@@ -3,7 +3,6 @@ from collections import namedtuple
 import itertools as it
 import numpy.random as random
 import numpy as np
-import pyvisgraph as vg
 
 from tsp.visgraph import calculate_visgraph, shortest_path
 from tsp.templates import Template
@@ -174,7 +173,7 @@ class TSP_O(TSP):
         """Each vertex is an (x, y) two-tuple"""
         self.obstacles.append([tuple(int(i) for i in v) for v in vertices])
 
-    def to_visgraph(self, rebuild=False) -> vg.graph.Graph:
+    def to_visgraph(self, rebuild=False):
         if self.vg is None or rebuild:
             self.vg = calculate_visgraph(self.cities, self.obstacles, bound=(self.w, self.h))
             # self.vg = vg.VisGraph()
