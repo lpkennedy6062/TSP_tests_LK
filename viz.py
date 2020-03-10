@@ -1,4 +1,9 @@
+from math import sin, cos, radians
+import numpy as np
 from PIL import Image, ImageDraw
+from cv2 import cv2
+
+from tsp.tsp import TSP
 
 
 def draw_cities(im, tsp):
@@ -52,6 +57,45 @@ def visualize_color(t, s, path):
     draw_cities_color(im, t)
     im.thumbnail((t.w, t.h))
     im.save(path)
+
+
+def visualize_3d(t, s, path, segments=False, step=1, time=12):
+    """
+    x’=xcos(alpha)+zsin(alpha)
+    y’=y
+    z’=-xsin(alpha)+zcos(alpha)
+    """
+    min_x, min_y, max_x, max_y = float('inf'), float('inf'), float('-inf'), float('-inf')
+    for alpha in range(0, 360, step):
+        for x, y, z in t.cities:
+            x_ = x*cos(radians(alpha)) + z*sin(radians(alpha))
+            y_ = y
+            min_x = min(min_x, x_)
+            min_y = min(min_y, y_)
+            max_x = max(max_x, x_)
+            max_y = max(max_y, y_)
+    min_x -= 10  # padding
+    min_y -= 10
+    max_x -= min_x - 10  # padding on max side
+    max_y -= min_y - 10
+    min_x, min_y, max_x, max_y = int(min_x), int(min_y), int(max_x), int(max_y)
+
+    video = cv2.VideoWriter(path, cv2.VideoWriter_fourcc(*'mp4v'), int(round((360 / step) / time)), (max_x, max_y))
+    for alpha in range(0, 360, step):
+        new_coords = []
+        for x, y, z in t.cities:
+            new_coords.append((
+                x*cos(radians(alpha)) + z*sin(radians(alpha)),
+                y
+            ))
+        new_coords = np.array(new_coords, dtype=np.int)
+        new_coords -= np.array([min_x, min_y])
+
+        new_t = TSP.from_cities(new_coords, w=max_x, h=max_y)
+        visualize(new_t, s, '/tmp/viz.png', segments)
+        video.write(cv2.imread('/tmp/viz.png'))
+    video.release()
+
 
 
 # def draw_visgraph(im, tsp):

@@ -6,7 +6,6 @@ import json
 import numpy as np
 
 from tsp.tsp import TSP, N_TSP, TSP_O
-from tsp.solvers import PyramidSolver, ConcordeSolver
 
 
 def save_stresses(stresses: [float], path: str):
