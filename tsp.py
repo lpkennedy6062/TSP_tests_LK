@@ -163,6 +163,37 @@ class TSP_Color(N_TSP):
 class TSP_O(TSP):
     """Container for a TSP-with-obstacles instance"""
 
+    @staticmethod
+    def check_min_dist(cities, obstacles, x, y, r, min_dist):
+        """Check that (x, y) is not within r of any city, or min_dist of any obstacle"""
+        for p in cities:
+            if _euclidean(p, (x, y)) < r:
+                return False
+        # TODO: distance from obstacles
+        return True
+
+    @classmethod
+    def generate_random_safe(cls, n: int, w: int = 500, h: int = 500, r: int = 10, padding: int = 10,
+                             n_obs: int = 10, edge_length: int = 20, min_dist: int = 10, track_discards: bool = False):
+        """Generate a random problem in which cities are min_dist from the obstacles"""
+        j = 0
+        while True:
+            result = cls(w, h)
+            result.add_random_obstacles(n_obs, edge_length)
+            while len(result.cities) < n:
+                x = random.randint(padding, w - padding)
+                y = random.randint(padding, h - padding)
+                if TSP_O.check_min_dist(result.cities, result.obstacles, x, y, r, min_dist):
+                    continue
+                result.add_city(x, y)
+                try:
+                    result.to_edge_matrix(True)
+                except Exception:
+                    j += 1
+                    break
+            if len(result.cities) == n:
+                return (result, j) if track_discards else result
+
     def __init__(self, w: int = 500, h: int = 500):
         TSP.__init__(self, w, h)
         self.obstacles = []  # list of "polygons" i.e. lists of two-tuple vertices
