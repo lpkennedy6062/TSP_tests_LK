@@ -8,7 +8,6 @@ import scipy as sp
 from tsp.tsp import N_TSP, TSP, TSP_O, City
 
 from tsp.pyramid import pyramid_solve
-from concorde.tsp import TSPSolver
 import tsp.christofides as christofides
 from sklearn.manifold import MDS, Isomap, SpectralEmbedding, LocallyLinearEmbedding
 from ortools.constraint_solver import pywrapcp

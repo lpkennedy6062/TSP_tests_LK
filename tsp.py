@@ -15,6 +15,18 @@ def _euclidean(a, b):
     return np.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2)
 
 
+def _point_to_line(p, L):
+    # see https://stackoverflow.com/a/1501725
+    p = np.array(p)
+    v1, v2 = np.array(L)
+    l2 = _euclidean(v1, v2) ** 2
+    if l2 == 0.:
+        return _euclidean(p, v1)
+    t = max(0., min(1., np.dot(p - v1, v2 - v1) / l2))
+    proj = v1 + t * (v2 - v1)
+    return _euclidean(p, proj)
+
+
 def distance(path: [(int, int)]):
     """Calculate the distance along a path of unspecified length"""
     return sum(map(lambda i: _euclidean(path[i - 1], path[i]), range(1, len(path))))
@@ -169,7 +181,10 @@ class TSP_O(TSP):
         for p in cities:
             if _euclidean(p, (x, y)) < r:
                 return False
-        # TODO: distance from obstacles
+        for L in obstacles:
+            assert len(L) == 2
+            if _point_to_line((x, y), L) < min_dist:
+                return False
         return True
 
     @classmethod
@@ -183,14 +198,15 @@ class TSP_O(TSP):
             while len(result.cities) < n:
                 x = random.randint(padding, w - padding)
                 y = random.randint(padding, h - padding)
-                if TSP_O.check_min_dist(result.cities, result.obstacles, x, y, r, min_dist):
+                if not TSP_O.check_min_dist(result.cities, result.obstacles, x, y, r, min_dist):
                     continue
                 result.add_city(x, y)
-                try:
-                    result.to_edge_matrix(True)
-                except Exception:
-                    j += 1
-                    break
+            try:
+                result.vg = None
+                result.to_edge_matrix()
+            except Exception:
+                j += 1
+                continue
             if len(result.cities) == n:
                 return (result, j) if track_discards else result
 

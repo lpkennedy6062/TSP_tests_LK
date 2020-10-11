@@ -24,7 +24,7 @@ def static_file(path):
     return bottle.static_file(path, root=UI_ROOT)
 
 def run():
-    bottle.run(host='', port=80)
+    bottle.run(host='', port=8080)
 
 
 # API
