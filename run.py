@@ -23,6 +23,8 @@ import numpy as np
 import itertools as it
 import subprocess
 import argparse
+import os
+import re
 
 
 def confirm():
@@ -65,9 +67,26 @@ def run_problem_set(participant, path, randomized):
         return
 
 
-def run(participant, set_list_path):
-    with open(set_list_path, 'r') as f:
-        problem_sets = parse_problems(f)
+def load_save_file(path):
+    with open(path) as f:
+        for line in f:
+            match = re.match(r'\(([R\s])\)\s(.*)\n', line)
+            yield match.group(2), (True if match.group(1) == 'R' else False)
+
+
+def dump_save_file(save_file_path, problem_sets):
+    with open(save_file_path, 'w') as f:
+        for path, randomized in problem_sets:
+            f.write('({}) {}\n'.format(('R' if randomized else ' '), path))
+
+
+def run(participant, set_list_path, save_file_path):
+    if os.path.exists(save_file_path):
+        problem_sets = list(load_save_file(save_file_path))
+    else:
+        with open(set_list_path, 'r') as f:
+            problem_sets = parse_problems(f)
+        dump_save_file(save_file_path, problem_sets)
     print('Running participant "{}".'.format(participant))
     print('Problem sets will be administered in the following order:\n')
     for path, randomized in problem_sets:
@@ -77,7 +96,10 @@ def run(participant, set_list_path):
     print('Then have the participant refresh the page')
     confirm()
     for path, randomized in problem_sets:
-        run_problem_set(participant, path, randomized)
+        if not os.path.exists(os.path.join(path, participant)):
+            run_problem_set(participant, path, randomized)
+        else:
+            print('Found existing directory {}, skipping...'.format(os.path.join(path, participant)))
     print()
     print('All problem sets done! Exiting...')
 
@@ -86,5 +108,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run a subject on problem sets.')
     parser.add_argument('id', type=str, help='Participant identifier')
     parser.add_argument('sets', type=str, help='Path to list of problem sets')
+    parser.add_argument('-s', type=str, required=False, help='Path to save file')
     args = parser.parse_args()
-    run(args.id, args.sets)
+    run(args.id, args.sets, args.s)
