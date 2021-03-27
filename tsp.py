@@ -72,7 +72,7 @@ class N_TSP:
         for a, b, d in self.to_edges():
             result[a,b] = d
         il = np.tril_indices(count)
-        result[il] = result.T[il]  # Make symmetric
+        result[il] = result.T[il]  # Make symmetric  # pylint: disable=E1136
         return result
 
     def score(self, tour: Iterable[int]) -> float:
@@ -101,7 +101,7 @@ class TSP(N_TSP):
         j = 0
         while True:
             result = cls(w, h)
-            for i in range(n):
+            for _ in range(n):
                 x = random.randint(0, w)
                 y = random.randint(0, h)
                 result.add_city(x, y)
@@ -126,50 +126,6 @@ class TSP(N_TSP):
 
     def score_tour_segments(self, tour_segments):
         return distance(tour_segments)
-
-
-class TSP_Color(N_TSP):
-
-    @classmethod
-    def generate_random(cls, n_colors: [int], w: int = 500, h: int = 500, penalty: float = 2.):
-        result = cls(w, h, penalty)
-        n_total = sum(n_colors)
-        while len(set(result.cities)) < n_total:
-            result = cls(w, h)
-            for c, n in enumerate(n_colors):
-                for i in range(n):
-                    x = random.randint(10, w - 10)
-                    y = random.randint(10, h - 10)
-                    result.add_city(x, y, c)
-        return result
-
-    @classmethod
-    def from_cities(cls, cities: [[int, int], int], w: int = 500, h: int = 500, penalty: float = 2.):
-        result = cls(w, h, penalty)
-        for xy, c in cities:
-            x, y = xy
-            result.add_city(int(x), int(y), int(c))
-        return result
-
-    def __init__(self, w: int = 500, h: int = 500, penalty: float = 2.):
-        N_TSP.__init__(self)
-        self.w, self.h = w, h
-        self.dimensions = 2
-        self.penalty = penalty
-        self.colors = []
-
-    def add_city(self, x: int, y: int, color: int):
-        self.cities.append(City(x, y))
-        self.colors.append(color)
-
-    def edge(self, a: int, b: int) -> float:
-        A, B = self.cities[a], self.cities[b]
-        Ac, Bc = self.colors[a], self.colors[b]
-        penalty = 1 if Ac == Bc else self.penalty
-        diffsum = 0.
-        for i, j in zip(A, B):
-            diffsum += (i - j) ** 2
-        return np.sqrt(diffsum) * penalty
 
 
 class TSP_O(TSP):
@@ -288,7 +244,7 @@ class TSP_O(TSP):
 
     def add_random_obstacle(self, edge_length: int = 20):
         xc, yc = random.randint(0, self.w), random.randint(0, self.h)
-        alpha = np.pi * random.random()
+        alpha = np.pi * random.rand()
         x1 = xc + int(edge_length * np.cos(alpha) / 2.)
         y1 = yc + int(edge_length * np.sin(alpha) / 2.)
         x2 = xc - int(edge_length * np.cos(alpha) / 2.)
@@ -303,12 +259,12 @@ class TSP_O(TSP):
         # self.add_obstacle((x1, y1), (x2, y2))
 
     def add_random_obstacles(self, n: int, edge_length: int = 20):
-        for i in range(n):
+        for _ in range(n):
             self.add_random_obstacle(edge_length)
         self.to_visgraph(True)
 
     def add_random_obstacles_from_template(self, template: Template, n: int = 1, start_offsets = (0, 0)):
-        for i in range(n):
+        for _ in range(n):
             template(
                 (start_offsets[0], self.w - start_offsets[0]),
                 (start_offsets[1], self.h - start_offsets[1]),

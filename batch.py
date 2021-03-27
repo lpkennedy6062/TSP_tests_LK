@@ -134,14 +134,14 @@ def load_all_tour_segments(path: str):
 
 def generate_batch(size: int, n_cities: int) -> [TSP]:
     result = []
-    for i in range(size):
+    for _ in range(size):
         result.append(TSP.generate_random(n_cities))
     return result
 
 
 def generate_batch_obstacles(size: int, n_cities: int, n_obstacles: int, obstacle_width: int) -> [TSP_O]:
     result = []
-    for i in range(size):
+    for _ in range(size):
         while True:
             t = TSP_O.generate_random(n_cities)
             t.add_random_obstacles(n_obstacles, obstacle_width)

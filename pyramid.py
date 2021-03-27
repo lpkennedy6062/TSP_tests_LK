@@ -30,7 +30,7 @@ class DSNode:
         if self.height < 1 or depth < 1:
             return [self]
         result = self.children[:]
-        for i in range(depth - 1):
+        for _ in range(depth - 1):
             to_split = max(result)
             result.remove(to_split)
             result += to_split.split()
@@ -131,7 +131,7 @@ def cluster_boruvka(nodes):
             value = np.sqrt(np.sum(np.square(nodes[i] - nodes[j])))
             edges[i, j] = value
     i_lower = np.tril_indices(v, -1)
-    edges[i_lower] = edges.T[i_lower]
+    edges[i_lower] = edges.T[i_lower]  # pylint: disable=E1136
     while tree.sets > 1:
         clusters = list(set(map(lambda n: tuple(n.find().values()), tree._sets.values())))
         minimum_edges = {i : (np.inf, None) for i in range(len(clusters))}
@@ -147,26 +147,7 @@ def cluster_boruvka(nodes):
     return tree.root
 
 
-cluster = cluster_boruvka
-
-
-def cluster_edges(edges):
-    """
-    Agglomerate nodes based on their MST, given edge weights.
-    Uses Kruskal's algorithm, which runs in O(v^2 log v)
-
-    Input: np.ndarray((v, v))
-    """
-    edge_pq = PriorityQueue(len(edges) * (len(edges) - 1) // 2)
-    tree = DSTree()
-    for i in range(len(edges)):
-        tree.make_set(i)
-        for j in range(i + 1, len(edges)):
-            edge_pq.put((edges[i, j], (i, j)))
-    while tree.sets > 1:
-        c = tree.union(*edge_pq.get()[1])
-        # TODO: Can this even work? The entire structure of the problem is changing!
-        # c.value = calculate_centroid(c, )
+cluster = cluster_boruvka  # cluster_kruskal is deprecated
 
 
 def evaluate_path(nodes, indices):

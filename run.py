@@ -53,7 +53,7 @@ def parse_problems(paths):
             result[-1].append((path[1:], False))
         else:
             result[-1].append((path, True))
-    return list(it.chain(*map(lambda x: sorted(x, key=lambda _: np.random.random()), result)))
+    return list(it.chain(*map(lambda x: sorted(x, key=lambda _: np.random.rand()), result)))
 
 
 def run_problem_set(participant, path, randomized):
