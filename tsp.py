@@ -115,6 +115,12 @@ class TSP(N_TSP):
         for x, y in cities:
             result.add_city(int(x), int(y))
         return result
+    
+    @classmethod
+    def from_tsp(cls, tsp):
+        result = cls(tsp.w, tsp.h)
+        result.cities = tsp.cities
+        return result
 
     def __init__(self, w: int = 500, h: int = 500):
         N_TSP.__init__(self)
