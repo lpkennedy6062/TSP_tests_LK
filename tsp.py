@@ -92,6 +92,15 @@ class N_TSP:
     def tour_segments(self, tour: Iterable[int]) -> ((int, int)):
         return [self.cities[c] for c in tour] + [self.cities[tour[0]]]
 
+    def convert_tour_segments(self, tour_segments):
+        """Expects a list of coordinates, returns a list of cities"""
+        cities = list(map(tuple, self.cities))
+        tour_segments = list(map(tuple, tour_segments))
+        result = []
+        for coord in tour_segments[:-1]:
+            result.append(cities.index(coord))
+        return result
+
 
 class TSP(N_TSP):
     """Container for a TSP instance"""
