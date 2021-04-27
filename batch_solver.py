@@ -37,6 +37,18 @@ def score_tours_2(batch_path: str, tours_path: str, base_path: str, load_func=lo
     return errors, np.mean(errors), np.std(errors) / np.sqrt(len(errors))
 
 
+def score_tours_3(batch_path: str, tours_path: str, base_path: str, load_func=load, load_tours_func=load_tours) -> [float]:
+    batch = load_batch(batch_path, load_func=load_func)
+    tours = load_tours_func(tours_path)
+    base = load_tours(base_path)
+    errors = np.ndarray((len(batch),), dtype=np.float)
+    for i, (p, t, b) in enumerate(zip(batch, tours, base)):
+        tour_score = p.score_tour_segments(t) if segments else p.score(t)
+        base_score = p.score(b)
+        errors[i] = (tour_score / base_score) - 1.
+    return errors, np.mean(errors), np.std(errors) / np.sqrt(len(errors))
+
+
 def evaluate_pyramid(tsp: TSP) -> ([int], float, float):
     """
     Returns the pyramid solution, distance traveled, and time per city to compute
