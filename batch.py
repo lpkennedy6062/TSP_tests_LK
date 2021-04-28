@@ -140,6 +140,7 @@ def load_all_tour_segments_to_cities(batch_path: str, load_func=load):
         for problem, tour in zip(batch, tours):
             result.append(problem.convert_tour_segments(tour))
         return result
+    return _result_func
 
 
 def generate_batch(size: int, n_cities: int) -> [TSP]:
