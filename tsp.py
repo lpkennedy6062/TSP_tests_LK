@@ -32,6 +32,16 @@ def distance(path: [(int, int)]):
     return sum(map(lambda i: _euclidean(path[i - 1], path[i]), range(1, len(path))))
 
 
+def convert_tour_segments(problem, tour_segments):
+    """Expects a list of coordinates, returns a list of cities"""
+    cities = list(map(tuple, problem.cities))
+    tour_segments = list(map(tuple, tour_segments))
+    result = []
+    for coord in tour_segments[:-1]:
+        result.append(cities.index(coord))
+    return result
+
+
 class N_TSP:
     """Container for an N-dimensional TSP instance"""
 

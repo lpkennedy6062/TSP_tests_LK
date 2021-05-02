@@ -5,7 +5,7 @@ import pickle
 import json
 import numpy as np
 
-from tsp.tsp import TSP, N_TSP, TSP_O
+from tsp.tsp import TSP, N_TSP, TSP_O, convert_tour_segments
 
 
 def save_stresses(stresses: [float], path: str):
@@ -138,7 +138,7 @@ def load_all_tour_segments_to_cities(batch_path: str, load_func=load):
         tours = load_all_tour_segments(path)
         result = []
         for problem, tour in zip(batch, tours):
-            result.append(problem.convert_tour_segments(tour))
+            result.append(convert_tour_segments(problem, tour))
         return result
     return _result_func
 
