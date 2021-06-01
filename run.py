@@ -69,7 +69,7 @@ def run_problem_set(participant, path, randomized):
         return
 
 
-def run_problem_set_2(participant, path, randomized):
+def run_problem_set_2(participant, path, randomized, ui_root=None):
     command = 'python3 -m tsp.batch_server -f {}/problems -s {}/{} -o{}'.format(path, path, participant, ' -r' if randomized else '')
     print()
     print(command)
@@ -77,7 +77,7 @@ def run_problem_set_2(participant, path, randomized):
     problems_path = f'{path}/problems'
     output_dir = f'{path}/{participant}'
     try:
-        batch_server_run(problems_path, output_dir, randomized)
+        batch_server_run(problems_path, output_dir, randomized, ui_root)
     except KeyboardInterrupt:
         return
 
@@ -95,7 +95,7 @@ def dump_save_file(save_file_path, problem_sets):
             f.write('({}) {}\n'.format(('R' if randomized else ' '), path))
 
 
-def run(participant, set_list_path, save_file_path):
+def run(participant, set_list_path, save_file_path, ui_root=None):
     if save_file_path is not None and os.path.exists(save_file_path):
         problem_sets = list(load_save_file(save_file_path))
     else:
@@ -113,7 +113,7 @@ def run(participant, set_list_path, save_file_path):
     confirm()
     for path, randomized in problem_sets:
         if not os.path.exists(os.path.join(path, participant)):
-            run_problem_set_2(participant, path, randomized)
+            run_problem_set_2(participant, path, randomized, ui_root)
         else:
             print('Found existing directory {}, skipping...'.format(os.path.join(path, participant)))
     print()

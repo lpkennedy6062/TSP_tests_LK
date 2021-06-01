@@ -79,11 +79,15 @@ def serve_static(path):
     return static_file(path)
 
 
-def batch_server_run(problems_path, output_dir, randomized):
+def batch_server_run(problems_path, output_dir, randomized, ui_root=None):
+    global tour_dir, batch, OBSTACLES, MAPPING, UI_ROOT
     tour_dir = output_dir
 
     OBSTACLES = True
-    UI_ROOT = os.path.join(os.path.dirname(__file__), 'obstacles_batch_ui')
+    if ui_root is None:
+        UI_ROOT = os.path.join(os.path.dirname(__file__), 'obstacles_batch_ui')
+    else:
+        UI_ROOT = ui_root
     batch = load_batch(problems_path, load_func=load_obstacles)
 
     if randomized:
