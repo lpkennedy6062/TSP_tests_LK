@@ -79,6 +79,30 @@ def serve_static(path):
     return static_file(path)
 
 
+def batch_server_run(problems_path, output_dir, randomized, ui_root=None):
+    global tour_dir, batch, OBSTACLES, MAPPING, UI_ROOT
+    tour_dir = output_dir
+
+    OBSTACLES = True
+    if ui_root is None:
+        UI_ROOT = os.path.join(os.path.dirname(__file__), 'obstacles_batch_ui')
+    else:
+        UI_ROOT = ui_root
+    batch = load_batch(problems_path, load_func=load_obstacles)
+
+    if randomized:
+        MAPPING = np.random.permutation(len(batch))
+    else:
+        MAPPING = np.arange(len(batch))
+
+    if not os.path.isdir(tour_dir):
+        os.makedirs(tour_dir)
+    with open(os.path.join(tour_dir, 'order.txt'), 'w') as f:
+        f.write('{}\n'.format(str(MAPPING)))
+
+    run()
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run a subject on a batch of problems.')
     parser.add_argument('-f', type=str, required=True, help='Path to TSP batch to load/write')

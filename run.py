@@ -26,6 +26,8 @@ import argparse
 import os
 import re
 
+from tsp.batch_server import batch_server_run
+
 
 def confirm():
     try:
@@ -67,6 +69,19 @@ def run_problem_set(participant, path, randomized):
         return
 
 
+def run_problem_set_2(participant, path, randomized, ui_root=None):
+    command = 'python3 -m tsp.batch_server -f {}/problems -s {}/{} -o{}'.format(path, path, participant, ' -r' if randomized else '')
+    print()
+    print(command)
+    confirm()
+    problems_path = f'{path}/problems'
+    output_dir = f'{path}/{participant}'
+    try:
+        batch_server_run(problems_path, output_dir, randomized, ui_root)
+    except KeyboardInterrupt:
+        return
+
+
 def load_save_file(path):
     with open(path) as f:
         for line in f:
@@ -80,13 +95,14 @@ def dump_save_file(save_file_path, problem_sets):
             f.write('({}) {}\n'.format(('R' if randomized else ' '), path))
 
 
-def run(participant, set_list_path, save_file_path):
-    if os.path.exists(save_file_path):
+def run(participant, set_list_path, save_file_path, ui_root=None):
+    if save_file_path is not None and os.path.exists(save_file_path):
         problem_sets = list(load_save_file(save_file_path))
     else:
         with open(set_list_path, 'r') as f:
             problem_sets = parse_problems(f)
-        dump_save_file(save_file_path, problem_sets)
+        if save_file_path is not None:
+            dump_save_file(save_file_path, problem_sets)
     print('Running participant "{}".'.format(participant))
     print('Problem sets will be administered in the following order:\n')
     for path, randomized in problem_sets:
@@ -97,7 +113,7 @@ def run(participant, set_list_path, save_file_path):
     confirm()
     for path, randomized in problem_sets:
         if not os.path.exists(os.path.join(path, participant)):
-            run_problem_set(participant, path, randomized)
+            run_problem_set_2(participant, path, randomized, ui_root)
         else:
             print('Found existing directory {}, skipping...'.format(os.path.join(path, participant)))
     print()

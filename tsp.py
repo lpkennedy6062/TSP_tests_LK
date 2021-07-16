@@ -32,6 +32,16 @@ def distance(path: [(int, int)]):
     return sum(map(lambda i: _euclidean(path[i - 1], path[i]), range(1, len(path))))
 
 
+def convert_tour_segments(problem, tour_segments):
+    """Expects a list of coordinates, returns a list of cities"""
+    cities = list(map(tuple, problem.cities))
+    tour_segments = list(map(tuple, tour_segments))
+    result = []
+    for coord in tour_segments[:-1]:
+        result.append(cities.index(coord))
+    return result
+
+
 class N_TSP:
     """Container for an N-dimensional TSP instance"""
 
@@ -92,6 +102,15 @@ class N_TSP:
     def tour_segments(self, tour: Iterable[int]) -> ((int, int)):
         return [self.cities[c] for c in tour] + [self.cities[tour[0]]]
 
+    def convert_tour_segments(self, tour_segments):
+        """Expects a list of coordinates, returns a list of cities"""
+        cities = list(map(tuple, self.cities))
+        tour_segments = list(map(tuple, tour_segments))
+        result = []
+        for coord in tour_segments[:-1]:
+            result.append(cities.index(coord))
+        return result
+
 
 class TSP(N_TSP):
     """Container for a TSP instance"""
@@ -114,6 +133,12 @@ class TSP(N_TSP):
         result = cls(w, h)
         for x, y in cities:
             result.add_city(int(x), int(y))
+        return result
+    
+    @classmethod
+    def from_tsp(cls, tsp):
+        result = cls(tsp.w, tsp.h)
+        result.cities = tsp.cities
         return result
 
     def __init__(self, w: int = 500, h: int = 500):
