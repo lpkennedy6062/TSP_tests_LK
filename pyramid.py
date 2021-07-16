@@ -141,10 +141,40 @@ def cluster_boruvka(nodes):
                     minimum_edges[c1] = edges[e], e
                 if edges[e] < minimum_edges[c2][0]:
                     minimum_edges[c2] = edges[e], e
-        for _, e in minimum_edges.values():
+        # for _, e in minimum_edges.values():
+        for _, e in sorted(minimum_edges.values(), key=lambda t: t[0]):
             c = tree.union(*e)
             c.value = calculate_centroid(c, nodes)
     return tree.root
+
+
+def mst_boruvka(nodes):
+    result = set()
+    v = nodes.shape[0]
+    edges = np.zeros((v, v), dtype=np.float)
+    tree = DSTree()
+    for i in range(v):
+        tree.make_set(i)
+        edges[i, i] = np.inf
+        for j in range(i + 1, v):
+            value = np.sqrt(np.sum(np.square(nodes[i] - nodes[j])))
+            edges[i, j] = value
+    i_lower = np.tril_indices(v, -1)
+    edges[i_lower] = edges.T[i_lower]
+    while tree.sets > 1:
+        clusters = list(set(map(lambda n: tuple(n.find().values()), tree._sets.values())))
+        minimum_edges = {i : (np.inf, None) for i in range(len(clusters))}
+        for c1, c2 in it.combinations(range(len(clusters)), 2):
+            for e in it.product(clusters[c1], clusters[c2]):
+                if edges[e] < minimum_edges[c1][0]:
+                    minimum_edges[c1] = edges[e], e
+                if edges[e] < minimum_edges[c2][0]:
+                    minimum_edges[c2] = edges[e], e
+        for _, e in minimum_edges.values():
+            c = tree.union(*e)
+            c.value = calculate_centroid(c, nodes)
+            result.add(e)
+    return result
 
 
 cluster = cluster_boruvka

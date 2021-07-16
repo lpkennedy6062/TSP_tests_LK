@@ -6,6 +6,14 @@ from cv2 import cv2
 from tsp.tsp import TSP
 
 
+def draw_edges(im, tsp, edges):
+    draw = ImageDraw.Draw(im)
+    for e1, e2 in edges:
+        e1 = tuple(np.array(tsp.cities[e1]) * 2)
+        e2 = tuple(np.array(tsp.cities[e2]) * 2)
+        draw.line([e1, e2], fill='blue', width=6)
+
+
 def draw_cities(im, tsp):
     draw = ImageDraw.Draw(im)
     for x, y in tsp.cities:
@@ -46,6 +54,14 @@ def visualize(t, s, path, segments=False):
         draw_tour(im, t, s, segments)
     draw_cities(im, t)
     draw_obstacles(im, t)
+    im.thumbnail((t.w, t.h))
+    im.save(path)
+
+
+def visualize_mst(t, edges, path):
+    im = Image.new('RGB', (t.w * 2, t.h * 2), color = 'white')
+    draw_edges(im, t, edges)
+    draw_cities(im, t)
     im.thumbnail((t.w, t.h))
     im.save(path)
 
