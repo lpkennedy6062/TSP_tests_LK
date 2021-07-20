@@ -1,36 +1,24 @@
+from typing import Iterable, Tuple
 import numpy.random as random
 import numpy as np
-from PIL import Image, ImageDraw
 
-from ..tsp import City, N_TSP
-
-
-def draw_cities_color(im, tsp):
-    draw = ImageDraw.Draw(im)
-    for i, p in enumerate(tsp.cities):
-        x, y = p
-        c = 'red' if tsp.colors[i] == 0 else 'blue'
-        draw.ellipse([(x*2 - 8, y*2 - 8), (x*2 + 8, y*2 + 8)], c, outline=c)
-
-
-def draw_tour_color(im, tsp, tour):
-    draw = ImageDraw.Draw(im)
-    draw.line([(x*2, y*2) for x, y in tsp.tour_segments(tour)], fill='black', width=3)
-
-
-def visualize_color(t, s, path):
-    im = Image.new('RGB', (t.w * 2, t.h * 2), color = 'white')
-    if s:
-        draw_tour_color(im, t, s)
-    draw_cities_color(im, t)
-    im.thumbnail((t.w, t.h))
-    im.save(path)
+from tsp.tsp import N_TSP
 
 
 class TSP_Color(N_TSP):
+    """Container for a TSP-with-colors instance."""
 
     @classmethod
-    def generate_random(cls, n_colors: [int], w: int = 500, h: int = 500, penalty: float = 2.):
+    def generate_random(cls, n_colors: Iterable[int], w: int = 500, h: int = 500, penalty: float = 2.):
+        """Generate a new problem with uniformly-distributed random cities of different colors.
+
+        Args:
+            n_colors (Iterable[int]): number of cities of each color, for example [25, 25] would be a
+                50-city problem with two colors evenly distributed
+            w (int, optional): Width of problem. Defaults to 500.
+            h (int, optional): Height of problem. Defaults to 500.
+            penalty (float, optional): Distance multiplier when traveling between colors. Defaults to 2.0.
+        """
         result = cls(w, h, penalty)
         n_total = sum(n_colors)
         while len(set(result.cities)) < n_total:
@@ -43,7 +31,15 @@ class TSP_Color(N_TSP):
         return result
 
     @classmethod
-    def from_cities(cls, cities: [[int, int], int], w: int = 500, h: int = 500, penalty: float = 2.):
+    def from_cities(cls, cities: Iterable[Tuple[Tuple[int, int], int]], w: int = 500, h: int = 500, penalty: float = 2.):
+        """Generate object from list/array of (colored) cities.
+
+        Args:
+            cities (Iterable[Tuple[Tuple[int, int], int]]): colored cities as [((x1, y1), c1), ...]
+            w (int, optional): Width of problem. Defaults to 500.
+            h (int, optional): Height of problem. Defaults to 500.
+            penalty (float, optional): Distance multiplier when traveling between colors. Defaults to 2.0.
+        """
         result = cls(w, h, penalty)
         for xy, c in cities:
             x, y = xy
@@ -55,13 +51,31 @@ class TSP_Color(N_TSP):
         self.w, self.h = w, h
         self.dimensions = 2
         self.penalty = penalty
-        self.colors = []
+        self.colors = np.array([])
 
     def add_city(self, x: int, y: int, color: int):
-        self.cities.append(City(x, y))
+        """Inefficiently adds a (colored) city to the problem.
+
+        Args:
+            x (int): city x
+            y (int): city y
+            color (int): city color
+        """
+        N_TSP.add_city(x, y)
+        self.colors = list(self.colors)
         self.colors.append(color)
+        self.colors = np.array(self.colors)
 
     def edge(self, a: int, b: int) -> float:
+        """Edge length between two cities, taking into account penalties for switching colors.
+
+        Args:
+            a (int): index of first city
+            b (int): index of second city
+
+        Returns:
+            float: edge length
+        """
         A, B = self.cities[a], self.cities[b]
         Ac, Bc = self.colors[a], self.colors[b]
         penalty = 1 if Ac == Bc else self.penalty

@@ -1,14 +1,19 @@
-import numpy as np
+from typing import DefaultDict, List, Tuple
 import itertools as it
 from collections import defaultdict
-from queue import PriorityQueue, Empty
+from queue import PriorityQueue
 
 
-def _on_segment(p, q, r):
+Point = Tuple[int, int]
+Line = Tuple[Point, Point]
+Graph = DefaultDict[Point, List[Point]]
+
+
+def _on_segment(p: Point, q: Point, r: Point) -> bool:
     return q[0] <= max(p[0], r[0]) and q[0] >= min(p[0], r[0]) and q[1] <= max(p[1], r[1]) and q[1] >= min(p[1], r[1])
 
 
-def _orientation(p, q, r):
+def _orientation(p: Point, q: Point, r: Point) -> int:
     val = (q[1] - p[1]) * (r[0] - q[0]) - (q[0] - p[0]) * (r[1] - q[1])
     if val == 0:
         return 0  # colinear
@@ -17,7 +22,7 @@ def _orientation(p, q, r):
     return 2  # counterclockwise
 
 
-def _intersect(p1, q1, p2, q2):
+def _intersect(p1: Point, q1: Point, p2: Point, q2: Point) -> bool:
     """Does p1q1 intersect p2q2?"""
     o1 = _orientation(p1, q1, p2)
     o2 = _orientation(p1, q1, q2)
@@ -36,7 +41,7 @@ def _intersect(p1, q1, p2, q2):
     return False
 
 
-def _visible(a, b, obstacles):
+def _visible(a: Point, b: Point, obstacles: List[Line]):
     for c, d in obstacles:
         if a == c or a == d or b == c or b == d:
             continue  # If one of the points is a vertex of the obstacle, it's visible
@@ -45,7 +50,17 @@ def _visible(a, b, obstacles):
     return True
 
 
-def calculate_visgraph(vertices, obstacles, bound=None):
+def calculate_visgraph(vertices: List[Point], obstacles: List[Line], bound: Tuple[int, int] = None) -> Graph:
+    """Calculate a visibility graph. Obstacle endpoints are included in the graph.
+
+    Args:
+        vertices (List[Point]): list of vertices
+        obstacles (List[Line]): list of obstacles
+        bound (Tuple[int, int], optional): Maximum x and y (excludes vertices and obstacle endpoints outside of this). Defaults to None.
+
+    Returns:
+        Graph: table of all vertices visible (value) from any given vertex (key)
+    """
     # Obstacles should only be line segments at this point
     result = defaultdict(list)
     points = vertices + list(it.chain(*obstacles))
@@ -61,11 +76,23 @@ def calculate_visgraph(vertices, obstacles, bound=None):
     return result
 
 
-def _distance(p, q):
-    return np.sqrt(pow(p[0] - q[0], 2) + pow(p[1] - q[1], 2))
+def _distance(p: Point, q: Point) -> float:
+    return pow(pow(p[0] - q[0], 2) + pow(p[1] - q[1], 2), 0.5)
 
 
-def shortest_path(a, b, graph, exclude=None):
+def shortest_path(a: Point, b: Point, graph: Graph, exclude: List[Point] = None) -> List[Point]:
+    """Shortest path (calculated with Dijkstra's) between points a and b in the visibility graph,
+    taking into account navigation around obstacles.
+
+    Args:
+        a (Point): starting point
+        b (Point): end point
+        graph (Graph): visibility graph (must contain a and b)
+        exclude (List[Point], optional): Points in the graph which cannot be on the path. Defaults to None.
+
+    Returns:
+        List[Point]: [description]
+    """
     a, b = tuple(a), tuple(b)
     q = PriorityQueue()
     visited = set() if exclude is None else set(exclude)
