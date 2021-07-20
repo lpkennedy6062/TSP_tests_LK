@@ -1,5 +1,5 @@
 from typing import Iterable
-from collections import namedtuple
+from numpy.typing import ArrayLike, NDArray
 import itertools as it
 import numpy.random as random
 import numpy as np
@@ -8,82 +8,76 @@ from tsp.visgraph import calculate_visgraph, shortest_path
 from tsp.templates import Template
 
 
-City = namedtuple('City', ['x', 'y'])
-
-
-def _euclidean(a, b):
-    return np.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2)
-
-
-def _point_to_line(p, L):
+def _point_to_line(p: ArrayLike, L: ArrayLike) -> float:
     # see https://stackoverflow.com/a/1501725
     p = np.array(p)
     v1, v2 = np.array(L)
-    l2 = _euclidean(v1, v2) ** 2
-    if l2 == 0.:
-        return _euclidean(p, v1)
+    l2 = np.linalg.norm(v1 - v2) ** 2
+    if np.isclose(l2, 0):
+        return np.linalg.norm(p - v1)
     t = max(0., min(1., np.dot(p - v1, v2 - v1) / l2))
     proj = v1 + t * (v2 - v1)
-    return _euclidean(p, proj)
+    return np.linalg.norm(p - proj)
 
 
-def distance(path: [(int, int)]):
+def distance(path: Iterable[ArrayLike]) -> float:
     """Calculate the distance along a path of unspecified length"""
-    return sum(map(lambda i: _euclidean(path[i - 1], path[i]), range(1, len(path))))
-
-
-def convert_tour_segments(problem, tour_segments):
-    """Expects a list of coordinates, returns a list of cities"""
-    cities = list(map(tuple, problem.cities))
-    tour_segments = list(map(tuple, tour_segments))
-    result = []
-    for coord in tour_segments[:-1]:
-        result.append(cities.index(coord))
-    return result
+    return sum(map(lambda i: np.linalg.norm(path[i - 1] - path[i]), range(1, len(path))))
 
 
 class N_TSP:
     """Container for an N-dimensional TSP instance"""
 
     @classmethod
-    def from_cities(cls, cities: [[int]]):
+    def from_cities(cls, cities: ArrayLike):
         result = cls()
-        for coords in cities:
-            result.add_city(*coords)
+        result.cities = np.array(cities)
         return result
 
     def __init__(self):
-        self.cities = []
-        self.dimensions = 0
+        self.cities = np.array([])
 
-    def add_city(self, *args):
-        assert self.dimensions == 0 or len(args) == self.dimensions
-        self.dimensions = len(args)
-        self.cities.append(tuple(args))
+    @property
+    def dimensions(self) -> int:
+        return self.cities.shape[1]
 
-    def to_matrix(self) -> np.ndarray:
-        return np.array(self.cities)
+    def add_city(self, *coords: int):
+        assert self.dimensions == 0 or len(coords) == self.dimensions
+        self.dimensions = len(coords)
+        self.cities = list(self.cities)
+        self.cities.append(np.array(coords))
+        self.cities = np.array(self.cities)
 
     def edge(self, a: int, b: int) -> float:
-        A, B = self.cities[a], self.cities[b]
-        diffsum = 0.
-        for i, j in zip(A, B):
-            diffsum += (i - j) ** 2
-        return np.sqrt(diffsum)
+        return np.linalg.norm(self.cities[a] - self.cities[b])
 
-    def to_edges(self) -> ((int, int), (int, int), float):
+    def to_edges(self) -> Iterable[int, int, float]:
         """Produces iterable of edges (a, b, d) of distance d between vertices a and b"""
         for a, b in it.combinations(range(len(self.cities)), 2):
             yield a, b, self.edge(a, b)
 
-    def to_edge_matrix(self) -> np.ndarray:
+    def to_edge_matrix(self) -> NDArray:
         count = len(self.cities)
         result = np.zeros((count, count), dtype=np.float32)
         for a, b, d in self.to_edges():
-            result[a,b] = d
+            result[a, b] = d
         il = np.tril_indices(count)
         result[il] = result.T[il]  # Make symmetric  # pylint: disable=E1136
         return result
+
+    def tour_segments(self, tour: Iterable[int]) -> Iterable[ArrayLike]:
+        for c in tour:
+            yield self.cities[c]
+        yield self.cities[tour[0]]
+
+    def convert_tour_segments(self, tour_segments: Iterable[ArrayLike]) -> NDArray:
+        """Expects a list of coordinates, returns a list of cities"""
+        cities = list(map(tuple, self.cities))
+        tour_segments = list(map(tuple, tour_segments))
+        result = []
+        for coord in tour_segments[:-1]:
+            result.append(cities.index(coord))
+        return np.array(result)
 
     def score(self, tour: Iterable[int]) -> float:
         result = 0.
@@ -99,24 +93,15 @@ class N_TSP:
         result += self.edge(c, first)
         return result
 
-    def tour_segments(self, tour: Iterable[int]) -> ((int, int)):
-        return [self.cities[c] for c in tour] + [self.cities[tour[0]]]
-
-    def convert_tour_segments(self, tour_segments):
-        """Expects a list of coordinates, returns a list of cities"""
-        cities = list(map(tuple, self.cities))
-        tour_segments = list(map(tuple, tour_segments))
-        result = []
-        for coord in tour_segments[:-1]:
-            result.append(cities.index(coord))
-        return result
+    def score_tour_segments(self, tour_segments: Iterable[ArrayLike]):
+        return distance(tour_segments)
 
 
 class TSP(N_TSP):
     """Container for a TSP instance"""
 
     @classmethod
-    def generate_random(cls, n: int, w: int = 500, h: int = 500, r: int = 10, track_discards = False):
+    def generate_random(cls, n: int, w: int = 500, h: int = 500, r: int = 10, track_discards: bool = False):
         j = 0
         while True:
             result = cls(w, h)
@@ -129,12 +114,12 @@ class TSP(N_TSP):
             j += 1
 
     @classmethod
-    def from_cities(cls, cities: [[int, int]], w: int = 500, h: int = 500):
+    def from_cities(cls, cities: ArrayLike, w: int = 500, h: int = 500):
         result = cls(w, h)
         for x, y in cities:
             result.add_city(int(x), int(y))
         return result
-    
+
     @classmethod
     def from_tsp(cls, tsp):
         result = cls(tsp.w, tsp.h)
@@ -144,23 +129,16 @@ class TSP(N_TSP):
     def __init__(self, w: int = 500, h: int = 500):
         N_TSP.__init__(self)
         self.w, self.h = w, h
-        self.dimensions = 2
-
-    def add_city(self, x: int, y: int):
-        self.cities.append(City(x, y))
-
-    def score_tour_segments(self, tour_segments):
-        return distance(tour_segments)
 
 
 class TSP_O(TSP):
     """Container for a TSP-with-obstacles instance"""
 
     @staticmethod
-    def check_min_dist(cities, obstacles, x, y, r, min_dist):
+    def check_min_dist(cities: Iterable[ArrayLike], obstacles: Iterable[ArrayLike], x: int, y: int, r: int, min_dist: int):
         """Check that (x, y) is not within r of any city, or min_dist of any obstacle"""
         for p in cities:
-            if _euclidean(p, (x, y)) < r:
+            if np.linalg.norm(p - np.array([x, y])) < r:
                 return False
         for L in obstacles:
             assert len(L) == 2
@@ -193,19 +171,19 @@ class TSP_O(TSP):
 
     def __init__(self, w: int = 500, h: int = 500):
         TSP.__init__(self, w, h)
-        self.obstacles = []  # list of "polygons" i.e. lists of two-tuple vertices
+        self.obstacles = np.array([])  # list of "polygons" i.e. lists of two-tuple vertices
         self.vg = None
         self.E = None
 
-    def add_obstacle(self, *vertices: [(int, int)]):
+    def add_obstacle(self, *vertices: int):
         """Each vertex is an (x, y) two-tuple"""
-        self.obstacles.append([tuple(int(i) for i in v) for v in vertices])
+        self.obstacles = list(self.obstacles)
+        self.obstacles.append(np.array([tuple(int(i) for i in v) for v in vertices]))
+        self.obstacles = np.array(self.obstacles)
 
-    def to_visgraph(self, rebuild=False):
+    def to_visgraph(self, rebuild: bool = False):
         if self.vg is None or rebuild:
             self.vg = calculate_visgraph(self.cities, self.obstacles, bound=(self.w, self.h))
-            # self.vg = vg.VisGraph()
-            # self.vg.build([[vg.Point(*v) for v in o] for o in self.obstacles])
         return self.vg
 
     def edge(self, a: int, b: int) -> float:
@@ -213,29 +191,19 @@ class TSP_O(TSP):
         A, B = self.cities[a], self.cities[b]
         return distance(shortest_path(A, B, g))
 
-    def to_edges(self) -> ((int, int), (int, int), float):
+    def to_edges(self) -> Iterable[int, int, float]:
         """Produces iterable of edges (a, b, d) of distance d between vertices a and b"""
         g = self.to_visgraph()
         for a, b in it.combinations(range(len(self.cities)), 2):
             A, B = self.cities[a], self.cities[b]
             yield a, b, distance(shortest_path(A, B, g))
 
-    def to_edge_matrix(self, rebuild=False):
+    def to_edge_matrix(self, rebuild: bool = False) -> NDArray:
         if self.E is None or rebuild:
             self.E = TSP.to_edge_matrix(self)
         return self.E
 
-    # def to_edge_matrix(self) -> np.ndarray:
-    #     """Compute the distance matrix with the visibility graph"""
-    #     count = len(self.cities)
-    #     result = np.zeros((count, count), dtype=np.float32)
-    #     for a, b, d in self.to_edges():
-    #         result[a,b] = d
-    #     il = np.tril_indices(count)
-    #     result[il] = result.T[il]  # Make symmetric
-    #     return result
-
-    def tour_segments(self, tour: Iterable[int]) -> ((int, int)):
+    def tour_segments(self, tour: Iterable[int]) -> Iterable[ArrayLike]:
         """Produces iterable of vertices (x, y) that, when connected, make up the tour in obstacle space"""
         g = self.to_visgraph()
         prev = None
@@ -248,19 +216,15 @@ class TSP_O(TSP):
                 continue
             A, B = prev, self.cities[c]
             _ = False
-            # for p in g.shortest_path(vg.Point(*A), vg.Point(*B)):
             for p in shortest_path(A, B, g):
                 if _:
                     yield p
-                    # yield int(p.x), int(p.y)
                 else:
                     _ = True  # Discard the first point so there are no duplicates
             prev = B
         _ = False
-        # for p in g.shortest_path(vg.Point(*prev), vg.Point(*first)):
         for p in shortest_path(prev, first, g):
             if _:
-                # yield int(p.x), int(p.y)
                 yield p
             else:
                 _ = True
@@ -275,13 +239,6 @@ class TSP_O(TSP):
         x2 = xc - int(edge_length * np.cos(alpha) / 2.)
         y2 = yc - int(edge_length * np.sin(alpha) / 2.)
         self.add_obstacle((x1, y1), (x2, y2))
-        # x1, y1 = random.randint(1, self.w - 1), random.randint(1, self.h - 1)
-        # x2, y2 = 0, 0
-        # while x2 <= 1 or y2 <= 1:
-        #     alpha = 2. * np.pi * random.random()
-        #     x2 = int((edge_length * np.cos(alpha)) + x1)
-        #     y2 = int((edge_length * np.sin(alpha)) + y1)
-        # self.add_obstacle((x1, y1), (x2, y2))
 
     def add_random_obstacles(self, n: int, edge_length: int = 20):
         for _ in range(n):
