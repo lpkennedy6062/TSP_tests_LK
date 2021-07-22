@@ -49,7 +49,6 @@ class TSP_Color(N_TSP):
     def __init__(self, w: int = 500, h: int = 500, penalty: float = 2.):
         N_TSP.__init__(self)
         self.w, self.h = w, h
-        self.dimensions = 2
         self.penalty = penalty
         self.colors = np.array([])
 
