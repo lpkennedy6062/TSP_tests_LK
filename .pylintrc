@@ -146,7 +146,8 @@ disable=print-statement,
       unsubscriptable-object,
       too-many-locals,
       line-too-long,
-      consider-using-enumerate
+      consider-using-enumerate,
+      global-statement
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option

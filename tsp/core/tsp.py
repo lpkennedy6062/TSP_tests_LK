@@ -1,4 +1,4 @@
-from typing import Iterable, Iterator, DefaultDict
+from typing import Iterable, Iterator, DefaultDict, Union
 from numpy.typing import ArrayLike, NDArray
 import itertools as it
 import numpy.random as random
@@ -117,7 +117,7 @@ class N_TSP:
         for coord in tour_segments[:-1]:
             yield cities.index(coord)
 
-    def score(self, tour: Iterable[int]) -> float:
+    def score_indices(self, tour: Iterable[int]) -> float:
         """Calculate tour length (from index format).
 
         Args:
@@ -149,6 +149,20 @@ class N_TSP:
             float: tour length
         """
         return distance(tour_segments)
+
+    def score(self, tour: Iterable[Union[int, ArrayLike]]) -> float:
+        """Calculate tour length (automatically detects index or segment format).
+
+        Args:
+            tour (Iterable[Union[int, ArrayLike]]): tour
+
+        Returns:
+            float: tour length
+        """
+        s = list(tour)
+        if isinstance(s[0], int):
+            return self.score_indices(s)
+        return self.score_tour_segments(s)
 
 
 class TSP(N_TSP):

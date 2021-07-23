@@ -23,8 +23,6 @@ def save_obstacles(obj: TSP_O, path: str):
         "h": obj.h,
         "obstacles": obj.obstacles
     }
-    if not os.path.isdir(path):
-        os.makedirs(path)
     with open(path, 'w') as f:
         json.dump(struct, f)
 
@@ -64,8 +62,6 @@ def save_color(obj: TSP_Color, path: str):
         "penalty": obj.penalty,
         "colors": obj.colors
     }
-    if not os.path.isdir(path):
-        os.makedirs(path)
     with open(path, 'w') as f:
         json.dump(struct, f)
 

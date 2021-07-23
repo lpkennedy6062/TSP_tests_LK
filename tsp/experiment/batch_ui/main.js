@@ -1,9 +1,17 @@
-// Global variables - only one set of cities and one tour can be displayed at one time
-
 window.tspCities = []
-window.tspTour = []
-window.currentCity = -1
+window.tspObstacles = []
+window.tourEdges = []
+window.tourEdgeTimes = []
+window.visitedCities = []
+window.activeVertices = []
+window.currentVertex = null
 
+window.problemIndex = 0
+window.tourComplete = false
+window.setCompleted = false
+
+window.cHeight = 500
+window.cWidth = 500
 window.c = document.getElementById("mainCanvas")
 window.ctx = c.getContext("2d")
 
@@ -12,7 +20,44 @@ window.crypto.getRandomValues(_array)
 window.clientId = _array[0]
 
 
+var MAX_DISTANCE = 16
+
+
 // Utility functions
+
+function sameCoord(xy1, xy2)
+{
+    return xy1[0] === xy2[0] && xy1[1] === xy2[1]
+}
+
+function inArray(xy1, a)
+{
+    for (var i = 0; i < a.length; i++)
+        if (sameCoord(xy1, a[i]))
+            return true
+    return false
+}
+
+function isSubset(a, b)
+{
+    for (var i = 0; i < a.length; i++)
+        if (!inArray(a[i], b))
+            return false
+    return true
+}
+
+function checkComplete()
+{
+    if (tourEdges.length < 2)
+        return false
+    // Is the tour closed?
+    if (!sameCoord(tourEdges[0][0], tourEdges[tourEdges.length - 1][1]))
+        return false
+    // Are all cities in the tour?
+    if (!isSubset(tspCities, tourEdges.flat()))
+        return false
+    return true
+}
 
 function distance(xy1, xy2)
 {
@@ -21,64 +66,93 @@ function distance(xy1, xy2)
     return Math.sqrt((dx * dx) + (dy * dy))
 }
 
-function drawCity(x, y, selected)
+
+var CURRENT = "#0f0"
+var ACTIVE = "#00f"
+var INACTIVE = "#f00"
+var NONCITY = "#999"
+
+function drawVertex(x, y, color)
 {
     var r = 5
     ctx.beginPath()
     ctx.arc(x, y, r, 0, 2 * Math.PI, false)
-    ctx.fillStyle = (selected) ? "#00f" : "#f00"
+    ctx.fillStyle = color
     ctx.fill()
 }
 
-function drawEdge(a, b)
+function drawEdge(xy1, xy2, color, thickness)
 {
-    var x1 = tspCities[a][0]
-    var y1 = tspCities[a][1]
-    var x2 = tspCities[b][0]
-    var y2 = tspCities[b][1]
+    x1 = xy1[0]
+    y1 = xy1[1]
+    x2 = xy2[0]
+    y2 = xy2[1]
 
     ctx.beginPath()
     ctx.moveTo(x1, y1)
     ctx.lineTo(x2, y2)
-    ctx.strokeStyle = "#00f"
-    ctx.lineWidth = 2
+    ctx.strokeStyle = color
+    ctx.lineWidth = thickness
     ctx.stroke()
 }
 
 function drawCities()
 {
     tspCities.forEach(function (xy) {
-        drawCity(xy[0], xy[1])
+        drawVertex(xy[0], xy[1], INACTIVE)
     })
-    if (currentCity >= 0)
-    {
-        drawCity(tspCities[currentCity][0], tspCities[currentCity][1], true)
-    }
 }
 
-function drawEdges()
+function drawObstacles()
 {
-    var a = 0, b = 1
-    for (; b < tspTour.length; a++, b++)
-    {
-        drawEdge(tspTour[a], tspTour[b])
-    }
-    if (tspTour.length > 0 && currentCity < 0) {
-        drawEdge(tspTour[a], tspTour[0])
+    tspObstacles.forEach(function (ab) {
+        xy1 = ab[0]
+        xy2 = ab[1]
+        drawEdge(xy1, xy2, "#000", 3)
+    })
+}
+
+function drawTour()
+{
+    tourEdges.forEach(function (ab) {
+        xy1 = ab[0]
+        xy2 = ab[1]
+        drawEdge(xy1, xy2, "#00f", 2)
+    })
+}
+
+function drawActive()
+{
+    activeVertices.forEach(function (xy) {
+        drawVertex(xy[0], xy[1], (inArray(xy, tspCities)) ? ACTIVE : NONCITY)
+    })
+    if (currentVertex !== null) {
+        drawVertex(currentVertex[0], currentVertex[1], CURRENT)
     }
 }
 
 function clearDrawing()
 {
     ctx.fillStyle = "#fff"
-    ctx.fillRect(0, 0, 500, 500)
+    ctx.fillRect(0, 0, cHeight, cWidth)
+}
+
+function resize()
+{
+    c.height = cHeight * 2
+    c.width = cWidth * 2
+    window.ctx = c.getContext("2d")
+    ctx.scale(2, 2)
 }
 
 function redraw()
 {
     clearDrawing()
-    drawEdges()
+    resize()
     drawCities()
+    drawObstacles()
+    drawTour()
+    drawActive()
 }
 
 
@@ -86,8 +160,12 @@ function redraw()
 
 function clear()
 {
-    window.tspTour = []
     window.tspCities = []
+    window.tspObstacles = []
+    window.tourEdges = []
+    window.tourEdgeTimes = []
+    window.activeVertices = []
+    window.currentVertex = null
 }
 
 function nextProblem()
@@ -99,10 +177,38 @@ function nextProblem()
         if (xhr.readyState == XMLHttpRequest.DONE) {
             clear()
             if (xhr.status == 200) {
-                window.tspCities = JSON.parse(xhr.responseText)
+                var response = JSON.parse(xhr.responseText)
+                window.tspCities = response.cities
+                window.tspObstacles = response.obstacles
+                window.activeVertices = response.cities
+                window.cHeight = response.height
+                window.cWidth = response.width
+                redraw()
+                document.getElementById("bottomBar").innerText = "Problem " + (window.problemIndex + 1)
+            } else {
+                window.setCompleted = true
+                window.alert("No more problems!")
+            }
+        }
+    }
+}
+
+function getVisgraph()
+{
+    if (inArray(currentVertex, tspCities) && tourEdges.length > 0 && !sameCoord(currentVertex, tourEdges[0][0]))
+        visitedCities.push(currentVertex)
+    var xhr = new XMLHttpRequest()
+    xhr.open("POST", "/api/" + window.problemIndex + "/visgraph", true)
+    xhr.send("data=" + encodeURIComponent(JSON.stringify(currentVertex)))
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+            if (xhr.status == 200) {
+                window.activeVertices = JSON.parse(xhr.responseText).filter(function(v) {
+                    return !inArray(v, visitedCities)
+                })
                 redraw()
             } else {
-                window.alert("No more problems!")
+                window.alert("Error encountered! Is the server still running?")
             }
         }
     }
@@ -110,10 +216,9 @@ function nextProblem()
 
 function recordTour()
 {
-    if (tspCities.length < 4) { return }
     var xhr = new XMLHttpRequest()
     xhr.open("POST", "/api/" + window.problemIndex + "/tour", true)
-    xhr.send("data=" + encodeURIComponent(JSON.stringify(tspTour)))
+    xhr.send("data=" + encodeURIComponent(JSON.stringify([tourEdges, tourEdgeTimes])))
     xhr.onreadystatechange = function() {
         if (xhr.readyState == XMLHttpRequest.DONE) {
             window.problemIndex++
@@ -130,73 +235,106 @@ function getXY(ev)
     var rect = ev.target.getBoundingClientRect()
     var x = ev.clientX - rect.left
     var y = ev.clientY - rect.top
+    x = x * cWidth / c.width
+    y = y * cHeight / c.height
     return [x, y]
 }
 
 function restartTour(ev)
 {
-    window.tspTour = []
+    if (!confirm("Clear existing tour?"))
+        return
+    window.tourEdges = []
+    window.tourEdgeTimes = []
+    window.visitedCities = []
+    window.currentVertex = null
+    window.activeVertices = tspCities
+    window.tourComplete = false
     redraw()
+}
+
+function undoTour(ev)
+{
+    if (tourEdges.length === 0)
+        return
+    while (inArray(currentVertex, visitedCities))
+        visitedCities.pop()
+    window.currentVertex = tourEdges.pop()[0]
+    tourEdgeTimes.pop()
+    getVisgraph()
+    window.tourComplete = false
 }
 
 function sendTour(ev)
 {
-    if (tspTour.length != tspCities.length)
+    if (!tourComplete)
     {
         alert("Tour incomplete!")
         return
     }
     recordTour()
+    window.tourComplete = false
 }
 
-function buildTour()
+function buildTour(ev)
 {
-    window.prevCity = -1
-    return function(ev) {
-        if (prevCity < 0 && tspTour.length > 0)
+    if (tourComplete)
+    {
+        restartTour()
+    }
+    var xy = getXY(ev)
+    var min = Infinity
+    var nextVertex = null
+    for (var i = 0; i < activeVertices.length; i++)
+    {
+        var dist = distance(xy, activeVertices[i])
+        if (!inArray(activeVertices[i], tspCities))
+            dist *= 2
+        if (dist < min)
         {
-            if (!confirm("Clear existing tour?"))
-            {
-                return
-            }
-            restartTour()
+            min = dist
+            nextVertex = activeVertices[i]
         }
-        var xy = getXY(ev)
-        var min = Infinity
-        window.currentCity = -1
-        for (var i = 0; i < tspCities.length; i++)
-        {
-            var dist = distance(xy, tspCities[i])
-            if (dist < min)
-            {
-                min = dist
-                window.currentCity = i
-            }
-        }
-        if (tspTour.indexOf(currentCity) >= 0)
-        {
-            window.currentCity = prevCity
-            return
-        }
-        tspTour.push(currentCity)
-        if (tspTour.length < tspCities.length)
-        {
-            window.prevCity = currentCity
-        }
-        else
-        {
-            alert("Tour complete!")
-            window.prevCity = -1
-            window.currentCity = -1
-        }
+    }
+    if (min > MAX_DISTANCE)
+        nextVertex = null
+    if (nextVertex === null)
+    {
+        // alert("No active vertices!")
+        return
+    }
+    if (window.currentVertex === null)
+    {
+        window.tourEdgeTimes.push(new Date().getTime())
+        window.currentVertex = nextVertex
+        getVisgraph()
+        return
+    }
+    tourEdges.push([currentVertex, nextVertex])
+    tourEdgeTimes.push(new Date().getTime())
+    if (checkComplete())
+    {
+        window.tourComplete = true
+        window.activeVertices = []
+        window.currentVertex = nextVertex
         redraw()
+        setTimeout(function(){ alert("Tour complete!"); }, 100);
+    }
+    else
+    {
+        window.currentVertex = nextVertex
+        getVisgraph()
     }
 }
 
+function cancelReload(ev)
+{
+    return setCompleted
+}
 
-window.c.onclick = buildTour()
+window.c.onclick = buildTour
+window.onbeforeunload = cancelReload
 document.getElementById("clearButton").onclick = restartTour
+document.getElementById("undoButton").onclick = undoTour
 document.getElementById("submitButton").onclick = sendTour
-
-window.problemIndex = 0
 nextProblem()

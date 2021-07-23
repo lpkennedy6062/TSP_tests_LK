@@ -19,8 +19,6 @@ def save_ntsp(obj: N_TSP, path: str):
         "type": "N_TSP",
         "cities": obj.cities
     }
-    if not os.path.isdir(path):
-        os.makedirs(path)
     with open(path, 'w') as f:
         json.dump(struct, f)
 
@@ -56,8 +54,6 @@ def save_tsp(obj: TSP, path: str):
         "w": obj.w,
         "h": obj.h
     }
-    if not os.path.isdir(path):
-        os.makedirs(path)
     with open(path, 'w') as f:
         json.dump(struct, f)
 
@@ -115,20 +111,18 @@ def load_problem(path: str) -> Any:
 
 
 def save_list(obj: Iterable[Any], path: str):
-    """Generic save function for tours of various formats.
+    """Generic save function for tours/sequences of various formats.
 
     Args:
         obj (Iterable[Any]): list
         path (str): path to save
     """
-    if not os.path.isdir(path):
-        os.makedirs(path)
     with open(path, 'w') as f:
         json.dump(list(obj), f)
 
 
 def load_list(path: str) -> List[Any]:
-    """Generic load function for tours of various formats.
+    """Generic load function for tours/sequences of various formats.
 
     Args:
         path (str): path to load
