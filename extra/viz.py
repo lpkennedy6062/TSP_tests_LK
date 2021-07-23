@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw
 import matplotlib.pyplot as plt
 from matplotlib.axes import SubplotBase
 
-from tsp.viz import _draw_cities_pil, _draw_cities_plt, _draw_tour_pil, _draw_tour_plt
+from tsp.core.viz import _draw_cities_pil, _draw_cities_plt, _draw_tour_pil, _draw_tour_plt
 from tsp.extra.obstacles import TSP_O
 from tsp.extra.color import TSP_Color
 

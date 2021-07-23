@@ -3,8 +3,8 @@ import os
 import numpy.random as random
 from pytsp import dumps_matrix, run as run_concorde
 
-from tsp.tsp import N_TSP
-from tsp.pyramid import pyramid_solve
+from tsp.core.tsp import N_TSP
+from tsp.core.pyramid import pyramid_solve
 
 
 class Solver:

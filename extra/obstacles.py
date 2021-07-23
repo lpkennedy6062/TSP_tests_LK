@@ -4,7 +4,7 @@ import itertools as it
 import numpy.random as random
 import numpy as np
 
-from tsp.tsp import TSP, distance
+from tsp.core.tsp import TSP, distance
 from tsp.extra.visgraph import calculate_visgraph, shortest_path
 from tsp.extra.templates import Template
 

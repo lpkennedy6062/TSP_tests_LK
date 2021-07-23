@@ -2,7 +2,7 @@ from typing import Iterable, Tuple
 import numpy.random as random
 import numpy as np
 
-from tsp.tsp import N_TSP
+from tsp.core.tsp import N_TSP
 
 
 class TSP_Color(N_TSP):

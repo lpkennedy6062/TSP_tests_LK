@@ -4,7 +4,7 @@ import numpy as np
 import scipy as sp
 from sklearn.manifold import MDS
 
-from tsp.tsp import N_TSP, TSP
+from tsp.core.tsp import N_TSP, TSP
 
 
 def stress(tsp_a: N_TSP, tsp_b: N_TSP) -> float:

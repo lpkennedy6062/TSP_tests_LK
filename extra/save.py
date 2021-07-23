@@ -3,8 +3,8 @@ import json
 import os
 import numpy as np
 
-from tsp.save import LoadError, save_ntsp, load_ntsp, save_tsp, load_tsp, save_list, load_list # pylint: disable=unused-import
-from tsp.save import save_problem as save_problem_, load_problem as load_problem_
+from tsp.core.save import LoadError, save_ntsp, load_ntsp, save_tsp, load_tsp, save_list, load_list # pylint: disable=unused-import
+from tsp.core.save import save_problem as save_problem_, load_problem as load_problem_
 from tsp.extra.obstacles import TSP_O
 from tsp.extra.color import TSP_Color
 

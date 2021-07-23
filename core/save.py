@@ -1,7 +1,7 @@
 from typing import Any, Dict, Iterable, List
 import os
 import json
-from tsp.tsp import N_TSP, TSP
+from tsp.core.tsp import N_TSP, TSP
 
 
 class LoadError(Exception):

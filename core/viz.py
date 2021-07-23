@@ -7,7 +7,7 @@ from cv2 import cv2
 import matplotlib.pyplot as plt
 from matplotlib.axes import SubplotBase
 
-from tsp.tsp import N_TSP, TSP
+from tsp.core.tsp import N_TSP, TSP
 
 
 def _draw_edges_pil(im: Image, tsp: TSP, edges: Iterable[ArrayLike]):
