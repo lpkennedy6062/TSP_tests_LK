@@ -19,24 +19,25 @@ Example:
 
 """
 
-import numpy as np
+from typing import Iterable, Iterator, Tuple
 import itertools as it
-import subprocess
 import argparse
 import os
 import re
+import sys
+import numpy as np
 
-from tsp.batch_server import batch_server_run
+from tsp.experiment.batch_server import batch_server_run
 
 
-def confirm():
+def _confirm():
     try:
         input('Press RETURN to begin (otherwise ^C)')
     except KeyboardInterrupt:
-        exit(0)
+        sys.exit(0)
 
 
-def parse_problems(paths):
+def _parse_problems(paths: Iterable[str]) -> Tuple[str, bool]:
     """
     Format of result: (base_path, randomize problems)
     """
@@ -58,22 +59,11 @@ def parse_problems(paths):
     return list(it.chain(*map(lambda x: sorted(x, key=lambda _: np.random.rand()), result)))
 
 
-def run_problem_set(participant, path, randomized):
-    command = 'python3 -m tsp.batch_server -f {}/problems -s {}/{} -o{}'.format(path, path, participant, ' -r' if randomized else '')
+def _run_problem_set(participant: str, path: str, randomized: bool, ui_root: str = None):
+    command = f'python3 -m tsp.experiment.batch_server -f {path}/problems -s {path}/{participant} -o{"-r" if randomized else ""}'
     print()
     print(command)
-    confirm()
-    try:
-        subprocess.call(command.split())
-    except KeyboardInterrupt:
-        return
-
-
-def run_problem_set_2(participant, path, randomized, ui_root=None):
-    command = 'python3 -m tsp.batch_server -f {}/problems -s {}/{} -o{}'.format(path, path, participant, ' -r' if randomized else '')
-    print()
-    print(command)
-    confirm()
+    _confirm()
     problems_path = f'{path}/problems'
     output_dir = f'{path}/{participant}'
     try:
@@ -82,27 +72,35 @@ def run_problem_set_2(participant, path, randomized, ui_root=None):
         return
 
 
-def load_save_file(path):
+def _load_save_file(path: str) -> Iterator[str, bool]:
     with open(path) as f:
         for line in f:
             match = re.match(r'\(([R\s])\)\s(.*)\n', line)
-            yield match.group(2), (True if match.group(1) == 'R' else False)
+            yield match.group(2), match.group(1) == 'R'
 
 
-def dump_save_file(save_file_path, problem_sets):
+def _dump_save_file(save_file_path: str, problem_sets: Iterable[str, bool]):
     with open(save_file_path, 'w') as f:
         for path, randomized in problem_sets:
             f.write('({}) {}\n'.format(('R' if randomized else ' '), path))
 
 
-def run(participant, set_list_path, save_file_path, ui_root=None):
+def run(participant: str, set_list_path: str, save_file_path: str, ui_root: str = None):
+    """Run a subject on a set of experimental conditions.
+
+    Args:
+        participant (str): participant identifier
+        set_list_path (str): path to set list file (see module documentation for expected format)
+        save_file_path (str): path to save the ordering of experimental conditions (mainly useful if randomized)
+        ui_root (str, optional): Path to UI (should only need to be used if creating a standalone executable). Defaults to None.
+    """
     if save_file_path is not None and os.path.exists(save_file_path):
-        problem_sets = list(load_save_file(save_file_path))
+        problem_sets = list(_load_save_file(save_file_path))
     else:
         with open(set_list_path, 'r') as f:
-            problem_sets = parse_problems(f)
+            problem_sets = _parse_problems(f)
         if save_file_path is not None:
-            dump_save_file(save_file_path, problem_sets)
+            _dump_save_file(save_file_path, problem_sets)
     print('Running participant "{}".'.format(participant))
     print('Problem sets will be administered in the following order:\n')
     for path, randomized in problem_sets:
@@ -110,10 +108,10 @@ def run(participant, set_list_path, save_file_path, ui_root=None):
     print()
     print('Once the participant has completed a set, continue to the next set with ^C')
     print('Then have the participant refresh the page')
-    confirm()
+    _confirm()
     for path, randomized in problem_sets:
         if not os.path.exists(os.path.join(path, participant)):
-            run_problem_set_2(participant, path, randomized, ui_root)
+            _run_problem_set(participant, path, randomized, ui_root)
         else:
             print('Found existing directory {}, skipping...'.format(os.path.join(path, participant)))
     print()
@@ -126,4 +124,5 @@ if __name__ == '__main__':
     parser.add_argument('sets', type=str, help='Path to list of problem sets')
     parser.add_argument('-s', type=str, required=False, help='Path to save file')
     args = parser.parse_args()
+
     run(args.id, args.sets, args.s)
