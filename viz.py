@@ -1,12 +1,16 @@
 from math import sin, cos, radians
+from typing import Iterable, Union
+from numpy.typing import ArrayLike
 import numpy as np
 from PIL import Image, ImageDraw
 from cv2 import cv2
+import matplotlib.pyplot as plt
+from matplotlib.axes import SubplotBase
 
-from tsp.tsp import TSP
+from tsp.tsp import N_TSP, TSP
 
 
-def draw_edges(im, tsp, edges):
+def _draw_edges_pil(im: Image, tsp: TSP, edges: Iterable[ArrayLike]):
     draw = ImageDraw.Draw(im)
     for e1, e2 in edges:
         e1 = tuple(np.array(tsp.cities[e1]) * 2)
@@ -14,54 +18,66 @@ def draw_edges(im, tsp, edges):
         draw.line([e1, e2], fill='blue', width=6)
 
 
-def draw_cities(im, tsp):
+def _draw_cities_pil(im: Image, tsp: TSP):
     draw = ImageDraw.Draw(im)
     for x, y in tsp.cities:
         draw.ellipse([(x*2 - 8, y*2 - 8), (x*2 + 8, y*2 + 8)], fill='red', outline='red')
 
 
-def draw_obstacles(im, tsp):
-    if 'obstacles' in tsp.__dict__:
-        draw = ImageDraw.Draw(im)
-        for a, b in tsp.obstacles:
-                draw.line([(a[0]*2, a[1]*2), (b[0]*2, b[1]*2)], fill='black', width=4)
-
-
-def draw_tour(im, tsp, tour, segments=False):
+def _draw_tour_pil(im: Image, tsp: TSP, tour: Iterable[Union[int, ArrayLike]]):
     draw = ImageDraw.Draw(im)
-    if segments:
-        draw.line([(x*2, y*2) for x, y in tour], fill='blue', width=6)
+    s = list(tour)
+    if isinstance(s[0], int):
+        draw.line([(x*2, y*2) for x, y in tsp.tour_segments(s)], fill='blue', width=6)
     else:
-        draw.line([(x*2, y*2) for x, y in tsp.tour_segments(tour)], fill='blue', width=6)
+        draw.line([(x*2, y*2) for x, y in s], fill='blue', width=6)
 
 
-def visualize(t, s, path, segments=False):
-    im = Image.new('RGB', (t.w * 2, t.h * 2), color = 'white')
-    if s:
-        draw_tour(im, t, s, segments)
-    draw_cities(im, t)
-    draw_obstacles(im, t)
-    im.thumbnail((t.w, t.h))
+def visualize_tsp_pil(tsp: TSP, tour: Iterable[Union[int, ArrayLike]], path: str):
+    """Generate and save visualization of a TSP using PIL backend.
+
+    Args:
+        tsp (TSP): the problem
+        tour (Iterable[Union[int, ArrayLike]]): tour either as indices of vertices or as segments
+        path (str): path to save
+    """
+    im = Image.new('RGB', (tsp.w * 2, tsp.h * 2), color = 'white')
+    if tour:
+        _draw_tour_pil(im, tsp, tour)
+    _draw_cities_pil(im, tsp)
+    im.thumbnail((tsp.w, tsp.h))
     im.save(path)
 
 
-def visualize_mst(t, edges, path):
-    im = Image.new('RGB', (t.w * 2, t.h * 2), color = 'white')
-    draw_edges(im, t, edges)
-    draw_cities(im, t)
-    im.thumbnail((t.w, t.h))
+def visualize_mst_pil(tsp: TSP, edges: Iterable[ArrayLike], path: str):
+    """Generate and save visualization of an MST using PIL backend.
+
+    Args:
+        tsp (TSP): the problem
+        edges (Iterable[ArrayLike]): edges in MST as [[[x1, y1], [x2, y2]], ...]
+        path (str): path to save
+    """
+    im = Image.new('RGB', (tsp.w * 2, tsp.h * 2), color = 'white')
+    _draw_edges_pil(im, tsp, edges)
+    _draw_cities_pil(im, tsp)
+    im.thumbnail((tsp.w, tsp.h))
     im.save(path)
 
 
-def visualize_3d(t, s, path, segments=False, step=1, time=12):
+def visualize_3d(tsp: N_TSP, tour: Iterable[Union[int, ArrayLike]], path: str, step: int = 1, time: int = 12):
+    """Generate and save visualization of 3D motion of a 3D TSP as an mp4.
+
+    Args:
+        tsp (N_TSP): the problem
+        tour (Iterable[Union[int, ArrayLike]]): tour either as indices of vertices or as segments
+        path (str): path to save
+        step (int, optional): Degrees to rotate per frame. Defaults to 1.
+        time (int, optional): Duration of generated video. Defaults to 12.
     """
-    x’=xcos(alpha)+zsin(alpha)
-    y’=y
-    z’=-xsin(alpha)+zcos(alpha)
-    """
+    assert tsp.dimensions == 3
     min_x, min_y, max_x, max_y = float('inf'), float('inf'), float('-inf'), float('-inf')
     for alpha in range(0, 360, step):
-        for x, y, z in t.cities:
+        for x, y, z in tsp.cities:
             x_ = x*cos(radians(alpha)) + z*sin(radians(alpha))
             y_ = y
             min_x = min(min_x, x_)
@@ -77,7 +93,7 @@ def visualize_3d(t, s, path, segments=False, step=1, time=12):
     video = cv2.VideoWriter(path, cv2.VideoWriter_fourcc(*'mp4v'), int(round((360 / step) / time)), (max_x, max_y))
     for alpha in range(0, 360, step):
         new_coords = []
-        for x, y, z in t.cities:
+        for x, y, z in tsp.cities:
             new_coords.append((
                 x*cos(radians(alpha)) + z*sin(radians(alpha)),
                 y
@@ -86,26 +102,71 @@ def visualize_3d(t, s, path, segments=False, step=1, time=12):
         new_coords -= np.array([min_x, min_y])
 
         new_t = TSP.from_cities(new_coords, w=max_x, h=max_y)
-        visualize(new_t, s, '/tmp/viz.png', segments)
+        visualize_mst_pil(new_t, tour, '/tmp/viz.png')
         video.write(cv2.imread('/tmp/viz.png'))
     video.release()
 
 
-# def draw_visgraph(im, tsp):
-#     draw = ImageDraw.Draw(im)
-#     for a in tsp.vg:
-#         for b in tsp.vg[a]:
-#             draw.line([a, b], fill='blue', width=3)
+def _draw_edges_plt(ax: SubplotBase, tsp: TSP, edges: Iterable[ArrayLike]):
+    for e1, e2 in edges:
+        e1[1] = tsp.h - e1[1]
+        e2[1] = tsp.h - e2[1]
+        ax.plot(*zip(e1, e2), 'b-')
 
 
-if __name__ == '__main__':
-    from tsp.batch import load_batch, load_obstacles, load_tour
+def _draw_cities_plt(ax: SubplotBase, tsp: TSP):
+    cities = np.array(list(zip(*tsp.cities)))
+    cities[1] = tsp.h - cities[1]
+    ax.plot(*cities, 'ro')
 
-    # batch = load_batch('./simulations/data/50cities_300_O/problems', load_obstacles)
-    # t = batch[0]
-    # s = load_tour('./simulations/data/50cities_300_O/concorde_mds_4/001.sol')
 
-    t = load_obstacles('./simulations/toy/10_250.tsp')
-    s = load_tour('./simulations/toy/001.sol')
+def _draw_tour_plt(ax: SubplotBase, tsp: TSP, tour: Iterable[Union[int, ArrayLike]]):
+    s = list(tour)
+    if isinstance(s, int):
+        edges = np.array(list(zip(*list(tsp.tour_segments(s)))))
+    else:
+        edges = np.array(list(zip(*s)))
+    edges[1] = tsp.h - edges[1]
+    ax.plot(*edges, 'b-')
 
-    visualize(t, s, 'viz.png')
+
+def visualize_tsp_plt(tsp: TSP, tour: Iterable[Union[int, ArrayLike]], ax: SubplotBase = None):
+    """Generate visualization of a TSP using MatPlotLib backend.
+
+    Args:
+        tsp (TSP): the problem
+        tour (Iterable[Union[int, ArrayLike]]): tour either as indices of vertices or as segments
+        ax (SubplotBase): Matplotlib axes to plot on. Defaults to None.
+    """
+    if ax is None:
+        ax = plt.subplot(111)
+
+    ax.set_xlim((0, tsp.w))
+    ax.set_ylim((0, tsp.h))
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_aspect('equal', 'box')
+
+    _draw_tour_plt(ax, tsp, tour)
+    _draw_cities_plt(ax, tsp)
+
+
+def visualize_mst_plt(tsp: TSP, edges: Iterable[ArrayLike], ax: SubplotBase = None):
+    """Generate visualization of an MST using MatPlotLib backend.
+
+    Args:
+        tsp (TSP): the problem
+        edges (Iterable[ArrayLike]): edges in MST as [[[x1, y1], [x2, y2]], ...]
+        ax (SubplotBase): Matplotlib axes to plot on. Defaults to None.
+    """
+    if ax is None:
+        ax = plt.subplot(111)
+
+    ax.set_xlim((0, tsp.w))
+    ax.set_ylim((0, tsp.h))
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_aspect('equal', 'box')
+
+    _draw_edges_plt(ax, tsp, edges)
+    _draw_cities_plt(ax, tsp)
