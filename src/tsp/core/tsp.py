@@ -1,4 +1,4 @@
-from typing import Iterable, Iterator, DefaultDict, Union
+from typing import Iterable, Iterator, DefaultDict, Tuple, Union
 from numpy.typing import ArrayLike, NDArray
 import itertools as it
 import numpy.random as random
@@ -67,7 +67,7 @@ class N_TSP:
         """
         return np.linalg.norm(self.cities[a] - self.cities[b])
 
-    def to_edges(self) -> Iterator[int, int, float]:
+    def to_edges(self) -> Iterator[Tuple[int, int, float]]:
         """Produces iterable of edges (a, b, d) of distance d between vertices a and b.
 
         Yields:

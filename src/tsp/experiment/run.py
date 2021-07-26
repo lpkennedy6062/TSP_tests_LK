@@ -72,14 +72,14 @@ def _run_problem_set(participant: str, path: str, randomized: bool, ui_root: str
         return
 
 
-def _load_save_file(path: str) -> Iterator[str, bool]:
+def _load_save_file(path: str) -> Iterator[Tuple[str, bool]]:
     with open(path) as f:
         for line in f:
             match = re.match(r'\(([R\s])\)\s(.*)\n', line)
             yield match.group(2), match.group(1) == 'R'
 
 
-def _dump_save_file(save_file_path: str, problem_sets: Iterable[str, bool]):
+def _dump_save_file(save_file_path: str, problem_sets: Iterable[Tuple[str, bool]]):
     with open(save_file_path, 'w') as f:
         for path, randomized in problem_sets:
             f.write('({}) {}\n'.format(('R' if randomized else ' '), path))

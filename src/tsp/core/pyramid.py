@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Any, Hashable, Iterable, Iterator, List, Set, Tuple
 from itertools import permutations
 from queue import PriorityQueue

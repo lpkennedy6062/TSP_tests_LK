@@ -1,4 +1,4 @@
-from typing import Iterable, Iterator, DefaultDict
+from typing import Iterable, Iterator, DefaultDict, Tuple
 from numpy.typing import ArrayLike, NDArray
 import itertools as it
 import numpy.random as random
@@ -131,7 +131,7 @@ class TSP_O(TSP):
         A, B = self.cities[a], self.cities[b]
         return distance(shortest_path(A, B, g))
 
-    def to_edges(self) -> Iterable[int, int, float]:
+    def to_edges(self) -> Iterable[Tuple[int, int, float]]:
         """Produces iterable of edges (a, b, d) of distance d between vertices a and b.
 
         Yields:

@@ -4,12 +4,20 @@ A library for cognitive science research on the traveling salesperson problem (T
 
 ## Installation
 
-Runs anywhere Python and Concorde can be installed.
+Runs anywhere Python (3.8+) and Concorde can be installed.
 
-1. Download (and compile, if necessary) [Concorde](https://www.math.uwaterloo.ca/tsp/concorde.html).
-2. Clone and install [pytsp](https://github.com/jackvandrunen/pytsp) (NOTE: not the one available on PyPI).
-3. Install other requirements.
-4. Install this package.
+First, you will have to download (and compile, if necessary)
+[Concorde](https://www.math.uwaterloo.ca/tsp/concorde.html) and its supporting libraries.
+
+Then, clone and install this repository:
+
+```
+git clone https://github.com/jackvandrunen/tsp.git
+cd tsp
+python3 -m pip install .
+```
+
+And you're ready to go!
 
 ## Acknowledgements
 
