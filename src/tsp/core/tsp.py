@@ -49,8 +49,7 @@ class N_TSP:
         Args:
             coords ([int]): city coordinates as individual arguments
         """
-        assert self.dimensions == 0 or len(coords) == self.dimensions
-        self.dimensions = len(coords)
+        assert self.cities.shape[0] == 0 or len(coords) == self.dimensions
         self.cities = list(self.cities)
         self.cities.append(np.array(coords))
         self.cities = np.array(self.cities)
@@ -205,5 +204,3 @@ class TSP(N_TSP):
     def __init__(self, w: int = 500, h: int = 500):
         N_TSP.__init__(self)
         self.w, self.h = w, h
-
-

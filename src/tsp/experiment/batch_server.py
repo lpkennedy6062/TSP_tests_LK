@@ -4,7 +4,7 @@ import os
 import numpy as np
 
 import bottle
-from bottle import route, request, response
+from bottle import route, request, response, abort
 
 from tsp.core.save import save_list
 from tsp.experiment.batch import load_problem_batch, save_list_item
@@ -43,11 +43,13 @@ def _get_tour(id_: int):
 
 @route('/api/<id_:int>/cities')
 def _send_cities(id_: int):
+    if id_ < 0 or id_ >= len(MAPPING):
+        abort(404, 'Problem not found.')
     id_ = MAPPING[id_]
     response.content_type = 'application/json'
     return [json.dumps({
-        'cities': batch[id_].cities,
-        'obstacles': batch[id_].obstacles if 'obstacles' in batch[id_].__dict__ else [],
+        'cities': batch[id_].cities.tolist(),
+        'obstacles': batch[id_].obstacles.tolist() if 'obstacles' in batch[id_].__dict__ else [],
         'height': batch[id_].h,
         'width': batch[id_].w
     })]
@@ -57,7 +59,7 @@ def _get_visgraph(id_: int):
     id_ = MAPPING[id_]
     response.content_type = 'application/json'
     vertex = tuple(json.loads(request.forms.get('data'))) # pylint: disable=no-member
-    return [json.dumps(batch[id_].to_visgraph()[vertex])]
+    return [json.dumps(batch[id_].to_visgraph()[vertex] if 'obstacles' in batch[id_].__dict__ else batch[id_].cities.tolist())]
 
 
 # Static

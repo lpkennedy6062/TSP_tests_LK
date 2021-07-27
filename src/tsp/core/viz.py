@@ -122,7 +122,7 @@ def _draw_cities_plt(ax: SubplotBase, tsp: TSP):
 
 def _draw_tour_plt(ax: SubplotBase, tsp: TSP, tour: Iterable[Union[int, ArrayLike]]):
     s = list(tour)
-    if isinstance(s, int):
+    if isinstance(s[0], int):
         edges = np.array(list(zip(*list(tsp.tour_segments(s)))))
     else:
         edges = np.array(list(zip(*s)))
@@ -147,7 +147,8 @@ def visualize_tsp_plt(tsp: TSP, tour: Iterable[Union[int, ArrayLike]], ax: Subpl
     ax.set_yticks([])
     ax.set_aspect('equal', 'box')
 
-    _draw_tour_plt(ax, tsp, tour)
+    if tour:
+        _draw_tour_plt(ax, tsp, tour)
     _draw_cities_plt(ax, tsp)
 
 

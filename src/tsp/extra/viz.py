@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw
 import matplotlib.pyplot as plt
 from matplotlib.axes import SubplotBase
 
-from tsp.core.viz import _draw_cities_pil, _draw_cities_plt, _draw_tour_pil, _draw_tour_plt
+from tsp.core.viz import _draw_cities_pil, _draw_cities_plt, _draw_tour_pil, _draw_tour_plt, visualize_tsp_plt
 from tsp.extra.obstacles import TSP_O
 from tsp.extra.color import TSP_Color
 
@@ -39,7 +39,7 @@ def _draw_obstacles_plt(ax: SubplotBase, tsp: TSP_O):
         ax.plot(*zip(a, b), 'k-')
 
 
-def visualize_tsp_plt(tsp: TSP_O, tour: Iterable[Union[int, ArrayLike]], ax: SubplotBase = None):
+def visualize_obstacles_plt(tsp: TSP_O, tour: Iterable[Union[int, ArrayLike]], ax: SubplotBase = None):
     """Generate visualization of a TSP_O using MatPlotLib backend.
 
     Args:
@@ -50,14 +50,7 @@ def visualize_tsp_plt(tsp: TSP_O, tour: Iterable[Union[int, ArrayLike]], ax: Sub
     if ax is None:
         ax = plt.subplot(111)
 
-    ax.set_xlim((0, tsp.w))
-    ax.set_ylim((0, tsp.h))
-    ax.set_xticks([])
-    ax.set_yticks([])
-    ax.set_aspect('equal', 'box')
-
-    _draw_tour_plt(ax, tsp, tour)
-    _draw_cities_plt(ax, tsp)
+    visualize_tsp_plt(tsp, tour, ax)
     _draw_obstacles_plt(ax, tsp)
 
 

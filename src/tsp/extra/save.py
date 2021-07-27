@@ -18,10 +18,10 @@ def save_obstacles(obj: TSP_O, path: str):
     """
     struct = {
         "type": "TSP_O",
-        "cities": obj.cities,
+        "cities": obj.cities.tolist(),
         "w": obj.w,
         "h": obj.h,
-        "obstacles": obj.obstacles
+        "obstacles": obj.obstacles.tolist()
     }
     with open(path, 'w') as f:
         json.dump(struct, f)
@@ -56,11 +56,11 @@ def save_color(obj: TSP_Color, path: str):
     """
     struct = {
         "type": "TSP_O",
-        "cities": obj.cities,
+        "cities": obj.cities.tolist(),
         "w": obj.w,
         "h": obj.h,
         "penalty": obj.penalty,
-        "colors": obj.colors
+        "colors": obj.colors.tolist()
     }
     with open(path, 'w') as f:
         json.dump(struct, f)

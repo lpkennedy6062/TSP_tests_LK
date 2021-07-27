@@ -1,6 +1,7 @@
 from typing import Any, Dict, Iterable, List
-import os
 import json
+import numpy as np
+
 from tsp.core.tsp import N_TSP, TSP
 
 
@@ -17,7 +18,7 @@ def save_ntsp(obj: N_TSP, path: str):
     """
     struct = {
         "type": "N_TSP",
-        "cities": obj.cities
+        "cities": obj.cities.tolist()
     }
     with open(path, 'w') as f:
         json.dump(struct, f)
@@ -50,7 +51,7 @@ def save_tsp(obj: TSP, path: str):
     """
     struct = {
         "type": "TSP",
-        "cities": obj.cities,
+        "cities": obj.cities.tolist(),
         "w": obj.w,
         "h": obj.h
     }
@@ -118,7 +119,7 @@ def save_list(obj: Iterable[Any], path: str):
         path (str): path to save
     """
     with open(path, 'w') as f:
-        json.dump(list(obj), f)
+        json.dump(obj.tolist() if isinstance(obj, np.ndarray) else list(obj), f)
 
 
 def load_list(path: str) -> List[Any]:
