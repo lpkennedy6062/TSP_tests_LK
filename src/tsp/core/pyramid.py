@@ -3,7 +3,7 @@ from typing import Any, Hashable, Iterable, Iterator, List, Set, Tuple
 from itertools import permutations
 from queue import PriorityQueue
 import itertools as it
-from numpy.typing import ArrayLike
+from numpy.typing import NDArray
 import numpy as np
 
 
@@ -131,15 +131,15 @@ class DSTree:
         return new_parent
 
 
-def _calculate_centroid(c: DSNode, nodes: ArrayLike) -> Tuple[float, ArrayLike]:
+def _calculate_centroid(c: DSNode, nodes: NDArray) -> Tuple[float, NDArray]:
     """Given a node in a disjoint-set dendrogram, calculate the center of gravity of all its children.
 
     Args:
         c (DSNode): parent node of relevance
-        nodes (ArrayLike): master list of coordinates of points
+        nodes (NDArray): master list of coordinates of points
 
     Returns:
-        Tuple[float, ArrayLike]: (number of children, centroid)
+        Tuple[float, NDArray]: (number of children, centroid)
     """
     result = np.zeros((nodes.shape[1],), dtype=np.int32)
     total = 0
@@ -153,27 +153,27 @@ def _calculate_centroid(c: DSNode, nodes: ArrayLike) -> Tuple[float, ArrayLike]:
     return total, result // total
 
 
-def centroid(c: DSNode, nodes: ArrayLike) -> ArrayLike:
+def centroid(c: DSNode, nodes: NDArray) -> NDArray:
     """Gets pre-computed centroid of node in tree.
 
     Args:
         c (DSNode): parent node of relevance
-        nodes (ArrayLike): master list of coordinates of points
+        nodes (NDArray): master list of coordinates of points
 
     Returns:
-        ArrayLike: centroid
+        NDArray: centroid
     """
     if not c.children:
         return nodes[c.value]
     return c.value[1]
 
 
-def cluster_kruskal(nodes: ArrayLike) -> Tuple[Set, DSNode]:
+def cluster_kruskal(nodes: NDArray) -> Tuple[Set, DSNode]:
     """Agglomerate nodes based on their MST, given coordinates in n-dimensions.
     Uses Kruskal's algorithm, which runs in O(v^2 log v)
 
     Args:
-        nodes (ArrayLike): ndarray((v, n))
+        nodes (NDArray): ndarray((v, n))
 
     Returns:
         Tuple[Set, DSNode]: (edges in MST, root of agglomerated tree)
@@ -194,12 +194,12 @@ def cluster_kruskal(nodes: ArrayLike) -> Tuple[Set, DSNode]:
     return result, tree.root
 
 
-def cluster_boruvka(nodes: ArrayLike) -> Tuple[Set, DSNode]:
+def cluster_boruvka(nodes: NDArray) -> Tuple[Set, DSNode]:
     """Agglomerate nodes based on their MST, given coordinates in n-dimensions.
     Uses Boruvka's algorithm: which should produce a more "balanced" tree.
 
     Args:
-        nodes (ArrayLike): ndarray((v, n))
+        nodes (NDArray): ndarray((v, n))
 
     Returns:
         Tuple[Set, DSNode]: (edges in MST, root of agglomerated tree)
@@ -236,11 +236,11 @@ mst = lambda nodes: cluster_boruvka(nodes)[0]
 cluster = lambda nodes: cluster_boruvka(nodes)[1]
 
 
-def _evaluate_path(nodes: ArrayLike, indices: Iterable[int]) -> float:
+def _evaluate_path(nodes: NDArray, indices: Iterable[int]) -> float:
     """Computes length of path.
 
     Args:
-        nodes (ArrayLike): master list of coordinates of points
+        nodes (NDArray): master list of coordinates of points
         indices (Iterable[int]): indices of points making up the path
 
     Returns:
@@ -255,11 +255,11 @@ def _evaluate_path(nodes: ArrayLike, indices: Iterable[int]) -> float:
     return distance
 
 
-def _evaluate_tour(nodes: ArrayLike, indices: Iterable[int]) -> float:
+def _evaluate_tour(nodes: NDArray, indices: Iterable[int]) -> float:
     """Computes length of path with return to first node in the path.
 
     Args:
-        nodes (ArrayLike): master list of coordinates of points
+        nodes (NDArray): master list of coordinates of points
         indices (Iterable[int]): indices of points making up the tour (without repeat of first point)
 
     Returns:
@@ -276,12 +276,12 @@ def _evaluate_tour(nodes: ArrayLike, indices: Iterable[int]) -> float:
     return distance
 
 
-def _partial_shortest_tour(nodes: ArrayLike, indices: Iterable[int], left: int = None, right: int = None) -> List[int]:
+def _partial_shortest_tour(nodes: NDArray, indices: Iterable[int], left: int = None, right: int = None) -> List[int]:
     """Brute force the shortest path (if left and right nodes provided) or tour (if not provided).
     Should only be used on computationally tractable subproblems.
 
     Args:
-        nodes (ArrayLike): master list of coordinates of points
+        nodes (NDArray): master list of coordinates of points
         indices (Iterable[int]): indices of points making up the path/tour
         left (int, optional): Left (starting) node, if computing a path. Defaults to None.
         right (int, optional): Right (ending) node, if computing a path. Defaults to None.
@@ -304,11 +304,11 @@ def _partial_shortest_tour(nodes: ArrayLike, indices: Iterable[int], left: int =
     return min_path
 
 
-def solve_level(nodes: ArrayLike, c: DSNode, k: int, left: int = None, right: int = None) -> List[int]:
+def solve_level(nodes: NDArray, c: DSNode, k: int, left: int = None, right: int = None) -> List[int]:
     """Find shortest path/tour through a branch of the tree.
 
     Args:
-        nodes (ArrayLike): master list of coordinates of points
+        nodes (NDArray): master list of coordinates of points
         c (DSNode): parent node of branch
         k (int): cluster size
         left (int, optional): Left (starting) node, if computing a path. Defaults to None.
@@ -325,11 +325,11 @@ def solve_level(nodes: ArrayLike, c: DSNode, k: int, left: int = None, right: in
     return [children[i] for i in tour]
 
 
-def pyramid_solve(nodes: ArrayLike, k: int = 6) -> List[int]:
+def pyramid_solve(nodes: NDArray, k: int = 6) -> List[int]:
     """Find an approximately-optimal tour using heirarchical clustering algorithm.
 
     Args:
-        nodes (ArrayLike): master list of coordinates of points
+        nodes (NDArray): master list of coordinates of points
         k (int, optional): Cluster size. Defaults to 6.
 
     Returns:
@@ -348,7 +348,7 @@ def pyramid_solve(nodes: ArrayLike, k: int = 6) -> List[int]:
     return result[zero:] + result[:zero]
 
 
-def pyramid_debug(nodes: ArrayLike, k: int = 6) -> Iterator[List[int]]:
+def pyramid_debug(nodes: NDArray, k: int = 6) -> Iterator[List[int]]:
     """Starts by yielding the centroids at the top level of the pyramid, then the level below, and so on, in the following pattern:
     (1) tour of centroids at top of pyramid: [a, b, c, d, e, f]
     (2) [cluster below a, b, c, d, e, f]
@@ -358,7 +358,7 @@ def pyramid_debug(nodes: ArrayLike, k: int = 6) -> Iterator[List[int]]:
     Repeating from 1 for the next level of the pyramid (which is the tour produced in 5).
 
     Args:
-        nodes (ArrayLike): master list of coordinates of points
+        nodes (NDArray): master list of coordinates of points
         k (int, optional): Cluster size. Defaults to 6.
 
     Yields:

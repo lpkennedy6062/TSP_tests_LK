@@ -1,5 +1,5 @@
 from typing import Callable, List, Tuple, Union
-from numpy.typing import ArrayLike, NDArray
+from numpy.typing import NDArray
 import numpy as np
 
 from tsp.core.tsp import N_TSP
@@ -27,12 +27,12 @@ def solve_batch(src: str, solver: Solver, dest: str = None) -> List[List[int]]:
     return tours
 
 
-def score_tours_absolute(problems: List[N_TSP], tours: List[Union[int, ArrayLike]]) -> NDArray:
+def score_tours_absolute(problems: List[N_TSP], tours: List[Union[int, NDArray]]) -> NDArray:
     """Calculate tour lengths for a batch of tours.
 
     Args:
         problems (List[N_TSP]): list of TSPs
-        tours (List[Union[int, ArrayLike]]): list of tours (in either index or segment format)
+        tours (List[Union[int, NDArray]]): list of tours (in either index or segment format)
 
     Returns:
         NDArray: tour lengths
@@ -58,13 +58,13 @@ def score_batch(problems_path: str, tours_path: str) -> NDArray:
     return score_tours_absolute(problems, tours)
 
 
-def score_tours_relative(problems: List[N_TSP], tours: List[Union[int, ArrayLike]], base_tours: List[Union[int, ArrayLike]]) -> Tuple[NDArray, float, float]:
+def score_tours_relative(problems: List[N_TSP], tours: List[Union[int, NDArray]], base_tours: List[Union[int, NDArray]]) -> Tuple[NDArray, float, float]:
     """Calculate tour errors relative to reference tours (for example, the optimal tours solved by Concorde).
 
     Args:
         problems (List[N_TSP]): list of TSPs
-        tours (List[Union[int, ArrayLike]]): list of tours (in either index or segment format)
-        base_tours (List[Union[int, ArrayLike]]): list of reference tours (in either index or segment format)
+        tours (List[Union[int, NDArray]]): list of tours (in either index or segment format)
+        base_tours (List[Union[int, NDArray]]): list of reference tours (in either index or segment format)
 
     Returns:
         Tuple[NDArray, float, float]: (proportional errors, mean error, standard error of mean)

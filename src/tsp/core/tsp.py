@@ -1,15 +1,15 @@
 from typing import Iterable, Iterator, DefaultDict, Tuple, Union
-from numpy.typing import ArrayLike, NDArray
+from numpy.typing import NDArray
 import itertools as it
 import numpy.random as random
 import numpy as np
 
 
-def distance(path: Iterable[ArrayLike]) -> float:
+def distance(path: Iterable[NDArray]) -> float:
     """Calculate the distance along a path of unspecified length.
 
     Args:
-        path (Iterable[ArrayLike]): path as [[x1, y1, ...], ...]
+        path (Iterable[NDArray]): path as [[x1, y1, ...], ...]
 
     Returns:
         float: distance
@@ -22,11 +22,11 @@ class N_TSP:
     """Container for a generic TSP instance."""
 
     @classmethod
-    def from_cities(cls, cities: ArrayLike):
+    def from_cities(cls, cities: NDArray):
         """Generate object from list/array of cities.
 
         Args:
-            cities (ArrayLike): cities as [[x1, y1, ...], ...]
+            cities (NDArray): cities as [[x1, y1, ...], ...]
         """
         result = cls()
         result.cities = np.array(cities)
@@ -90,24 +90,24 @@ class N_TSP:
         result[il] = result.T[il]  # Make symmetric  # pylint: disable=E1136
         return result
 
-    def tour_segments(self, tour: Iterable[int]) -> Iterator[ArrayLike]:
+    def tour_segments(self, tour: Iterable[int]) -> Iterator[NDArray]:
         """Convert a tour in index format into a tour in segment format.
 
         Args:
             tour (Iterable[int]): tour as indices of cities
 
         Yields:
-            Iterator[ArrayLike]: tour as coordinates of cities
+            Iterator[NDArray]: tour as coordinates of cities
         """
         for c in tour:
             yield self.cities[c]
         yield self.cities[tour[0]]
 
-    def convert_tour_segments(self, tour_segments: Iterable[ArrayLike]) -> Iterator[int]:
+    def convert_tour_segments(self, tour_segments: Iterable[NDArray]) -> Iterator[int]:
         """Convert a tour in segment format into a tour in index format.
 
         Args:
-            tour_segments (Iterable[ArrayLike]): tour as coordinates of cities
+            tour_segments (Iterable[NDArray]): tour as coordinates of cities
 
         Yields:
             Iterator[int]: tour as indices of cities
@@ -139,22 +139,22 @@ class N_TSP:
         result += self.edge(c, first)
         return result
 
-    def score_tour_segments(self, tour_segments: Iterable[ArrayLike]) -> float:
+    def score_tour_segments(self, tour_segments: Iterable[NDArray]) -> float:
         """Calculate tour length (from segment format).
 
         Args:
-            tour_segments (Iterable[ArrayLike]): tour as coordinates of cities
+            tour_segments (Iterable[NDArray]): tour as coordinates of cities
 
         Returns:
             float: tour length
         """
         return distance(tour_segments)
 
-    def score(self, tour: Iterable[Union[int, ArrayLike]]) -> float:
+    def score(self, tour: Iterable[Union[int, NDArray]]) -> float:
         """Calculate tour length (automatically detects index or segment format).
 
         Args:
-            tour (Iterable[Union[int, ArrayLike]]): tour
+            tour (Iterable[Union[int, NDArray]]): tour
 
         Returns:
             float: tour length
@@ -189,11 +189,11 @@ class TSP(N_TSP):
                 return result
 
     @classmethod
-    def from_cities(cls, cities: ArrayLike, w: int = 500, h: int = 500):
+    def from_cities(cls, cities: NDArray, w: int = 500, h: int = 500):
         """Generate object from list/array of cities.
 
         Args:
-            cities (ArrayLike): cities as [[x1, y1], ...]
+            cities (NDArray): cities as [[x1, y1], ...]
             w (int, optional): Width of problem. Defaults to 500.
             h (int, optional): Height of problem. Defaults to 500.
         """

@@ -1,5 +1,5 @@
 from typing import Iterable, Union
-from numpy.typing import ArrayLike
+from numpy.typing import NDArray
 from PIL import Image, ImageDraw
 import matplotlib.pyplot as plt
 from matplotlib.axes import SubplotBase
@@ -15,12 +15,12 @@ def _draw_obstacles_pil(im: Image, tsp: TSP_O):
         draw.line([(a[0]*2, a[1]*2), (b[0]*2, b[1]*2)], fill='black', width=4)
 
 
-def visualize_obstacles_pil(tsp: TSP_O, tour: Iterable[Union[int, ArrayLike]], path: str):
+def visualize_obstacles_pil(tsp: TSP_O, tour: Iterable[Union[int, NDArray]], path: str):
     """Generate and save visualization of a TSP_O using PIL backend.
 
     Args:
         tsp (TSP_O): the problem
-        tour (Iterable[Union[int, ArrayLike]]): tour either as indices of vertices or as segments
+        tour (Iterable[Union[int, NDArray]]): tour either as indices of vertices or as segments
         path (str): path to save
     """
     im = Image.new('RGB', (tsp.w * 2, tsp.h * 2), color = 'white')
@@ -39,12 +39,12 @@ def _draw_obstacles_plt(ax: SubplotBase, tsp: TSP_O):
         ax.plot(*zip(a, b), 'k-')
 
 
-def visualize_obstacles_plt(tsp: TSP_O, tour: Iterable[Union[int, ArrayLike]], ax: SubplotBase = None):
+def visualize_obstacles_plt(tsp: TSP_O, tour: Iterable[Union[int, NDArray]], ax: SubplotBase = None):
     """Generate visualization of a TSP_O using MatPlotLib backend.
 
     Args:
         tsp (TSP_O): the problem
-        tour (Iterable[Union[int, ArrayLike]]): tour either as indices of vertices or as segments
+        tour (Iterable[Union[int, NDArray]]): tour either as indices of vertices or as segments
         ax (SubplotBase): Matplotlib axes to plot on. Defaults to None.
     """
     if ax is None:

@@ -1,5 +1,5 @@
 from typing import Iterable, Iterator, DefaultDict, Tuple
-from numpy.typing import ArrayLike, NDArray
+from numpy.typing import NDArray
 import itertools as it
 import numpy.random as random
 import numpy as np
@@ -9,12 +9,12 @@ from tsp.extra.visgraph import calculate_visgraph, shortest_path
 from tsp.extra.templates import Template
 
 
-def _point_to_line(p: ArrayLike, L: ArrayLike) -> float:
+def _point_to_line(p: NDArray, L: NDArray) -> float:
     """Calculates distance from point p to line L. Adapted from https://stackoverflow.com/a/1501725.
 
     Args:
-        p (ArrayLike): point coordinates [x, y, ...]
-        L (ArrayLike): line coordinates [[x1, y1, ...], [x2, y2, ...]]
+        p (NDArray): point coordinates [x, y, ...]
+        L (NDArray): line coordinates [[x1, y1, ...], [x2, y2, ...]]
 
     Returns:
         float: distance
@@ -33,12 +33,12 @@ class TSP_O(TSP):
     """Container for a TSP-with-obstacles instance."""
 
     @staticmethod
-    def _check_min_dist(cities: Iterable[ArrayLike], obstacles: Iterable[ArrayLike], x: int, y: int, r: int, min_dist: int) -> bool:
+    def _check_min_dist(cities: Iterable[NDArray], obstacles: Iterable[NDArray], x: int, y: int, r: int, min_dist: int) -> bool:
         """Check that (x, y) is not within r of any city, or min_dist of any obstacle.
 
         Args:
-            cities (Iterable[ArrayLike]): cities as [[x1, y1], ...]
-            obstacles (Iterable[ArrayLike]): obstacles as [[[x1, y1], [x2, y2]], ...]
+            cities (Iterable[NDArray]): cities as [[x1, y1], ...]
+            obstacles (Iterable[NDArray]): obstacles as [[[x1, y1], [x2, y2]], ...]
             x (int): city x-coordinate
             y (int): city y-coordinate
             r (int): minimum distance allowed between cities
@@ -152,14 +152,14 @@ class TSP_O(TSP):
             self.E = TSP.to_edge_matrix(self)
         return self.E
 
-    def tour_segments(self, tour: Iterable[int]) -> Iterator[ArrayLike]:
+    def tour_segments(self, tour: Iterable[int]) -> Iterator[NDArray]:
         """Produces iterator of vertices (x, y) that, when connected, make up the tour in obstacle space.
 
         Args:
             tour (Iterable[int]): tour as indices of cities
 
         Yields:
-            Iterator[ArrayLike]: tour as coordinates of line segments
+            Iterator[NDArray]: tour as coordinates of line segments
         """
         g = self.to_visgraph()
         prev = None

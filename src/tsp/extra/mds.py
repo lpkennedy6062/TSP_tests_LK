@@ -1,5 +1,5 @@
 from typing import Tuple
-from numpy.typing import ArrayLike, NDArray
+from numpy.typing import NDArray
 import numpy as np
 import scipy as sp
 from sklearn.manifold import MDS
@@ -25,7 +25,7 @@ def stress(tsp_a: N_TSP, tsp_b: N_TSP) -> float:
     return np.sqrt(diffsum / sqsum)
 
 
-def _recover_local(original: ArrayLike, reconstructed: ArrayLike) -> NDArray:
+def _recover_local(original: NDArray, reconstructed: NDArray) -> NDArray:
     o, m, _ = sp.spatial.procrustes(original, reconstructed)
     ox = np.vstack([o[:, 0], np.ones_like(o[:, 0])]).T
     mx = np.vstack([m[:, 0], np.ones_like(m[:, 0])]).T
@@ -39,12 +39,12 @@ def _recover_local(original: ArrayLike, reconstructed: ArrayLike) -> NDArray:
     return result.astype(np.int)
 
 
-def recover_local_scaled(original: N_TSP, reconstructed: ArrayLike) -> TSP:
+def recover_local_scaled(original: N_TSP, reconstructed: NDArray) -> TSP:
     """Use Procrustes scaling to make the MDS reconstruction fit the original problem as best as possible.
 
     Args:
         original (N_TSP): original problem
-        reconstructed (ArrayLike): MDS reconstruction
+        reconstructed (NDArray): MDS reconstruction
 
     Returns:
         TSP: reconstructed problem of guaranteed same height and width
