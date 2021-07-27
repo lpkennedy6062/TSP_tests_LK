@@ -1,10 +1,12 @@
 import argparse
 import json
 import os
+from threading import Thread
+import time
 import numpy as np
 
 import bottle
-from bottle import route, request, response, abort
+from bottle import route, request, response, abort, WSGIRefServer
 
 from tsp.core.save import save_list
 from tsp.experiment.batch import load_problem_batch, save_list_item
@@ -15,6 +17,7 @@ tour_dir = None
 batch = None
 
 MAPPING = []
+SERVER = None
 
 
 # Utilities
@@ -25,7 +28,16 @@ def _static_file(path: str):
     return bottle.static_file(path, root=UI_ROOT)
 
 def _run():
-    bottle.run(host='', port=8080)
+    global SERVER
+    print('Serving on http://localhost:8080 ...')
+    SERVER = WSGIRefServer(host='', port=8080)
+    bottle.run(server=SERVER, quiet=True)
+
+def _shutdown():
+    print('Stopping server...')
+    time.sleep(5)
+    SERVER.srv.shutdown()
+    SERVER.srv.server_close()
 
 
 # API
@@ -44,6 +56,8 @@ def _get_tour(id_: int):
 @route('/api/<id_:int>/cities')
 def _send_cities(id_: int):
     if id_ < 0 or id_ >= len(MAPPING):
+        if id_ == len(MAPPING):
+            Thread(target=_shutdown).start()
         abort(404, 'Problem not found.')
     id_ = MAPPING[id_]
     response.content_type = 'application/json'

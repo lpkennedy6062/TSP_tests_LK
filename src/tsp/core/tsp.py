@@ -14,6 +14,7 @@ def distance(path: Iterable[ArrayLike]) -> float:
     Returns:
         float: distance
     """
+    path = np.array(list(path))
     return sum(map(lambda i: np.linalg.norm(path[i - 1] - path[i]), range(1, len(path))))
 
 
