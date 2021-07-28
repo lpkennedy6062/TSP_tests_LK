@@ -1,3 +1,34 @@
+"""Implements a hierarchical clustering ("pyramid") algorithm similar to those used in the
+literature to approximate human solutions to the TSP.
+
+Most all of this is not of interest to the casual user of the library, as the important bits are
+wrapped by `tsp.core.solvers.PyramidSolver`. Following is a rundown of the pyramid algorithm.
+
+First, we construct a minimum spanning tree (MST) of the cities in the problem using
+Borůvka's algorithm. During the MST-construction stage, the algorithm constructs a dendrogram using
+a disjoint-set data structure which stores the Borůvka's clusters as trees, building them upwards
+as they are joined together by adding edges to the MST until one dendrogram results.
+
+This dendrogram can be conceptualized as a pyramid. The top level of a pyramid can be derived by
+breaking up the dendrogram into N subtrees by slicing off the N branches nearest to the top,
+collecting all of the cities in each of the trees and finding their centers of gravity. This
+produces a cluster of N centroids in the space of the original problem. This can be done at any
+level of the tree, so a subtree can in turn be broken up into its component clusters.
+
+At the top level of the pyramid, the shortest tour can be found precisely in constant time because
+there are now a constant number of cities (N) which compose the problem. Once this tour is found,
+each of the N centroids which make up the top level are broken down into the N centroids beneath
+them, and a shortest path through these centroids is constructed and added to the final tour. This
+shortest path takes into account the centroid of the "next" cluster to be visited, as well as the
+last city in the shortest path through the "previous" cluster. This process of iterative refinement
+of the tour is repeated until all clusters have been broken up and only the cities of the original
+problem remain.
+
+See the documentation of `pyramid_debug` for another characterization of the operation of this
+pyramid model.
+"""
+
+
 from __future__ import annotations
 from typing import Any, Hashable, Iterable, Iterator, List, Set, Tuple
 from itertools import permutations
@@ -232,8 +263,28 @@ def cluster_boruvka(nodes: NDArray) -> Tuple[Set, DSNode]:
     return result, tree.root
 
 
-mst = lambda nodes: cluster_boruvka(nodes)[0]
-cluster = lambda nodes: cluster_boruvka(nodes)[1]
+def mst(nodes: NDArray) -> Set:
+    """Generate an MST (shorthand for `cluster_boruvka(nodes)[0]`).
+
+    Args:
+        nodes (NDArray): ndarray((v, n))
+
+    Returns:
+        Set: edges in MST
+    """
+    return cluster_boruvka(nodes)[0]
+
+
+def cluster(nodes: NDArray) -> DSNode:
+    """Agglomerate nodes into dendrogram (shorthand for `cluster_boruvka(nodes)[1]`).
+
+    Args:
+        nodes (NDArray): ndarray((v, n))
+
+    Returns:
+        DSNode: root of agglomerated tree
+    """
+    return cluster_boruvka(nodes)[1]
 
 
 def _evaluate_path(nodes: NDArray, indices: Iterable[int]) -> float:
@@ -350,12 +401,13 @@ def pyramid_solve(nodes: NDArray, k: int = 6) -> List[int]:
 
 def pyramid_debug(nodes: NDArray, k: int = 6) -> Iterator[List[int]]:
     """Starts by yielding the centroids at the top level of the pyramid, then the level below, and so on, in the following pattern:
-    (1) tour of centroids at top of pyramid: [a, b, c, d, e, f]
-    (2) [cluster below a, b, c, d, e, f]
-    (3) [cluster below a, cluster below b, c, d, e, f]
-    (4) ...
-    (5) [cluster below a, cluster below b, ..., cluster below f]
-    Repeating from 1 for the next level of the pyramid (which is the tour produced in 5).
+    
+    1. tour of centroids at top of pyramid: [a, b, c, d, e, f]
+    2. [cluster below a, b, c, d, e, f]
+    3. [cluster below a, cluster below b, c, d, e, f]
+    4. ...
+    5. [cluster below a, cluster below b, ..., cluster below f]
+    6. Repeating from 1 for the next level of the pyramid (which is the tour produced in 5).
 
     Args:
         nodes (NDArray): master list of coordinates of points

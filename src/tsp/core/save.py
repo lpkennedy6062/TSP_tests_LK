@@ -1,3 +1,18 @@
+"""Procedures for serializing TSP objects and tours.
+
+Prefer `save_problem` and `load_problem` over `save_ntsp`, etc. These are general-purpose
+procedures which determine the type of the problem and the proper procedure for serialization.
+Note also that `tsp.extra.save.save_problem` and `tsp.extra.save.load_problem` work on a strict
+*superset* of the problem types handled by `save_problem` and `load_problem`, so can be dropped
+in for these seamlessly.
+
+Use `save_list` and `load_list` to serialize and unserialize tours. The conventional extension for
+tours is `.sol` (for "solution").
+
+See `tsp.experiment.batch` for procedures for serializing whole sets of problems and tours.
+"""
+
+
 from typing import Any, Dict, Iterable, List
 import json
 import numpy as np
