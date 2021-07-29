@@ -1,6 +1,12 @@
 # tsp
 
-A library for cognitive science research on the traveling salesperson problem (TSP).
+A library for cognitive science research on the traveling salesperson problem (TSP). Documentation
+is hosted [here](https://jackv.co/tsp/tsp.html).
+
+**Coming here from the *Problem Solving* textbook? Check out the
+[quickstart](examples/quickstart.ipynb) demo, and the
+[documentation for the `experiment` module](https://jackv.co/tsp/tsp/experiment.html) to get
+started.**
 
 ## Installation
 
@@ -21,9 +27,10 @@ And you're ready to go!
 
 ## Citations
 
-The code was used to generate results for the following abstracts:
+This library accompanies the forthcoming book *Problem Solving: Cognitive Mechanisms and Formal
+Models*. It has been used to generate results for the following abstracts:
 
-> Pizlo, Z. and VanDrunen, J. "The status of mental representations in cognitive functions." *Annual Interdisciplinary Conference*, February 2020.
+> Pizlo, Z. and VanDrunen, J. "The status of mental representations in cognitive functions." *Annual Interdisciplinary Conference*, 2020.
 > 
 > VanDrunen, J. and Pizlo, Z. "The effectiveness of Multidimensional Scaling in TSPs whose metric is not Euclidean" (poster). *Society for Mathematical Psychology*, 2019.
 

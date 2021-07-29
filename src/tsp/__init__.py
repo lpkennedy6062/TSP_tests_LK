@@ -15,6 +15,7 @@ for saving whole sets of problems and tours and calculating statistics, as well 
 for collecting human participant tours of problem sets.
 
 This code has been used to generate results for a couple of abstracts so far, and implements
-some experiments described in others. See the [README](https://github.com/jackvandrunen/tsp) for
+some experiments described in others. It serves as a companion to the book *Problem Solving:
+Cognitive Mechanisms and Formal Models*. See the [README](https://github.com/jackvandrunen/tsp) for
 citations.
 """
