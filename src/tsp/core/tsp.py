@@ -127,7 +127,7 @@ class N_TSP:
         Returns:
             NDArray: tour
         """
-        return np.ndarray(solver(self)())
+        return np.array(solver(self)())
 
     def tour_segments(self, tour: Iterable[int]) -> Iterator[NDArray]:
         """Convert a tour in index format into a tour in segment format.

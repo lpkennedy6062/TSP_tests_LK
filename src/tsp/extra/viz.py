@@ -24,7 +24,7 @@ def visualize_obstacles_pil(tsp: TSP_O, tour: Iterable[Union[int, NDArray]], pat
         path (str): path to save
     """
     im = Image.new('RGB', (tsp.w * 2, tsp.h * 2), color = 'white')
-    if tour:
+    if len(tour):
         _draw_tour_pil(im, tsp, tour)
     _draw_cities_pil(im, tsp)
     _draw_obstacles_pil(im, tsp)
@@ -78,7 +78,7 @@ def visualize_color_pil(tsp: TSP_Color, tour: Iterable[int], path: str):
         path (str): path to save
     """
     im = Image.new('RGB', (tsp.w * 2, tsp.h * 2), color = 'white')
-    if tour:
+    if len(tour):
         _draw_tour_color_pil(im, tsp, tour)
     _draw_cities_color_pil(im, tsp)
     im.thumbnail((tsp.w, tsp.h))

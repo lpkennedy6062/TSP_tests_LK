@@ -14,6 +14,7 @@ MatPlotLib directives, but are also great for inlining in Jupyter notebooks, etc
 
 from math import sin, cos, radians
 from typing import Iterable, Union
+from numbers import Number
 from numpy.typing import NDArray
 import numpy as np
 from PIL import Image, ImageDraw
@@ -41,7 +42,7 @@ def _draw_cities_pil(im: Image, tsp: TSP):
 def _draw_tour_pil(im: Image, tsp: TSP, tour: Iterable[Union[int, NDArray]]):
     draw = ImageDraw.Draw(im)
     s = list(tour)
-    if isinstance(s[0], int):
+    if isinstance(s[0], Number):
         draw.line([(x*2, y*2) for x, y in tsp.tour_segments(s)], fill='blue', width=6)
     else:
         draw.line([(x*2, y*2) for x, y in s], fill='blue', width=6)
@@ -56,7 +57,7 @@ def visualize_tsp_pil(tsp: TSP, tour: Iterable[Union[int, NDArray]], path: str):
         path (str): path to save
     """
     im = Image.new('RGB', (tsp.w * 2, tsp.h * 2), color = 'white')
-    if tour:
+    if len(tour):
         _draw_tour_pil(im, tsp, tour)
     _draw_cities_pil(im, tsp)
     im.thumbnail((tsp.w, tsp.h))
@@ -136,7 +137,7 @@ def _draw_cities_plt(ax: SubplotBase, tsp: TSP):
 
 def _draw_tour_plt(ax: SubplotBase, tsp: TSP, tour: Iterable[Union[int, NDArray]]):
     s = list(tour)
-    if isinstance(s[0], int):
+    if isinstance(s[0], Number):
         edges = np.array(list(zip(*list(tsp.tour_segments(s)))))
     else:
         edges = np.array(list(zip(*s)))
@@ -161,7 +162,7 @@ def visualize_tsp_plt(tsp: TSP, tour: Iterable[Union[int, NDArray]], ax: Subplot
     ax.set_yticks([])
     ax.set_aspect('equal', 'box')
 
-    if tour:
+    if len(tour):
         _draw_tour_plt(ax, tsp, tour)
     _draw_cities_plt(ax, tsp)
 
