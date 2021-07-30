@@ -55,7 +55,7 @@ def save_color(obj: TSP_Color, path: str):
         path (str): path to save
     """
     struct = {
-        "type": "TSP_O",
+        "type": "TSP_Color",
         "cities": obj.cities.tolist(),
         "w": obj.w,
         "h": obj.h,
