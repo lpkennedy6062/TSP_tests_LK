@@ -5,8 +5,7 @@ is hosted [here](https://jackv.co/tsp/tsp.html).
 
 **Coming here from the *Problem Solving* textbook? Check out the
 [quickstart](examples/quickstart.ipynb) demo, and the
-[documentation for the `experiment` module](https://jackv.co/tsp/tsp/experiment.html) to get
-started (also available as a [Jupyter notebook](examples/experiment_demo.ipynb)).**
+[setting up a simple experiment](examples/experiment_demo.ipynb) demo.**
 
 ## Installation
 
