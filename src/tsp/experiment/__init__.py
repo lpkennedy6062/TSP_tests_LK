@@ -13,6 +13,9 @@ programmatically (e.g., with the Concorde solver), and computing statistics for 
 
 ### Setting Up a Simple Experiment
 
+This example is also available as a
+[Jupyter notebook](https://github.com/jackvandrunen/tsp/blob/master/examples/experiment_demo.ipynb).
+
 First, generate a set of problems (in this case, we will create a set of 10 20-city problems).
 
 ```python
