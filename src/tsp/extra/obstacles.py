@@ -16,8 +16,8 @@ line segments arranged in some kind of template, the code for that can be found 
 
 
 from typing import Iterable, Iterator, DefaultDict, Tuple
-from numpy.typing import NDArray
 import itertools as it
+from numpy.typing import NDArray
 import numpy.random as random
 import numpy as np
 

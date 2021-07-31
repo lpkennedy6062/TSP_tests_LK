@@ -26,9 +26,9 @@ respectively.
 """
 
 
-from typing import Iterable, Iterator, DefaultDict, List, Tuple, Type, Union
-from numpy.typing import NDArray
+from typing import Iterable, Iterator, Tuple, Type, Union
 import itertools as it
+from numpy.typing import NDArray
 import numpy.random as random
 import numpy as np
 
@@ -178,7 +178,7 @@ class N_TSP:
         result += self.edge(c, first)
         return result
 
-    def score_tour_segments(self, tour_segments: Iterable[NDArray]) -> float:
+    def score_tour_segments(self, tour_segments: Iterable[NDArray]) -> float: # pylint: disable=no-self-use
         """Calculate tour length (from segment format).
 
         Args:
