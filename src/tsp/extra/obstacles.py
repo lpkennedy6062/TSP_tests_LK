@@ -1,6 +1,23 @@
+"""Container for TSP with obstacles (TSP-O).
+
+In a TSP-O there may be straight-line obstacles occluding the shortest paths between cities. When
+this happens, the shortest path will no longer be a straight line between the two vertices, thus
+violating an axiom of Euclidean geometry. However, the metric axioms are not violated. As this has
+nothing to do with "non-Euclidean geometry" proper, we have taken to calling it a "*not*-Euclidean"
+problem rather than a *non*-Euclidean problem.
+
+Note that the generated edge matrix from a `TSP_O` object will use the shortest paths found using
+the visibility graph and Dijkstra's algorithm implemented in `tsp.extra.visgraph`.
+
+If you are interested in generating TSP-Os with more complex obstacles made from a bunch of
+line segments arranged in some kind of template, the code for that can be found in
+`tsp.extra.templates`.
+"""
+
+
 from typing import Iterable, Iterator, DefaultDict, Tuple
-from numpy.typing import NDArray
 import itertools as it
+from numpy.typing import NDArray
 import numpy.random as random
 import numpy as np
 

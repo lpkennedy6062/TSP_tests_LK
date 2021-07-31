@@ -51,10 +51,16 @@
                     <h1 class="modulename">
 <a href="./../../tsp.html">tsp</a><wbr>.<a href="./../extra.html">extra</a><wbr>.visgraph    </h1>
 
-                
+                        <div class="docstring"><p>Visibility graph (assumes obstacles as straight line segments) and Dijkstra's implementation.</p>
+</div>
+
                         <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">DefaultDict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+            <div class="codehilite"><pre><span></span><span class="sd">&quot;&quot;&quot;Visibility graph (assumes obstacles as straight line segments) and Dijkstra&#39;s implementation.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">DefaultDict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="kn">import</span> <span class="nn">itertools</span> <span class="k">as</span> <span class="nn">it</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">PriorityQueue</span>
@@ -147,7 +153,7 @@
 <span class="sd">        exclude (List[Point], optional): Points in the graph which cannot be on the path. Defaults to None.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        List[Point]: [description]</span>
+<span class="sd">        List[Point]: shortest path from a to b</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
     <span class="n">q</span> <span class="o">=</span> <span class="n">PriorityQueue</span><span class="p">()</span>
@@ -257,7 +263,7 @@
 <span class="sd">        exclude (List[Point], optional): Points in the graph which cannot be on the path. Defaults to None.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        List[Point]: [description]</span>
+<span class="sd">        List[Point]: shortest path from a to b</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
     <span class="n">q</span> <span class="o">=</span> <span class="n">PriorityQueue</span><span class="p">()</span>
@@ -294,7 +300,7 @@ taking into account navigation around obstacles.</p>
 <h6 id="returns">Returns</h6>
 
 <blockquote>
-  <p>List[Point]: [description]</p>
+  <p>List[Point]: shortest path from a to b</p>
 </blockquote>
 </div>
 

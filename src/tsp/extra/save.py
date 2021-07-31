@@ -1,6 +1,11 @@
+"""Procedures for serializing and unserializing TSP-Os and TSPs with color.
+
+Note that `save_problem` and `load_problem` can drop in for their equivalents in `tsp.core.save`.
+"""
+
+
 from typing import Any, Dict
 import json
-import os
 import numpy as np
 
 from tsp.core.save import LoadError, save_ntsp, load_ntsp, save_tsp, load_tsp, save_list, load_list # pylint: disable=unused-import

@@ -63,12 +63,21 @@
                     <h1 class="modulename">
 <a href="./../../tsp.html">tsp</a><wbr>.<a href="./../extra.html">extra</a><wbr>.save    </h1>
 
-                
+                        <div class="docstring"><p>Procedures for serializing and unserializing TSP-Os and TSPs with color.</p>
+
+<p>Note that <code><a href="#save_problem">save_problem</a></code> and <code><a href="#load_problem">load_problem</a></code> can drop in for their equivalents in <code><a href="../core/save.html">tsp.core.save</a></code>.</p>
+</div>
+
                         <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+            <div class="codehilite"><pre><span></span><span class="sd">&quot;&quot;&quot;Procedures for serializing and unserializing TSP-Os and TSPs with color.</span>
+
+<span class="sd">Note that `save_problem` and `load_problem` can drop in for their equivalents in `tsp.core.save`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">tsp.core.save</span> <span class="kn">import</span> <span class="n">LoadError</span><span class="p">,</span> <span class="n">save_ntsp</span><span class="p">,</span> <span class="n">load_ntsp</span><span class="p">,</span> <span class="n">save_tsp</span><span class="p">,</span> <span class="n">load_tsp</span><span class="p">,</span> <span class="n">save_list</span><span class="p">,</span> <span class="n">load_list</span> <span class="c1"># pylint: disable=unused-import</span>

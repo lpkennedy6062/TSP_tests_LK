@@ -1,3 +1,13 @@
+"""Container for TSP with colors.
+
+In a TSP with color, traveling between cities of different color can incur a proportionally higher
+cost than traveling between cities of the same color. This could result in violations of the
+triangle inequality, making it a genuinely non-metric TSP.
+
+Note that this is the least developed code in the library.
+"""
+
+
 from typing import Iterable, Tuple
 import numpy.random as random
 import numpy as np

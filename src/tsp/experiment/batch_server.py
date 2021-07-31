@@ -1,3 +1,32 @@
+"""A user interface (UI) for collecting solutions to problem sets from human subjects.
+
+See `tsp.experiment.run` for a way to automate experiments with multiple experimental conditions.
+
+The interface can run with either `tsp.core.tsp.TSP` or `tsp.extra.obstacles.TSP_O` problems. They
+should be saved in a directory with the file naming system described in `tsp.experiment.batch`
+(you should just use `tsp.experiment.batch.save_problem_batch` to handle this). In the directory
+you pass in as the `output_dir` the UI will save the human-generated tours as well as the time
+(in milliseconds) that it took the human to construct each tour segment. The UI is served on
+[localhost:8080](http://localhost:8080). It uses the wonderful [Bottle](https://bottlepy.org/)
+microframework to glue together the tsp library and a JavaScript/HTML5 canvas frontend.
+
+This script can also be run on the command line with `python3 -m tsp.experiment.batch_server`.
+The command line documentation is as follows:
+
+```
+usage: batch_server.py [-h] -f F -s S [-r]
+
+Run a subject on a batch of problems.
+
+optional arguments:
+  -h, --help  show this help message and exit
+  -f F        Path to TSP batch to load
+  -s S        Path to save tours
+  -r          Randomize the order in which problems are presented
+```
+"""
+
+
 import argparse
 import json
 import os

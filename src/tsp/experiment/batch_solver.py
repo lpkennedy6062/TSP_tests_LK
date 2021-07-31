@@ -1,18 +1,31 @@
-from typing import Callable, List, Tuple, Union
+"""Helper functions for generating solutions to problem sets
+programmatically (e.g., with the Concorde solver), and computing statistics for problem sets.
+
+`solve_batch` takes in a set of problems saved using `tsp.experiment.batch.save_problem_batch` and
+produces a set of solutions using the provided Solver.
+
+`score_tours_absolute` and `score_tours_relative` are used to compute the distance (in the
+absolute case) and the error (in the relative case) of a set of tours.
+
+`score_batch`, `score_batch_2`, and `score_batch_3` are specialized functions which we've used to
+automate the calculation of statistics for experiments we've done.
+"""
+
+
+from typing import Callable, List, Tuple, Type, Union
 from numpy.typing import NDArray
 import numpy as np
 
 from tsp.core.tsp import N_TSP
-from tsp.core.solvers import Solver
 from tsp.experiment.batch import load_list_batch, load_problem_batch, save_list_batch
 
 
-def solve_batch(src: str, solver: Solver, dest: str = None) -> List[List[int]]:
+def solve_batch(src: str, solver: Type, dest: str = None) -> List[List[int]]:
     """Use a solver to generate tours for a batch of problems.
 
     Args:
         src (str): path of root where problems are saved
-        solver (Solver): an instance of a Solver (tsp.core.solvers.Solver)
+        solver (Type): an instance of a Solver (tsp.core.solvers.Solver)
         dest (str, optional): Path of root to save tours. Defaults to None.
 
     Returns:

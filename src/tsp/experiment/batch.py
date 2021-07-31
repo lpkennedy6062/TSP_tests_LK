@@ -1,3 +1,19 @@
+"""Helper functions for saving and loading sets of problems and tours.
+
+The experiment code relies on files saved in a particular format in a root directory. Files should
+be named according to the "001.x" convention where numbering starts from 1 and "x" substitutes for
+the appropriate file extension. The `save_problem_batch` and `load_problem_batch` procedures handle
+this for TSPs of any kind from `tsp.core` or `tsp.extra`, saving them with the ".tsp" extension.
+
+`save_list_batch` and `load_list_batch` handle this for anything that can be saved with
+`tsp.core.save.save_list`. `save_list_item` is for saving an individual list with the proper
+numbering format. Examples of sequences that are saved using these procedures are tours (human and
+model-generated) and the times for human tours. Tours are saved using the ".sol" extension, and
+times using the ".time" extension. See `tsp.experiment.batch_server` for more on the data the UI
+for human-subject experiments collects.
+"""
+
+
 from typing import Any, Iterable, List
 import glob
 import os

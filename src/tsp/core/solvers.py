@@ -21,7 +21,6 @@ The human-approximate solver uses a hierarchical clustering ("pyramid") algorith
 """
 
 
-from typing import Iterable
 import os
 from numpy.typing import NDArray
 import numpy as np

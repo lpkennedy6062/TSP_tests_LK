@@ -401,7 +401,7 @@ def pyramid_solve(nodes: NDArray, k: int = 6) -> List[int]:
 
 def pyramid_debug(nodes: NDArray, k: int = 6) -> Iterator[List[int]]:
     """Starts by yielding the centroids at the top level of the pyramid, then the level below, and so on, in the following pattern:
-    
+
     1. tour of centroids at top of pyramid: [a, b, c, d, e, f]
     2. [cluster below a, b, c, d, e, f]
     3. [cluster below a, cluster below b, c, d, e, f]

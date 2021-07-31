@@ -63,24 +63,49 @@
                     <h1 class="modulename">
 <a href="./../../tsp.html">tsp</a><wbr>.<a href="./../experiment.html">experiment</a><wbr>.batch_solver    </h1>
 
-                
+                        <div class="docstring"><p>Helper functions for generating solutions to problem sets
+programmatically (e.g., with the Concorde solver), and computing statistics for problem sets.</p>
+
+<p><code><a href="#solve_batch">solve_batch</a></code> takes in a set of problems saved using <code><a href="batch.html#save_problem_batch">tsp.experiment.batch.save_problem_batch</a></code> and
+produces a set of solutions using the provided Solver.</p>
+
+<p><code><a href="#score_tours_absolute">score_tours_absolute</a></code> and <code><a href="#score_tours_relative">score_tours_relative</a></code> are used to compute the distance (in the
+absolute case) and the error (in the relative case) of a set of tours.</p>
+
+<p><code><a href="#score_batch">score_batch</a></code>, <code><a href="#score_batch_2">score_batch_2</a></code>, and <code><a href="#score_batch_3">score_batch_3</a></code> are specialized functions which we've used to
+automate the calculation of statistics for experiments we've done.</p>
+</div>
+
                         <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+            <div class="codehilite"><pre><span></span><span class="sd">&quot;&quot;&quot;Helper functions for generating solutions to problem sets</span>
+<span class="sd">programmatically (e.g., with the Concorde solver), and computing statistics for problem sets.</span>
+
+<span class="sd">`solve_batch` takes in a set of problems saved using `tsp.experiment.batch.save_problem_batch` and</span>
+<span class="sd">produces a set of solutions using the provided Solver.</span>
+
+<span class="sd">`score_tours_absolute` and `score_tours_relative` are used to compute the distance (in the</span>
+<span class="sd">absolute case) and the error (in the relative case) of a set of tours.</span>
+
+<span class="sd">`score_batch`, `score_batch_2`, and `score_batch_3` are specialized functions which we&#39;ve used to</span>
+<span class="sd">automate the calculation of statistics for experiments we&#39;ve done.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">NDArray</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">tsp.core.tsp</span> <span class="kn">import</span> <span class="n">N_TSP</span>
-<span class="kn">from</span> <span class="nn">tsp.core.solvers</span> <span class="kn">import</span> <span class="n">Solver</span>
 <span class="kn">from</span> <span class="nn">tsp.experiment.batch</span> <span class="kn">import</span> <span class="n">load_list_batch</span><span class="p">,</span> <span class="n">load_problem_batch</span><span class="p">,</span> <span class="n">save_list_batch</span>
 
 
-<span class="k">def</span> <span class="nf">solve_batch</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="n">Solver</span><span class="p">,</span> <span class="n">dest</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="k">def</span> <span class="nf">solve_batch</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="n">Type</span><span class="p">,</span> <span class="n">dest</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;Use a solver to generate tours for a batch of problems.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        src (str): path of root where problems are saved</span>
-<span class="sd">        solver (Solver): an instance of a Solver (tsp.core.solvers.Solver)</span>
+<span class="sd">        solver (Type): an instance of a Solver (tsp.core.solvers.Solver)</span>
 <span class="sd">        dest (str, optional): Path of root to save tours. Defaults to None.</span>
 
 <span class="sd">    Returns:</span>
@@ -198,21 +223,17 @@
 
         
             <span class="def">def</span>
-            <span class="name">solve_batch</span><span class="signature">(
-    src: str,
-    solver: <a href="../core/solvers.html#Solver">tsp.core.solvers.Solver</a>,
-    dest: str = None
-) -&gt; List[List[int]]</span>:
+            <span class="name">solve_batch</span><span class="signature">(src: str, solver: Type, dest: str = None) -&gt; List[List[int]]</span>:
     </div>
 
                 <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">solve_batch</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="n">Solver</span><span class="p">,</span> <span class="n">dest</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">solve_batch</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="n">Type</span><span class="p">,</span> <span class="n">dest</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;Use a solver to generate tours for a batch of problems.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        src (str): path of root where problems are saved</span>
-<span class="sd">        solver (Solver): an instance of a Solver (tsp.core.solvers.Solver)</span>
+<span class="sd">        solver (Type): an instance of a Solver (tsp.core.solvers.Solver)</span>
 <span class="sd">        dest (str, optional): Path of root to save tours. Defaults to None.</span>
 
 <span class="sd">    Returns:</span>
@@ -235,7 +256,7 @@
 
 <ul>
 <li><strong>src (str):</strong>  path of root where problems are saved</li>
-<li><strong>solver (Solver):</strong>  an instance of a Solver (<a href="../core/solvers.html#Solver">tsp.core.solvers.Solver</a>)</li>
+<li><strong>solver (Type):</strong>  an instance of a Solver (<a href="../core/solvers.html#Solver">tsp.core.solvers.Solver</a>)</li>
 <li><strong>dest (str, optional):</strong>  Path of root to save tours. Defaults to None.</li>
 </ul>
 

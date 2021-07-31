@@ -5,8 +5,7 @@ is hosted [here](https://jackv.co/tsp/tsp.html).
 
 **Coming here from the *Problem Solving* textbook? Check out the
 [quickstart](examples/quickstart.ipynb) demo, and the
-[documentation for the `experiment` module](https://jackv.co/tsp/tsp/experiment.html) to get
-started.**
+[setting up a simple experiment](examples/experiment_demo.ipynb) demo.**
 
 ## Installation
 
@@ -28,7 +27,7 @@ And you're ready to go!
 ## Citations
 
 This library accompanies the forthcoming book *Problem Solving: Cognitive Mechanisms and Formal
-Models*. It has been used to generate results for the following abstracts:
+Models* by Zygmunt Pizlo. It has been used to generate results for the following abstracts:
 
 > Pizlo, Z. and VanDrunen, J. "The status of mental representations in cognitive functions." *Annual Interdisciplinary Conference*, 2020.
 > 
@@ -45,6 +44,14 @@ Other papers describing 3D TSP, not-Euclidean TSP with obstacles, and not-Euclid
 > Saalweachter, J. and Pizlo, Z. "Non-Euclidean traveling salesman problem." In *Decision Modeling and Behavior in Complex and Uncertain Environments* (Springer, 2008), 339-358.
 > 
 > Sajedinia, Z., Pizlo, Z., and H&eacute;lie, S. "Investigating the role of the visual system in solving the traveling salesperson problem." *Cognitive Science Society*, 2019.
+
+### Citing This Code
+
+You are welcome to use this code without citation (it is also licensed with a
+[copyfree](https://copyfree.org/) license, so you can do *anything* with it in general). However,
+if experiments done with the help of this code make their way into a publication, I would greatly
+appreciate a citation or acknowledgement in some format which includes my full name (Jacob
+VanDrunen) and a link to this repository.
 
 ## Acknowledgements
 
