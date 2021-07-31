@@ -1,3 +1,7 @@
+"""Generate multidimensional scaling (MDS) reconstructions of TSP-Os and TSPs with color.
+"""
+
+
 from typing import Tuple
 from numpy.typing import NDArray
 import numpy as np

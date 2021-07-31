@@ -1,3 +1,7 @@
+"""Procedures for visualizing TSP-Os and TSPs with color using the PIL and MatPlotLib backends.
+"""
+
+
 from typing import Iterable, Union
 from numpy.typing import NDArray
 from PIL import Image, ImageDraw

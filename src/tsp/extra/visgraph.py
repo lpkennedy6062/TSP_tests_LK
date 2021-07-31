@@ -1,3 +1,7 @@
+"""Visibility graph (assumes obstacles as straight line segments) and Dijkstra's implementation.
+"""
+
+
 from typing import DefaultDict, List, Tuple
 import itertools as it
 from collections import defaultdict
@@ -91,7 +95,7 @@ def shortest_path(a: Point, b: Point, graph: Graph, exclude: List[Point] = None)
         exclude (List[Point], optional): Points in the graph which cannot be on the path. Defaults to None.
 
     Returns:
-        List[Point]: [description]
+        List[Point]: shortest path from a to b
     """
     a, b = tuple(a), tuple(b)
     q = PriorityQueue()

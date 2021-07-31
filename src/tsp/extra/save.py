@@ -1,3 +1,9 @@
+"""Procedures for serializing and unserializing TSP-Os and TSPs with color.
+
+Note that `save_problem` and `load_problem` can drop in for their equivalents in `tsp.core.save`.
+"""
+
+
 from typing import Any, Dict
 import json
 import os

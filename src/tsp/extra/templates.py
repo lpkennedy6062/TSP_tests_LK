@@ -1,3 +1,50 @@
+"""Procedures for generating TSP-Os with complex obstacles composed of straight line segments
+arranged according to a template.
+
+The template basically emulates a pen and executes a series of directives which either rotate
+(`Turn`), move (`Gap`), or draw (`Line`) in straight lines. See also
+`tsp.extra.obstacles.TSP_O.add_random_obstacles_from_template`.
+
+As an example, here is some old code I dug up from an experiment on "keyhole" problems where
+the obstacles are set up in a box with a small opening to one side. First, a visualization:
+
+```
+|----------------------------|
+|          .                 |
+|   .    |---------| .    .  |
+|        |       . |         |
+|        | .       |     .   |
+|                  |         |
+|  .     |.      . |         |
+|       .|      .  |   .     |
+|        |---------|        .|
+|.  .            .           |
+|----------------------------|
+```
+
+And now code to generate such a box-with-keyhole obstacle, starting with the "top" of the keyhole:
+
+```python
+problem = TSP_O.generate_random(20)
+
+problem.add_random_obstacles_from_template(Template([
+    Line(157),
+    Turn(RIGHT_90),
+    Line(339),
+    Turn(RIGHT_90),
+    Line(339),
+    Turn(RIGHT_90),
+    Line(339),
+    Turn(RIGHT_90),
+    Line(157)
+], Point(80, 237), Direction(-np.pi / 2)))
+```
+
+Note that you can omit the last two arguments to `add_random_obstacles_from_template` if you wish
+to place the starting point at a random position and orientation.
+"""
+
+
 from typing import Callable, List, Tuple
 import numpy as np
 
