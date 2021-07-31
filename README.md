@@ -27,7 +27,7 @@ And you're ready to go!
 ## Citations
 
 This library accompanies the forthcoming book *Problem Solving: Cognitive Mechanisms and Formal
-Models*. It has been used to generate results for the following abstracts:
+Models* by Zygmunt Pizlo. It has been used to generate results for the following abstracts:
 
 > Pizlo, Z. and VanDrunen, J. "The status of mental representations in cognitive functions." *Annual Interdisciplinary Conference*, 2020.
 > 
