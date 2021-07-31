@@ -66,10 +66,28 @@
                     <h1 class="modulename">
 <a href="./../../tsp.html">tsp</a><wbr>.<a href="./../extra.html">extra</a><wbr>.color    </h1>
 
-                
+                        <div class="docstring"><p>Container for TSP with colors.</p>
+
+<p>In a TSP with color, traveling between cities of different color can incur a proportionally higher
+cost than traveling between cities of the same color. This could result in violations of the
+triangle inequality, making it a genuinely non-metric TSP.</p>
+
+<p>Note that this is the least developed code in the library.</p>
+</div>
+
                         <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Tuple</span>
+            <div class="codehilite"><pre><span></span><span class="sd">&quot;&quot;&quot;Container for TSP with colors.</span>
+
+<span class="sd">In a TSP with color, traveling between cities of different color can incur a proportionally higher</span>
+<span class="sd">cost than traveling between cities of the same color. This could result in violations of the</span>
+<span class="sd">triangle inequality, making it a genuinely non-metric TSP.</span>
+
+<span class="sd">Note that this is the least developed code in the library.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="kn">import</span> <span class="nn">numpy.random</span> <span class="k">as</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 

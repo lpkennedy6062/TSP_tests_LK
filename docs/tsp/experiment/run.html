@@ -26,6 +26,12 @@
                                pattern=".+" required>
 
 
+                    <h2>Contents</h2>
+                    <ul>
+  <li><a href="#problem-set-file-format">Problem Set File Format</a></li>
+  <li><a href="#packaging">Packaging</a></li>
+</ul>
+
 
 
                     <h2>API Documentation</h2>
@@ -48,7 +54,30 @@
                     <h1 class="modulename">
 <a href="./../../tsp.html">tsp</a><wbr>.<a href="./../experiment.html">experiment</a><wbr>.run    </h1>
 
-                        <div class="docstring"><p>Problem set file format:</p>
+                        <div class="docstring"><p>Script for automating experiments with multiple experimental conditions.</p>
+
+<p>This script can be run on the command line with <code>python3 -m <a href="">tsp.experiment.run</a></code>.
+The command line documentation is as follows:</p>
+
+<pre><code>usage: run.py [-h] [-s S] id sets
+
+Run a subject on problem sets.
+
+positional arguments:
+  id          Participant identifier
+  sets        Path to list of problem sets
+
+optional arguments:
+  -h, --help  show this help message and exit
+  -s S        Path to save file
+</code></pre>
+
+<h3 id="problem-set-file-format">Problem Set File Format</h3>
+
+<p>Problem sets (corresponding to experimental conditions) should be saved under a parent directory
+for the data from the experimental condition in a subdirectory named <code>problems</code>. The interface will
+save the human-generated tours and times in a subdirectory named <code>&lt;id&gt;</code> where &lt;id&gt; is the
+participant identifier. Then, create a "set list file" with the following format:</p>
 
 <ul>
 <li>List of paths to problem sets (without /problems)</li>
@@ -58,7 +87,7 @@
 
 <p>Example:</p>
 
-<p>*./simulations4/data/set_test
+<pre><code>*&amp;./simulations4/data/set_test
 ./simulations4/data/set_16_128
 ./simulations4/data/set_16_192
 ./simulations4/data/set_16_256
@@ -67,20 +96,101 @@
 ./simulations4/data/set_32_256
 ./simulations4/data/set_48_128
 ./simulations4/data/set_48_192
-./simulations4/data/set_48_256</p>
+./simulations4/data/set_48_256
+</code></pre>
+
+<p>This file would present the first experimental condition (a test set) first and with problems in
+unrandomized order. Then it would present all of the rest of the experimental conditions in random
+order, with their problems in randomized order.</p>
+
+<p>When provided with a path, the script will generate a "save file" containing the actual order the
+experimental conditions are presented in and whether or not each one is randomized. This is useful
+both as reference and if the subject needs multiple sessions to complete all conditions. Note that
+if an experimental condition has been started on a previous run of the script, it will be skipped
+over on the next run, <em>even if it hasn't been completed</em>. In this case, you will need to manually
+remove the offending directory.</p>
+
+<h3 id="packaging">Packaging</h3>
+
+<p>With mildly tech-savvy participants, you can package a simple script which calls
+<code><a href="#run">tsp.experiment.run.run</a></code> as a standalone executable using something like
+<a href="https://www.pyinstaller.org/">PyInstaller</a>, and have the participants run themselves on the
+experimental conditions. In the age of COVID-19, we've had to do this ourselves. The basic
+directory structure should look something like:</p>
+
+<pre><code> |-- run_this.exe
+ |-- problems.txt  # problem set list
+ |-- data
+      |-- condition1
+      |    |-- problems
+      |         |-- 001.tsp
+      |         |-- ...
+      |
+      |-- condition2
+      |    |-- ...
+      |
+      |-- ...
+ |-- batch_ui  # copy of src/tsp/experiment/batch_ui
+      |-- ...
+</code></pre>
+
+<p>Then the Python script to package into <code>run_this.exe</code> would be something like:</p>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn"><a href="">tsp.experiment.run</a></span> <span class="kn">import</span> <span class="n">run</span>
+
+<span class="n">run</span><span class="p">(</span>
+    <span class="n">participant</span><span class="o">=</span><span class="s1">&#39;jv&#39;</span><span class="p">,</span>
+    <span class="n">set_list_path</span><span class="o">=</span><span class="s1">&#39;problems.txt&#39;</span><span class="p">,</span>
+    <span class="n">save_file_path</span><span class="o">=</span><span class="s1">&#39;save.txt&#39;</span><span class="p">,</span>
+    <span class="n">ui_root</span><span class="o">=</span><span class="s1">&#39;batch_ui&#39;</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Where "jv" gets replaced with the participant identifier. Theoretically this could also be provided
+dynamically if one doesn't want to package individual scripts for each participant. Solutions and
+times will then be saved in <code>data/condition1/jv</code>, <code>data/condition2/jv</code>, etc.</p>
+
+<p>Note that the files for the web interface need to be provided manually in order for the UI to work
+correctly as a standalone executable. With a native Python install of the library, the UI stuff is
+all handled "under the hood."</p>
 </div>
 
                         <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Problem set file format:</span>
+            <div class="codehilite"><pre><span></span><span class="sd">&quot;&quot;&quot;Script for automating experiments with multiple experimental conditions.</span>
+
+<span class="sd">This script can be run on the command line with `python3 -m tsp.experiment.run`.</span>
+<span class="sd">The command line documentation is as follows:</span>
+
+<span class="sd">```</span>
+<span class="sd">usage: run.py [-h] [-s S] id sets</span>
+
+<span class="sd">Run a subject on problem sets.</span>
+
+<span class="sd">positional arguments:</span>
+<span class="sd">  id          Participant identifier</span>
+<span class="sd">  sets        Path to list of problem sets</span>
+
+<span class="sd">optional arguments:</span>
+<span class="sd">  -h, --help  show this help message and exit</span>
+<span class="sd">  -s S        Path to save file</span>
+<span class="sd">```</span>
+
+<span class="sd">### Problem Set File Format</span>
+
+<span class="sd">Problem sets (corresponding to experimental conditions) should be saved under a parent directory</span>
+<span class="sd">for the data from the experimental condition in a subdirectory named `problems`. The interface will</span>
+<span class="sd">save the human-generated tours and times in a subdirectory named `&lt;id&gt;` where &amp;lt;id&amp;gt; is the</span>
+<span class="sd">participant identifier. Then, create a &quot;set list file&quot; with the following format:</span>
+
 <span class="sd"> - List of paths to problem sets (without /problems)</span>
 <span class="sd"> - Asterisk (*) in front of paths that should be kept in the position that it is in</span>
 <span class="sd"> - Ampersand (&amp;) in front of paths that should not have their problems presented in random order (after the * if they coincide)</span>
 
 <span class="sd">Example:</span>
 
-<span class="sd">*./simulations4/data/set_test</span>
+<span class="sd">```</span>
+<span class="sd">*&amp;./simulations4/data/set_test</span>
 <span class="sd">./simulations4/data/set_16_128</span>
 <span class="sd">./simulations4/data/set_16_192</span>
 <span class="sd">./simulations4/data/set_16_256</span>
@@ -90,7 +200,65 @@
 <span class="sd">./simulations4/data/set_48_128</span>
 <span class="sd">./simulations4/data/set_48_192</span>
 <span class="sd">./simulations4/data/set_48_256</span>
+<span class="sd">```</span>
 
+<span class="sd">This file would present the first experimental condition (a test set) first and with problems in</span>
+<span class="sd">unrandomized order. Then it would present all of the rest of the experimental conditions in random</span>
+<span class="sd">order, with their problems in randomized order.</span>
+
+<span class="sd">When provided with a path, the script will generate a &quot;save file&quot; containing the actual order the</span>
+<span class="sd">experimental conditions are presented in and whether or not each one is randomized. This is useful</span>
+<span class="sd">both as reference and if the subject needs multiple sessions to complete all conditions. Note that</span>
+<span class="sd">if an experimental condition has been started on a previous run of the script, it will be skipped</span>
+<span class="sd">over on the next run, *even if it hasn&#39;t been completed*. In this case, you will need to manually</span>
+<span class="sd">remove the offending directory.</span>
+
+<span class="sd">### Packaging</span>
+
+<span class="sd">With mildly tech-savvy participants, you can package a simple script which calls</span>
+<span class="sd">`tsp.experiment.run.run` as a standalone executable using something like</span>
+<span class="sd">[PyInstaller](https://www.pyinstaller.org/), and have the participants run themselves on the</span>
+<span class="sd">experimental conditions. In the age of COVID-19, we&#39;ve had to do this ourselves. The basic</span>
+<span class="sd">directory structure should look something like:</span>
+
+<span class="sd">```</span>
+<span class="sd">root</span>
+<span class="sd"> |-- run_this.exe</span>
+<span class="sd"> |-- problems.txt  # problem set list</span>
+<span class="sd"> |-- data</span>
+<span class="sd">      |-- condition1</span>
+<span class="sd">      |    |-- problems</span>
+<span class="sd">      |         |-- 001.tsp</span>
+<span class="sd">      |         |-- ...</span>
+<span class="sd">      |</span>
+<span class="sd">      |-- condition2</span>
+<span class="sd">      |    |-- ...</span>
+<span class="sd">      |</span>
+<span class="sd">      |-- ...</span>
+<span class="sd"> |-- batch_ui  # copy of src/tsp/experiment/batch_ui</span>
+<span class="sd">      |-- ...</span>
+<span class="sd">```</span>
+
+<span class="sd">Then the Python script to package into `run_this.exe` would be something like:</span>
+
+<span class="sd">```python</span>
+<span class="sd">from tsp.experiment.run import run</span>
+
+<span class="sd">run(</span>
+<span class="sd">    participant=&#39;jv&#39;,</span>
+<span class="sd">    set_list_path=&#39;problems.txt&#39;,</span>
+<span class="sd">    save_file_path=&#39;save.txt&#39;,</span>
+<span class="sd">    ui_root=&#39;batch_ui&#39;</span>
+<span class="sd">)</span>
+<span class="sd">```</span>
+
+<span class="sd">Where &quot;jv&quot; gets replaced with the participant identifier. Theoretically this could also be provided</span>
+<span class="sd">dynamically if one doesn&#39;t want to package individual scripts for each participant. Solutions and</span>
+<span class="sd">times will then be saved in `data/condition1/jv`, `data/condition2/jv`, etc.</span>
+
+<span class="sd">Note that the files for the web interface need to be provided manually in order for the UI to work</span>
+<span class="sd">correctly as a standalone executable. With a native Python install of the library, the UI stuff is</span>
+<span class="sd">all handled &quot;under the hood.&quot;</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Tuple</span>
@@ -180,8 +348,7 @@
     <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">randomized</span> <span class="ow">in</span> <span class="n">problem_sets</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;(</span><span class="si">{}</span><span class="s1">) </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">((</span><span class="s1">&#39;R&#39;</span> <span class="k">if</span> <span class="n">randomized</span> <span class="k">else</span> <span class="s1">&#39; &#39;</span><span class="p">),</span> <span class="n">path</span><span class="p">))</span>
     <span class="nb">print</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Once the participant has completed a set, continue to the next set with ^C&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Then have the participant refresh the page&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Have the participant refresh the page after starting each condition here.&#39;</span><span class="p">)</span>
     <span class="n">_confirm</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">randomized</span> <span class="ow">in</span> <span class="n">problem_sets</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">participant</span><span class="p">)):</span>
@@ -241,8 +408,7 @@
     <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">randomized</span> <span class="ow">in</span> <span class="n">problem_sets</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;(</span><span class="si">{}</span><span class="s1">) </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">((</span><span class="s1">&#39;R&#39;</span> <span class="k">if</span> <span class="n">randomized</span> <span class="k">else</span> <span class="s1">&#39; &#39;</span><span class="p">),</span> <span class="n">path</span><span class="p">))</span>
     <span class="nb">print</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Once the participant has completed a set, continue to the next set with ^C&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Then have the participant refresh the page&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Have the participant refresh the page after starting each condition here.&#39;</span><span class="p">)</span>
     <span class="n">_confirm</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">randomized</span> <span class="ow">in</span> <span class="n">problem_sets</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">participant</span><span class="p">)):</span>

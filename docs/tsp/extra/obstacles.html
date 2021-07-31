@@ -84,12 +84,44 @@
                     <h1 class="modulename">
 <a href="./../../tsp.html">tsp</a><wbr>.<a href="./../extra.html">extra</a><wbr>.obstacles    </h1>
 
-                
+                        <div class="docstring"><p>Container for TSP with obstacles (TSP-O).</p>
+
+<p>In a TSP-O there may be straight-line obstacles occluding the shortest paths between cities. When
+this happens, the shortest path will no longer be a straight line between the two vertices, thus
+violating an axiom of Euclidean geometry. However, the metric axioms are not violated. As this has
+nothing to do with "non-Euclidean geometry" proper, we have taken to calling it a "<em>not</em>-Euclidean"
+problem rather than a <em>non</em>-Euclidean problem.</p>
+
+<p>Note that the generated edge matrix from a <code><a href="#TSP_O">TSP_O</a></code> object will use the shortest paths found using
+the visibility graph and Dijkstra's algorithm implemented in <code><a href="visgraph.html">tsp.extra.visgraph</a></code>.</p>
+
+<p>If you are interested in generating TSP-Os with more complex obstacles made from a bunch of
+line segments arranged in some kind of template, the code for that can be found in
+<code><a href="templates.html">tsp.extra.templates</a></code>.</p>
+</div>
+
                         <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">DefaultDict</span><span class="p">,</span> <span class="n">Tuple</span>
-<span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">NDArray</span>
+            <div class="codehilite"><pre><span></span><span class="sd">&quot;&quot;&quot;Container for TSP with obstacles (TSP-O).</span>
+
+<span class="sd">In a TSP-O there may be straight-line obstacles occluding the shortest paths between cities. When</span>
+<span class="sd">this happens, the shortest path will no longer be a straight line between the two vertices, thus</span>
+<span class="sd">violating an axiom of Euclidean geometry. However, the metric axioms are not violated. As this has</span>
+<span class="sd">nothing to do with &quot;non-Euclidean geometry&quot; proper, we have taken to calling it a &quot;*not*-Euclidean&quot;</span>
+<span class="sd">problem rather than a *non*-Euclidean problem.</span>
+
+<span class="sd">Note that the generated edge matrix from a `TSP_O` object will use the shortest paths found using</span>
+<span class="sd">the visibility graph and Dijkstra&#39;s algorithm implemented in `tsp.extra.visgraph`.</span>
+
+<span class="sd">If you are interested in generating TSP-Os with more complex obstacles made from a bunch of</span>
+<span class="sd">line segments arranged in some kind of template, the code for that can be found in</span>
+<span class="sd">`tsp.extra.templates`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">DefaultDict</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="kn">import</span> <span class="nn">itertools</span> <span class="k">as</span> <span class="nn">it</span>
+<span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">NDArray</span>
 <span class="kn">import</span> <span class="nn">numpy.random</span> <span class="k">as</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 

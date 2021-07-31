@@ -48,10 +48,65 @@
                     <h1 class="modulename">
 <a href="./../../tsp.html">tsp</a><wbr>.<a href="./../experiment.html">experiment</a><wbr>.batch_server    </h1>
 
-                
+                        <div class="docstring"><p>A user interface (UI) for collecting solutions to problem sets from human subjects.</p>
+
+<p>See <code><a href="run.html">tsp.experiment.run</a></code> for a way to automate experiments with multiple experimental conditions.</p>
+
+<p>The interface can run with either <code><a href="../core/tsp.html#TSP">tsp.core.tsp.TSP</a></code> or <code><a href="../extra/obstacles.html#TSP_O">tsp.extra.obstacles.TSP_O</a></code> problems. They
+should be saved in a directory with the file naming system described in <code><a href="batch.html">tsp.experiment.batch</a></code>
+(you should just use <code><a href="batch.html#save_problem_batch">tsp.experiment.batch.save_problem_batch</a></code> to handle this). In the directory
+you pass in as the <code>output_dir</code> the UI will save the human-generated tours as well as the time
+(in milliseconds) that it took the human to construct each tour segment. The UI is served on
+<a href="http://localhost:8080">localhost:8080</a>. It uses the wonderful <a href="https://bottlepy.org/">Bottle</a>
+microframework to glue together the tsp library and a JavaScript/HTML5 canvas frontend.</p>
+
+<p>This script can also be run on the command line with <code>python3 -m <a href="">tsp.experiment.batch_server</a></code>.
+The command line documentation is as follows:</p>
+
+<pre><code>usage: batch_server.py [-h] -f F -s S [-r]
+
+Run a subject on a batch of problems.
+
+optional arguments:
+  -h, --help  show this help message and exit
+  -f F        Path to TSP batch to load
+  -s S        Path to save tours
+  -r          Randomize the order in which problems are presented
+</code></pre>
+</div>
+
                         <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">argparse</span>
+            <div class="codehilite"><pre><span></span><span class="sd">&quot;&quot;&quot;A user interface (UI) for collecting solutions to problem sets from human subjects.</span>
+
+<span class="sd">See `tsp.experiment.run` for a way to automate experiments with multiple experimental conditions.</span>
+
+<span class="sd">The interface can run with either `tsp.core.tsp.TSP` or `tsp.extra.obstacles.TSP_O` problems. They</span>
+<span class="sd">should be saved in a directory with the file naming system described in `tsp.experiment.batch`</span>
+<span class="sd">(you should just use `tsp.experiment.batch.save_problem_batch` to handle this). In the directory</span>
+<span class="sd">you pass in as the `output_dir` the UI will save the human-generated tours as well as the time</span>
+<span class="sd">(in milliseconds) that it took the human to construct each tour segment. The UI is served on</span>
+<span class="sd">[localhost:8080](http://localhost:8080). It uses the wonderful [Bottle](https://bottlepy.org/)</span>
+<span class="sd">microframework to glue together the tsp library and a JavaScript/HTML5 canvas frontend.</span>
+
+<span class="sd">This script can also be run on the command line with `python3 -m tsp.experiment.batch_server`.</span>
+<span class="sd">The command line documentation is as follows:</span>
+
+<span class="sd">```</span>
+<span class="sd">usage: batch_server.py [-h] -f F -s S [-r]</span>
+
+<span class="sd">Run a subject on a batch of problems.</span>
+
+<span class="sd">optional arguments:</span>
+<span class="sd">  -h, --help  show this help message and exit</span>
+<span class="sd">  -f F        Path to TSP batch to load</span>
+<span class="sd">  -s S        Path to save tours</span>
+<span class="sd">  -r          Randomize the order in which problems are presented</span>
+<span class="sd">```</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>

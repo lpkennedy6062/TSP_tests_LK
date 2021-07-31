@@ -543,7 +543,7 @@ pyramid model.</p>
 
 <span class="k">def</span> <span class="nf">pyramid_debug</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;Starts by yielding the centroids at the top level of the pyramid, then the level below, and so on, in the following pattern:</span>
-<span class="sd">    </span>
+
 <span class="sd">    1. tour of centroids at top of pyramid: [a, b, c, d, e, f]</span>
 <span class="sd">    2. [cluster below a, b, c, d, e, f]</span>
 <span class="sd">    3. [cluster below a, cluster below b, c, d, e, f]</span>
@@ -1439,7 +1439,7 @@ Uses Boruvka's algorithm: which should produce a more "balanced" tree.</p>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">pyramid_debug</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;Starts by yielding the centroids at the top level of the pyramid, then the level below, and so on, in the following pattern:</span>
-<span class="sd">    </span>
+
 <span class="sd">    1. tour of centroids at top of pyramid: [a, b, c, d, e, f]</span>
 <span class="sd">    2. [cluster below a, b, c, d, e, f]</span>
 <span class="sd">    3. [cluster below a, cluster below b, c, d, e, f]</span>

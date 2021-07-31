@@ -60,10 +60,40 @@
                     <h1 class="modulename">
 <a href="./../../tsp.html">tsp</a><wbr>.<a href="./../experiment.html">experiment</a><wbr>.batch    </h1>
 
-                
+                        <div class="docstring"><p>Helper functions for saving and loading sets of problems and tours.</p>
+
+<p>The experiment code relies on files saved in a particular format in a root directory. Files should
+be named according to the "001.x" convention where numbering starts from 1 and "x" substitutes for
+the appropriate file extension. The <code><a href="#save_problem_batch">save_problem_batch</a></code> and <code><a href="#load_problem_batch">load_problem_batch</a></code> procedures handle
+this for TSPs of any kind from <code><a href="../core.html">tsp.core</a></code> or <code><a href="../extra.html">tsp.extra</a></code>, saving them with the ".tsp" extension.</p>
+
+<p><code><a href="#save_list_batch">save_list_batch</a></code> and <code><a href="#load_list_batch">load_list_batch</a></code> handle this for anything that can be saved with
+<code><a href="../core/save.html#save_list">tsp.core.save.save_list</a></code>. <code><a href="#save_list_item">save_list_item</a></code> is for saving an individual list with the proper
+numbering format. Examples of sequences that are saved using these procedures are tours (human and
+model-generated) and the times for human tours. Tours are saved using the ".sol" extension, and
+times using the ".time" extension. See <code><a href="batch_server.html">tsp.experiment.batch_server</a></code> for more on the data the UI
+for human-subject experiments collects.</p>
+</div>
+
                         <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span>
+            <div class="codehilite"><pre><span></span><span class="sd">&quot;&quot;&quot;Helper functions for saving and loading sets of problems and tours.</span>
+
+<span class="sd">The experiment code relies on files saved in a particular format in a root directory. Files should</span>
+<span class="sd">be named according to the &quot;001.x&quot; convention where numbering starts from 1 and &quot;x&quot; substitutes for</span>
+<span class="sd">the appropriate file extension. The `save_problem_batch` and `load_problem_batch` procedures handle</span>
+<span class="sd">this for TSPs of any kind from `tsp.core` or `tsp.extra`, saving them with the &quot;.tsp&quot; extension.</span>
+
+<span class="sd">`save_list_batch` and `load_list_batch` handle this for anything that can be saved with</span>
+<span class="sd">`tsp.core.save.save_list`. `save_list_item` is for saving an individual list with the proper</span>
+<span class="sd">numbering format. Examples of sequences that are saved using these procedures are tours (human and</span>
+<span class="sd">model-generated) and the times for human tours. Tours are saved using the &quot;.sol&quot; extension, and</span>
+<span class="sd">times using the &quot;.time&quot; extension. See `tsp.experiment.batch_server` for more on the data the UI</span>
+<span class="sd">for human-subject experiments collects.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span>
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">os</span>
 
