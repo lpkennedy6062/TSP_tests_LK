@@ -92,7 +92,7 @@ class PyramidSolver(Solver):
 
     def __init__(self, tsp: N_TSP):
         Solver.__init__(self, tsp)
-        self.m = tsp.to_matrix()
+        self.m = tsp.cities
 
     def __call__(self) -> NDArray:
         return np.array(pyramid_solve(self.m))
