@@ -54,7 +54,7 @@ def recover_local_scaled(original: N_TSP, reconstructed: NDArray) -> TSP:
         TSP: reconstructed problem of guaranteed same height and width
     """
     assert original.dimensions == 2 and reconstructed.shape[1] == 2
-    t = _recover_local(original.to_matrix(), reconstructed).astype(np.float)
+    t = _recover_local(original.cities, reconstructed).astype(np.float)
     x_high, y_high = original.w - 1, original.h - 1
     # We want to get everything within coordinates 0, n-1
     # If necessary, shift so that 0 is min
