@@ -106,7 +106,7 @@ class DSTree:
         Args:
             values (List[Any], optional): Initial leaves to initialize. Defaults to None.
         """
-        self.sets = dict()
+        self._sets = dict()
         self._unions = 0
         self.root = None
         if values is not None:
@@ -120,7 +120,7 @@ class DSTree:
         Returns:
             int: number of sets
         """
-        return len(self.sets) - self._unions
+        return len(self._sets) - self._unions
 
     def make_set(self, value: Hashable):
         """Initialize a new set/leaf of tree.
@@ -128,7 +128,7 @@ class DSTree:
         Args:
             value (Any): value to store at node
         """
-        self.sets[value] = DSNode(value)
+        self._sets[value] = DSNode(value)
 
     def find(self, value: Hashable) -> DSNode:
         """Find root of tree containing node which stores value.
@@ -139,7 +139,7 @@ class DSTree:
         Returns:
             DSNode: root of tree
         """
-        return self.sets[value].find()
+        return self._sets[value].find()
 
     def union(self, x: Hashable, y: Hashable) -> DSNode:
         """Create a union of set containing x and set containing y.
@@ -248,7 +248,7 @@ def cluster_boruvka(nodes: NDArray) -> Tuple[Set, DSNode]:
     i_lower = np.tril_indices(v, -1)
     edges[i_lower] = edges.T[i_lower]
     while tree.sets > 1:
-        clusters = list(set(map(lambda n: tuple(n.find().values()), tree.sets.values())))
+        clusters = list(set(map(lambda n: tuple(n.find().values()), tree._sets.values())))
         minimum_edges = {i : (np.inf, None) for i in range(len(clusters))}
         for c1, c2 in it.combinations(range(len(clusters)), 2):
             for e in it.product(clusters[c1], clusters[c2]):
