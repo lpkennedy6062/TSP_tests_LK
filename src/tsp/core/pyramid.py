@@ -256,7 +256,7 @@ def cluster_boruvka(nodes: NDArray) -> Tuple[Set, DSNode]:
                     minimum_edges[c1] = edges[e], e
                 if edges[e] < minimum_edges[c2][0]:
                     minimum_edges[c2] = edges[e], e
-        for _, e in minimum_edges.values():
+        for _, e in sorted(minimum_edges.values(), key=lambda t: t[0]):
             c = tree.union(*e)
             c.value = _calculate_centroid(c, nodes)
             result.add(e)
