@@ -23,6 +23,7 @@ import matplotlib.pyplot as plt
 from matplotlib.axes import SubplotBase
 
 from tsp.core.tsp import N_TSP, TSP
+from tsp.core.pyramid import DSNode
 
 
 def _draw_edges_pil(im: Image, tsp: TSP, edges: Iterable[Tuple[int, int]]):
@@ -187,4 +188,29 @@ def visualize_mst_plt(tsp: TSP, mst: Iterable[Tuple[float, Tuple[int, int]]], ax
     ax.set_aspect('equal', 'box')
 
     _draw_edges_plt(ax, tsp, list(zip(*mst))[1])
+    _draw_cities_plt(ax, tsp)
+
+
+def _isolate_edges(mst: Iterable[Tuple[int, int]], clusters: Iterable[DSNode]):
+    for cluster in clusters:
+        cities = set(cluster.values())
+        result = []
+        for e0, e1 in mst:
+            if e0 in cities and e1 in cities:
+                result.append((e0, e1))
+        yield result
+
+
+def visualize_clusters_plt(tsp: TSP, mst: Iterable[Tuple[float, Tuple[int, int]]], clusters: Iterable[DSNode], ax: SubplotBase = None):
+    if ax is None:
+        ax = plt.subplot(111)
+
+    ax.set_xlim((0, tsp.w))
+    ax.set_ylim((0, tsp.h))
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_aspect('equal', 'box')
+
+    for edges in _isolate_edges(list(zip(*mst))[1], clusters):
+        _draw_edges_plt(ax, tsp, edges)
     _draw_cities_plt(ax, tsp)
