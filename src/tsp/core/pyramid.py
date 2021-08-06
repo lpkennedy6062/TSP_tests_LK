@@ -218,10 +218,12 @@ def cluster_kruskal(nodes: NDArray) -> Tuple[Set, DSNode]:
             value = np.sqrt(np.sum(np.square(nodes[i] - nodes[j])))
             edges.put((value, (i, j)))
     while tree.sets > 1:
-        e = edges.get()[1]
+        old_root = tree.root
+        edge_length, e = edges.get()
         c = tree.union(*e)
         c.value = _calculate_centroid(c, nodes)
-        result.add(e)
+        if old_root is None or old_root != c:
+            result.add((edge_length, e))
     return result, tree.root
 
 
@@ -256,10 +258,12 @@ def cluster_boruvka(nodes: NDArray) -> Tuple[Set, DSNode]:
                     minimum_edges[c1] = edges[e], e
                 if edges[e] < minimum_edges[c2][0]:
                     minimum_edges[c2] = edges[e], e
-        for _, e in sorted(minimum_edges.values(), key=lambda t: t[0]):
+        for edge_length, e in sorted(minimum_edges.values(), key=lambda t: t[0]):
+            old_root = tree.root
             c = tree.union(*e)
             c.value = _calculate_centroid(c, nodes)
-            result.add(e)
+            if old_root is None or old_root != c:
+                result.add((edge_length, e))
     return result, tree.root
 
 

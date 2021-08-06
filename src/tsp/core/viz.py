@@ -13,7 +13,7 @@ MatPlotLib directives, but are also great for inlining in Jupyter notebooks, etc
 
 
 from math import sin, cos, radians
-from typing import Iterable, Union
+from typing import Iterable, Tuple, Union
 from numbers import Number
 from numpy.typing import NDArray
 import numpy as np
@@ -25,11 +25,11 @@ from matplotlib.axes import SubplotBase
 from tsp.core.tsp import N_TSP, TSP
 
 
-def _draw_edges_pil(im: Image, tsp: TSP, edges: Iterable[NDArray]):
+def _draw_edges_pil(im: Image, tsp: TSP, edges: Iterable[Tuple[int, int]]):
     draw = ImageDraw.Draw(im)
     for e1, e2 in edges:
-        e1 = tuple(np.array(tsp.cities[e1]) * 2)
-        e2 = tuple(np.array(tsp.cities[e2]) * 2)
+        e1 = tuple(tsp.cities[e1] * 2)
+        e2 = tuple(tsp.cities[e2] * 2)
         draw.line([e1, e2], fill='blue', width=6)
 
 
@@ -64,7 +64,7 @@ def visualize_tsp_pil(tsp: TSP, tour: Iterable[Union[int, NDArray]], path: str):
     im.save(path)
 
 
-def visualize_mst_pil(tsp: TSP, edges: Iterable[NDArray], path: str):
+def visualize_mst_pil(tsp: TSP, mst: Iterable[Tuple[float, Tuple[int, int]]], path: str):
     """Generate and save visualization of an MST using PIL backend.
 
     Args:
@@ -73,7 +73,7 @@ def visualize_mst_pil(tsp: TSP, edges: Iterable[NDArray], path: str):
         path (str): path to save
     """
     im = Image.new('RGB', (tsp.w * 2, tsp.h * 2), color = 'white')
-    _draw_edges_pil(im, tsp, edges)
+    _draw_edges_pil(im, tsp, list(zip(*mst))[1])
     _draw_cities_pil(im, tsp)
     im.thumbnail((tsp.w, tsp.h))
     im.save(path)
@@ -122,8 +122,10 @@ def visualize_3d(tsp: N_TSP, tour: Iterable[Union[int, NDArray]], path: str, ste
     video.release()
 
 
-def _draw_edges_plt(ax: SubplotBase, tsp: TSP, edges: Iterable[NDArray]):
+def _draw_edges_plt(ax: SubplotBase, tsp: TSP, edges: Iterable[Tuple[int, int]]):
     for e1, e2 in edges:
+        e1 = np.copy(tsp.cities[e1])
+        e2 = np.copy(tsp.cities[e2])
         e1[1] = tsp.h - e1[1]
         e2[1] = tsp.h - e2[1]
         ax.plot(*zip(e1, e2), 'b-')
@@ -167,7 +169,7 @@ def visualize_tsp_plt(tsp: TSP, tour: Iterable[Union[int, NDArray]], ax: Subplot
     _draw_cities_plt(ax, tsp)
 
 
-def visualize_mst_plt(tsp: TSP, edges: Iterable[NDArray], ax: SubplotBase = None):
+def visualize_mst_plt(tsp: TSP, mst: Iterable[Tuple[float, Tuple[int, int]]], ax: SubplotBase = None):
     """Generate visualization of an MST using MatPlotLib backend.
 
     Args:
@@ -184,5 +186,5 @@ def visualize_mst_plt(tsp: TSP, edges: Iterable[NDArray], ax: SubplotBase = None
     ax.set_yticks([])
     ax.set_aspect('equal', 'box')
 
-    _draw_edges_plt(ax, tsp, edges)
+    _draw_edges_plt(ax, tsp, list(zip(*mst))[1])
     _draw_cities_plt(ax, tsp)
