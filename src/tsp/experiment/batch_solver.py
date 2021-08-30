@@ -20,7 +20,7 @@ from tsp.core.tsp import N_TSP
 from tsp.experiment.batch import load_list_batch, load_problem_batch, save_list_batch
 
 
-def solve_batch(src: str, solver: Union[Callable, Type], dest: str = None) -> List[List[int]]:
+def solve_batch(src: str, solver: Union[Callable, Type], dest: str = None, **kwargs) -> List[List[int]]:
     """Use a solver to generate tours for a batch of problems.
 
     Args:
@@ -37,7 +37,7 @@ def solve_batch(src: str, solver: Union[Callable, Type], dest: str = None) -> Li
         if isinstance(solver, Type):
             tours.append(solver(p)())  # for compatibility with old API
         else:
-            tours.append(solver(p))
+            tours.append(solver(p, **kwargs))
     if dest is not None:
         save_list_batch(tours, dest, 'sol')
     return tours

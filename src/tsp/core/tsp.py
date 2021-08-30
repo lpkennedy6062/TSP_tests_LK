@@ -118,7 +118,7 @@ class N_TSP:
         result[il] = result.T[il]  # Make symmetric  # pylint: disable=E1136
         return result
 
-    def solve(self, solver: Union[Callable, Type]) -> NDArray:
+    def solve(self, solver: Union[Callable, Type], **kwargs) -> NDArray:
         """Generate a tour using a Solver.
 
         Args:
@@ -129,7 +129,7 @@ class N_TSP:
         """
         if isinstance(solver, Type):
             return np.array(solver(self)())  # for compatibility with old API
-        return np.array(solver(self))
+        return np.array(solver(self, **kwargs))
 
     def tour_segments(self, tour: Iterable[int]) -> Iterator[NDArray]:
         """Convert a tour in index format into a tour in segment format.
