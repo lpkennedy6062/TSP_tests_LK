@@ -20,12 +20,12 @@ from tsp.core.tsp import N_TSP
 from tsp.experiment.batch import load_list_batch, load_problem_batch, save_list_batch
 
 
-def solve_batch(src: str, solver: Type, dest: str = None) -> List[List[int]]:
+def solve_batch(src: str, solver: Union[Callable, Type], dest: str = None) -> List[List[int]]:
     """Use a solver to generate tours for a batch of problems.
 
     Args:
         src (str): path of root where problems are saved
-        solver (Type): an instance of a Solver (tsp.core.solvers.Solver)
+        solver (Union[Callable, Type]): a solver function from `tsp.core.solvers`
         dest (str, optional): Path of root to save tours. Defaults to None.
 
     Returns:
@@ -34,7 +34,10 @@ def solve_batch(src: str, solver: Type, dest: str = None) -> List[List[int]]:
     batch = load_problem_batch(src)
     tours = []
     for p in batch:
-        tours.append(solver(p)())
+        if isinstance(solver, Type):
+            tours.append(solver(p)())  # for compatibility with old API
+        else:
+            tours.append(solver(p))
     if dest is not None:
         save_list_batch(tours, dest, 'sol')
     return tours

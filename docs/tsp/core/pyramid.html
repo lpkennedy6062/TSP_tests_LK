@@ -248,7 +248,7 @@ pyramid model.</p>
 <span class="sd">        Args:</span>
 <span class="sd">            values (List[Any], optional): Initial leaves to initialize. Defaults to None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sets</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sets</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_unions</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -262,7 +262,7 @@ pyramid model.</p>
 <span class="sd">        Returns:</span>
 <span class="sd">            int: number of sets</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sets</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unions</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sets</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unions</span>
 
     <span class="k">def</span> <span class="nf">make_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initialize a new set/leaf of tree.</span>
@@ -270,7 +270,7 @@ pyramid model.</p>
 <span class="sd">        Args:</span>
 <span class="sd">            value (Any): value to store at node</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sets</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="n">DSNode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sets</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="n">DSNode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DSNode</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Find root of tree containing node which stores value.</span>
@@ -281,7 +281,7 @@ pyramid model.</p>
 <span class="sd">        Returns:</span>
 <span class="sd">            DSNode: root of tree</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sets</span><span class="p">[</span><span class="n">value</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sets</span><span class="p">[</span><span class="n">value</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">union</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DSNode</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Create a union of set containing x and set containing y.</span>
@@ -360,10 +360,12 @@ pyramid model.</p>
             <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">nodes</span><span class="p">[</span><span class="n">j</span><span class="p">])))</span>
             <span class="n">edges</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)))</span>
     <span class="k">while</span> <span class="n">tree</span><span class="o">.</span><span class="n">sets</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">e</span> <span class="o">=</span> <span class="n">edges</span><span class="o">.</span><span class="n">get</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">old_root</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">root</span>
+        <span class="n">edge_length</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">edges</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
         <span class="n">c</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="n">e</span><span class="p">)</span>
         <span class="n">c</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">_calculate_centroid</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">old_root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">old_root</span> <span class="o">!=</span> <span class="n">c</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">edge_length</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">tree</span><span class="o">.</span><span class="n">root</span>
 
 
@@ -390,7 +392,7 @@ pyramid model.</p>
     <span class="n">i_lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">edges</span><span class="p">[</span><span class="n">i_lower</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="n">i_lower</span><span class="p">]</span>
     <span class="k">while</span> <span class="n">tree</span><span class="o">.</span><span class="n">sets</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">clusters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">find</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="n">tree</span><span class="o">.</span><span class="n">sets</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
+        <span class="n">clusters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">find</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="n">tree</span><span class="o">.</span><span class="n">_sets</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
         <span class="n">minimum_edges</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span> <span class="p">:</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">clusters</span><span class="p">))}</span>
         <span class="k">for</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">clusters</span><span class="p">)),</span> <span class="mi">2</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">clusters</span><span class="p">[</span><span class="n">c1</span><span class="p">],</span> <span class="n">clusters</span><span class="p">[</span><span class="n">c2</span><span class="p">]):</span>
@@ -398,10 +400,12 @@ pyramid model.</p>
                     <span class="n">minimum_edges</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="n">e</span>
                 <span class="k">if</span> <span class="n">edges</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">minimum_edges</span><span class="p">[</span><span class="n">c2</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
                     <span class="n">minimum_edges</span><span class="p">[</span><span class="n">c2</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="n">e</span>
-        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">minimum_edges</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">edge_length</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">minimum_edges</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">old_root</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">root</span>
             <span class="n">c</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="n">e</span><span class="p">)</span>
             <span class="n">c</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">_calculate_centroid</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">old_root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">old_root</span> <span class="o">!=</span> <span class="n">c</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">edge_length</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">tree</span><span class="o">.</span><span class="n">root</span>
 
 
@@ -826,7 +830,7 @@ pyramid model.</p>
 <span class="sd">        Args:</span>
 <span class="sd">            values (List[Any], optional): Initial leaves to initialize. Defaults to None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sets</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sets</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_unions</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -840,7 +844,7 @@ pyramid model.</p>
 <span class="sd">        Returns:</span>
 <span class="sd">            int: number of sets</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sets</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unions</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sets</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unions</span>
 
     <span class="k">def</span> <span class="nf">make_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initialize a new set/leaf of tree.</span>
@@ -848,7 +852,7 @@ pyramid model.</p>
 <span class="sd">        Args:</span>
 <span class="sd">            value (Any): value to store at node</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sets</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="n">DSNode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sets</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="n">DSNode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DSNode</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Find root of tree containing node which stores value.</span>
@@ -859,7 +863,7 @@ pyramid model.</p>
 <span class="sd">        Returns:</span>
 <span class="sd">            DSNode: root of tree</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sets</span><span class="p">[</span><span class="n">value</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sets</span><span class="p">[</span><span class="n">value</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">union</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DSNode</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Create a union of set containing x and set containing y.</span>
@@ -902,7 +906,7 @@ pyramid model.</p>
 <span class="sd">        Args:</span>
 <span class="sd">            values (List[Any], optional): Initial leaves to initialize. Defaults to None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sets</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sets</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_unions</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -954,7 +958,7 @@ pyramid model.</p>
 <span class="sd">        Args:</span>
 <span class="sd">            value (Any): value to store at node</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sets</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="n">DSNode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sets</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="n">DSNode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 
         </details>
@@ -989,7 +993,7 @@ pyramid model.</p>
 <span class="sd">        Returns:</span>
 <span class="sd">            DSNode: root of tree</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sets</span><span class="p">[</span><span class="n">value</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sets</span><span class="p">[</span><span class="n">value</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
 </pre></div>
 
         </details>
@@ -1137,10 +1141,12 @@ pyramid model.</p>
             <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">nodes</span><span class="p">[</span><span class="n">j</span><span class="p">])))</span>
             <span class="n">edges</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)))</span>
     <span class="k">while</span> <span class="n">tree</span><span class="o">.</span><span class="n">sets</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">e</span> <span class="o">=</span> <span class="n">edges</span><span class="o">.</span><span class="n">get</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">old_root</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">root</span>
+        <span class="n">edge_length</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">edges</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
         <span class="n">c</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="n">e</span><span class="p">)</span>
         <span class="n">c</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">_calculate_centroid</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">old_root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">old_root</span> <span class="o">!=</span> <span class="n">c</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">edge_length</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">tree</span><span class="o">.</span><span class="n">root</span>
 </pre></div>
 
@@ -1197,7 +1203,7 @@ Uses Kruskal's algorithm, which runs in O(v^2 log v)</p>
     <span class="n">i_lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">edges</span><span class="p">[</span><span class="n">i_lower</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="n">i_lower</span><span class="p">]</span>
     <span class="k">while</span> <span class="n">tree</span><span class="o">.</span><span class="n">sets</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">clusters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">find</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="n">tree</span><span class="o">.</span><span class="n">sets</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
+        <span class="n">clusters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">find</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="n">tree</span><span class="o">.</span><span class="n">_sets</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
         <span class="n">minimum_edges</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span> <span class="p">:</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">clusters</span><span class="p">))}</span>
         <span class="k">for</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">clusters</span><span class="p">)),</span> <span class="mi">2</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">clusters</span><span class="p">[</span><span class="n">c1</span><span class="p">],</span> <span class="n">clusters</span><span class="p">[</span><span class="n">c2</span><span class="p">]):</span>
@@ -1205,10 +1211,12 @@ Uses Kruskal's algorithm, which runs in O(v^2 log v)</p>
                     <span class="n">minimum_edges</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="n">e</span>
                 <span class="k">if</span> <span class="n">edges</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">minimum_edges</span><span class="p">[</span><span class="n">c2</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
                     <span class="n">minimum_edges</span><span class="p">[</span><span class="n">c2</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="n">e</span>
-        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">minimum_edges</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">edge_length</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">minimum_edges</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">old_root</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">root</span>
             <span class="n">c</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="n">e</span><span class="p">)</span>
             <span class="n">c</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">_calculate_centroid</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">old_root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">old_root</span> <span class="o">!=</span> <span class="n">c</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">edge_length</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">tree</span><span class="o">.</span><span class="n">root</span>
 </pre></div>
 

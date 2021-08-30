@@ -70,7 +70,7 @@ def visualize_mst_pil(tsp: TSP, mst: Iterable[Tuple[float, Tuple[int, int]]], pa
 
     Args:
         tsp (TSP): the problem
-        edges (Iterable[NDArray]): edges in MST as [[[x1, y1], [x2, y2]], ...]
+        mst (Iterable[Tuple[float, Typle[int, int]]]): edges in MST
         path (str): path to save
     """
     im = Image.new('RGB', (tsp.w * 2, tsp.h * 2), color = 'white')
@@ -175,7 +175,7 @@ def visualize_mst_plt(tsp: TSP, mst: Iterable[Tuple[float, Tuple[int, int]]], ax
 
     Args:
         tsp (TSP): the problem
-        edges (Iterable[NDArray]): edges in MST as [[[x1, y1], [x2, y2]], ...]
+        mst (Iterable[Tuple[float, Typle[int, int]]]): edges in MST
         ax (SubplotBase): Matplotlib axes to plot on. Defaults to None.
     """
     if ax is None:
@@ -202,6 +202,14 @@ def _isolate_edges(mst: Iterable[Tuple[int, int]], clusters: Iterable[DSNode]):
 
 
 def visualize_clusters_plt(tsp: TSP, mst: Iterable[Tuple[float, Tuple[int, int]]], clusters: Iterable[DSNode], ax: SubplotBase = None):
+    """Generate visualization of clusters using MatPlotLib backend.
+
+    Args:
+        tsp (TSP): the problem
+        mst (Iterable[NDArray]): edges in MST as [[[x1, y1], [x2, y2]], ...]
+        clusters (Iterable[DSNode]): forest of clusters
+        ax (SubplotBase): Matplotlib axes to plot on. Defaults to None.
+    """
     if ax is None:
         ax = plt.subplot(111)
 

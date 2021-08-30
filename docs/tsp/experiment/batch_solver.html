@@ -100,12 +100,12 @@ automate the calculation of statistics for experiments we've done.</p>
 <span class="kn">from</span> <span class="nn">tsp.experiment.batch</span> <span class="kn">import</span> <span class="n">load_list_batch</span><span class="p">,</span> <span class="n">load_problem_batch</span><span class="p">,</span> <span class="n">save_list_batch</span>
 
 
-<span class="k">def</span> <span class="nf">solve_batch</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="n">Type</span><span class="p">,</span> <span class="n">dest</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="k">def</span> <span class="nf">solve_batch</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Type</span><span class="p">],</span> <span class="n">dest</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;Use a solver to generate tours for a batch of problems.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        src (str): path of root where problems are saved</span>
-<span class="sd">        solver (Type): an instance of a Solver (tsp.core.solvers.Solver)</span>
+<span class="sd">        solver (Union[Callable, Type]): a solver function from `tsp.core.solvers`</span>
 <span class="sd">        dest (str, optional): Path of root to save tours. Defaults to None.</span>
 
 <span class="sd">    Returns:</span>
@@ -114,7 +114,10 @@ automate the calculation of statistics for experiments we've done.</p>
     <span class="n">batch</span> <span class="o">=</span> <span class="n">load_problem_batch</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
     <span class="n">tours</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">:</span>
-        <span class="n">tours</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">solver</span><span class="p">(</span><span class="n">p</span><span class="p">)())</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">Type</span><span class="p">):</span>
+            <span class="n">tours</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">solver</span><span class="p">(</span><span class="n">p</span><span class="p">)())</span>  <span class="c1"># for compatibility with old API</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tours</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">solver</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">dest</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">save_list_batch</span><span class="p">(</span><span class="n">tours</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="s1">&#39;sol&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">tours</span>
@@ -223,17 +226,21 @@ automate the calculation of statistics for experiments we've done.</p>
 
         
             <span class="def">def</span>
-            <span class="name">solve_batch</span><span class="signature">(src: str, solver: Type, dest: str = None) -&gt; List[List[int]]</span>:
+            <span class="name">solve_batch</span><span class="signature">(
+    src: str,
+    solver: Union[Callable, Type],
+    dest: str = None
+) -&gt; List[List[int]]</span>:
     </div>
 
                 <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">solve_batch</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="n">Type</span><span class="p">,</span> <span class="n">dest</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">solve_batch</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Type</span><span class="p">],</span> <span class="n">dest</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;Use a solver to generate tours for a batch of problems.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        src (str): path of root where problems are saved</span>
-<span class="sd">        solver (Type): an instance of a Solver (tsp.core.solvers.Solver)</span>
+<span class="sd">        solver (Union[Callable, Type]): a solver function from `tsp.core.solvers`</span>
 <span class="sd">        dest (str, optional): Path of root to save tours. Defaults to None.</span>
 
 <span class="sd">    Returns:</span>
@@ -242,7 +249,10 @@ automate the calculation of statistics for experiments we've done.</p>
     <span class="n">batch</span> <span class="o">=</span> <span class="n">load_problem_batch</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
     <span class="n">tours</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">:</span>
-        <span class="n">tours</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">solver</span><span class="p">(</span><span class="n">p</span><span class="p">)())</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">Type</span><span class="p">):</span>
+            <span class="n">tours</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">solver</span><span class="p">(</span><span class="n">p</span><span class="p">)())</span>  <span class="c1"># for compatibility with old API</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tours</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">solver</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">dest</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">save_list_batch</span><span class="p">(</span><span class="n">tours</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="s1">&#39;sol&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">tours</span>
@@ -256,7 +266,7 @@ automate the calculation of statistics for experiments we've done.</p>
 
 <ul>
 <li><strong>src (str):</strong>  path of root where problems are saved</li>
-<li><strong>solver (Type):</strong>  an instance of a Solver (<a href="../core/solvers.html#Solver">tsp.core.solvers.Solver</a>)</li>
+<li><strong>solver (Union[Callable, Type]):</strong>  a solver function from <code><a href="../core/solvers.html">tsp.core.solvers</a></code></li>
 <li><strong>dest (str, optional):</strong>  Path of root to save tours. Defaults to None.</li>
 </ul>
 

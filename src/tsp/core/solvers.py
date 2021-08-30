@@ -1,12 +1,16 @@
 """Implements random, optimal, and human-approximate solvers.
 
-Other solvers can be implemented by extending `Solver`, which functions as an abstract class. Due
-to a historical contingency in the depths of the past, the API is somewhat opaque, and it's
-questionable whether we might have been better off if the solvers weren't object-oriented. The
-basic idea is that the initializer sets up the solver, and then the `__call__` method is what does
-the computation and returns the tour. So, `Solver.__init__` and `Solver.__call__` should be
-overridden by subclasses - while `Solver.solve` is a newer addition serving as syntactical sugar
-for `Solver.__call__`.
+The new version of this API implements solvers as procedures which take in a TSP object as their
+single argument, and returns an array of integers corresponding to the indices of the vertices
+ordered as a tour. You can implement a new solver by following this format.
+
+[OLD DOCUMENTATION: Other solvers can be implemented by extending `Solver`, which functions as an
+abstract class. Due to a historical contingency in the depths of the past, the API is somewhat
+opaque, and it's questionable whether we might have been better off if the solvers weren't
+object-oriented. The basic idea is that the initializer sets up the solver, and then the
+`__call__` method is what does the computation and returns the tour. So, `Solver.__init__` and
+`Solver.__call__` should be overridden by subclasses - while `Solver.solve` is a newer addition
+serving as syntactical sugar for `Solver.__call__`.]
 
 The random solver is exactly as advertised - returning a random permutation of the cities as a
 solution.
@@ -22,12 +26,13 @@ The human-approximate solver uses a hierarchical clustering ("pyramid") algorith
 
 
 import os
+import warnings
 from numpy.typing import NDArray
 import numpy as np
 from pytsp import dumps_matrix, run as run_concorde
 
 from tsp.core.tsp import N_TSP
-from tsp.core.pyramid import pyramid_solve
+from tsp.core.pyramid import pyramid_solve as pyramid_solve_
 
 
 class Solver:
@@ -39,6 +44,7 @@ class Solver:
         Args:
             tsp (N_TSP): problem to be solved.
         """
+        warnings.warn('Prefer the new solver API (see documentation for details)', DeprecationWarning)
 
     def __call__(self) -> NDArray:
         """Run the solver and produce a tour.
@@ -95,4 +101,30 @@ class PyramidSolver(Solver):
         self.m = tsp.cities
 
     def __call__(self) -> NDArray:
-        return np.array(pyramid_solve(self.m))
+        return np.array(pyramid_solve_(self.m))
+
+
+def random_solve(tsp: N_TSP) -> NDArray:
+    """A solver which produces a random tour."""
+    vertices = np.arange(tsp.cities.shape[0])
+    np.random.shuffle(vertices)
+    return vertices
+
+
+def concorde_solve(tsp: N_TSP) -> NDArray:
+    """An optimal solver with the Concorde backend."""
+    E = tsp.to_edge_matrix()
+    outf = './tsp.temp'
+    with open(outf, 'w') as dest:
+        dest.write(dumps_matrix(E))
+
+    old_dir = os.getcwd()
+    tour = run_concorde(outf, start=0, solver="concorde")
+    os.unlink(outf)
+    os.chdir(old_dir)
+    return np.array(tour['tour'])
+
+
+def pyramid_solve(tsp: N_TSP) -> NDArray:
+    """A solver which implements a pyramid approximator."""
+    return np.array(pyramid_solve_(tsp.cities))
