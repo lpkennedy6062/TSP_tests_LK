@@ -45,6 +45,9 @@
             <li>
                     <a class="function" href="#visualize_mst_plt">visualize_mst_plt</a>
             </li>
+            <li>
+                    <a class="function" href="#visualize_clusters_plt">visualize_clusters_plt</a>
+            </li>
     </ul>
 
 
@@ -90,7 +93,7 @@ MatPlotLib directives, but are also great for inlining in Jupyter notebooks, etc
 
 
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">radians</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Number</span>
 <span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">NDArray</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -100,13 +103,14 @@ MatPlotLib directives, but are also great for inlining in Jupyter notebooks, etc
 <span class="kn">from</span> <span class="nn">matplotlib.axes</span> <span class="kn">import</span> <span class="n">SubplotBase</span>
 
 <span class="kn">from</span> <span class="nn">tsp.core.tsp</span> <span class="kn">import</span> <span class="n">N_TSP</span><span class="p">,</span> <span class="n">TSP</span>
+<span class="kn">from</span> <span class="nn">tsp.core.pyramid</span> <span class="kn">import</span> <span class="n">DSNode</span>
 
 
-<span class="k">def</span> <span class="nf">_draw_edges_pil</span><span class="p">(</span><span class="n">im</span><span class="p">:</span> <span class="n">Image</span><span class="p">,</span> <span class="n">tsp</span><span class="p">:</span> <span class="n">TSP</span><span class="p">,</span> <span class="n">edges</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">NDArray</span><span class="p">]):</span>
+<span class="k">def</span> <span class="nf">_draw_edges_pil</span><span class="p">(</span><span class="n">im</span><span class="p">:</span> <span class="n">Image</span><span class="p">,</span> <span class="n">tsp</span><span class="p">:</span> <span class="n">TSP</span><span class="p">,</span> <span class="n">edges</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]):</span>
     <span class="n">draw</span> <span class="o">=</span> <span class="n">ImageDraw</span><span class="o">.</span><span class="n">Draw</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">e1</span><span class="p">,</span> <span class="n">e2</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
-        <span class="n">e1</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">tsp</span><span class="o">.</span><span class="n">cities</span><span class="p">[</span><span class="n">e1</span><span class="p">])</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="n">e2</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">tsp</span><span class="o">.</span><span class="n">cities</span><span class="p">[</span><span class="n">e2</span><span class="p">])</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">e1</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">tsp</span><span class="o">.</span><span class="n">cities</span><span class="p">[</span><span class="n">e1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">e2</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">tsp</span><span class="o">.</span><span class="n">cities</span><span class="p">[</span><span class="n">e2</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
         <span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">([</span><span class="n">e1</span><span class="p">,</span> <span class="n">e2</span><span class="p">],</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
 
 
@@ -141,16 +145,16 @@ MatPlotLib directives, but are also great for inlining in Jupyter notebooks, etc
     <span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">visualize_mst_pil</span><span class="p">(</span><span class="n">tsp</span><span class="p">:</span> <span class="n">TSP</span><span class="p">,</span> <span class="n">edges</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">NDArray</span><span class="p">],</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">visualize_mst_pil</span><span class="p">(</span><span class="n">tsp</span><span class="p">:</span> <span class="n">TSP</span><span class="p">,</span> <span class="n">mst</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]],</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Generate and save visualization of an MST using PIL backend.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        tsp (TSP): the problem</span>
-<span class="sd">        edges (Iterable[NDArray]): edges in MST as [[[x1, y1], [x2, y2]], ...]</span>
+<span class="sd">        mst (Iterable[Tuple[float, Typle[int, int]]]): edges in MST</span>
 <span class="sd">        path (str): path to save</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;RGB&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tsp</span><span class="o">.</span><span class="n">w</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">tsp</span><span class="o">.</span><span class="n">h</span> <span class="o">*</span> <span class="mi">2</span><span class="p">),</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;white&#39;</span><span class="p">)</span>
-    <span class="n">_draw_edges_pil</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">tsp</span><span class="p">,</span> <span class="n">edges</span><span class="p">)</span>
+    <span class="n">_draw_edges_pil</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">tsp</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">mst</span><span class="p">))[</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">_draw_cities_pil</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">tsp</span><span class="p">)</span>
     <span class="n">im</span><span class="o">.</span><span class="n">thumbnail</span><span class="p">((</span><span class="n">tsp</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="n">tsp</span><span class="o">.</span><span class="n">h</span><span class="p">))</span>
     <span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
@@ -199,8 +203,10 @@ MatPlotLib directives, but are also great for inlining in Jupyter notebooks, etc
     <span class="n">video</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
 
 
-<span class="k">def</span> <span class="nf">_draw_edges_plt</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">SubplotBase</span><span class="p">,</span> <span class="n">tsp</span><span class="p">:</span> <span class="n">TSP</span><span class="p">,</span> <span class="n">edges</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">NDArray</span><span class="p">]):</span>
+<span class="k">def</span> <span class="nf">_draw_edges_plt</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">SubplotBase</span><span class="p">,</span> <span class="n">tsp</span><span class="p">:</span> <span class="n">TSP</span><span class="p">,</span> <span class="n">edges</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]):</span>
     <span class="k">for</span> <span class="n">e1</span><span class="p">,</span> <span class="n">e2</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+        <span class="n">e1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">tsp</span><span class="o">.</span><span class="n">cities</span><span class="p">[</span><span class="n">e1</span><span class="p">])</span>
+        <span class="n">e2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">tsp</span><span class="o">.</span><span class="n">cities</span><span class="p">[</span><span class="n">e2</span><span class="p">])</span>
         <span class="n">e1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">tsp</span><span class="o">.</span><span class="n">h</span> <span class="o">-</span> <span class="n">e1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">e2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">tsp</span><span class="o">.</span><span class="n">h</span> <span class="o">-</span> <span class="n">e2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="n">e1</span><span class="p">,</span> <span class="n">e2</span><span class="p">),</span> <span class="s1">&#39;b-&#39;</span><span class="p">)</span>
@@ -244,12 +250,12 @@ MatPlotLib directives, but are also great for inlining in Jupyter notebooks, etc
     <span class="n">_draw_cities_plt</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">tsp</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">visualize_mst_plt</span><span class="p">(</span><span class="n">tsp</span><span class="p">:</span> <span class="n">TSP</span><span class="p">,</span> <span class="n">edges</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">NDArray</span><span class="p">],</span> <span class="n">ax</span><span class="p">:</span> <span class="n">SubplotBase</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">visualize_mst_plt</span><span class="p">(</span><span class="n">tsp</span><span class="p">:</span> <span class="n">TSP</span><span class="p">,</span> <span class="n">mst</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]],</span> <span class="n">ax</span><span class="p">:</span> <span class="n">SubplotBase</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Generate visualization of an MST using MatPlotLib backend.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        tsp (TSP): the problem</span>
-<span class="sd">        edges (Iterable[NDArray]): edges in MST as [[[x1, y1], [x2, y2]], ...]</span>
+<span class="sd">        mst (Iterable[Tuple[float, Typle[int, int]]]): edges in MST</span>
 <span class="sd">        ax (SubplotBase): Matplotlib axes to plot on. Defaults to None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -261,7 +267,40 @@ MatPlotLib directives, but are also great for inlining in Jupyter notebooks, etc
     <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">,</span> <span class="s1">&#39;box&#39;</span><span class="p">)</span>
 
-    <span class="n">_draw_edges_plt</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">tsp</span><span class="p">,</span> <span class="n">edges</span><span class="p">)</span>
+    <span class="n">_draw_edges_plt</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">tsp</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">mst</span><span class="p">))[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">_draw_cities_plt</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">tsp</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_isolate_edges</span><span class="p">(</span><span class="n">mst</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="n">clusters</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">DSNode</span><span class="p">]):</span>
+    <span class="k">for</span> <span class="n">cluster</span> <span class="ow">in</span> <span class="n">clusters</span><span class="p">:</span>
+        <span class="n">cities</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">e0</span><span class="p">,</span> <span class="n">e1</span> <span class="ow">in</span> <span class="n">mst</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e0</span> <span class="ow">in</span> <span class="n">cities</span> <span class="ow">and</span> <span class="n">e1</span> <span class="ow">in</span> <span class="n">cities</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">e0</span><span class="p">,</span> <span class="n">e1</span><span class="p">))</span>
+        <span class="k">yield</span> <span class="n">result</span>
+
+
+<span class="k">def</span> <span class="nf">visualize_clusters_plt</span><span class="p">(</span><span class="n">tsp</span><span class="p">:</span> <span class="n">TSP</span><span class="p">,</span> <span class="n">mst</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]],</span> <span class="n">clusters</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">DSNode</span><span class="p">],</span> <span class="n">ax</span><span class="p">:</span> <span class="n">SubplotBase</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate visualization of clusters using MatPlotLib backend.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tsp (TSP): the problem</span>
+<span class="sd">        mst (Iterable[NDArray]): edges in MST as [[[x1, y1], [x2, y2]], ...]</span>
+<span class="sd">        clusters (Iterable[DSNode]): forest of clusters</span>
+<span class="sd">        ax (SubplotBase): Matplotlib axes to plot on. Defaults to None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">tsp</span><span class="o">.</span><span class="n">w</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">tsp</span><span class="o">.</span><span class="n">h</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">,</span> <span class="s1">&#39;box&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">edges</span> <span class="ow">in</span> <span class="n">_isolate_edges</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">mst</span><span class="p">))[</span><span class="mi">1</span><span class="p">],</span> <span class="n">clusters</span><span class="p">):</span>
+        <span class="n">_draw_edges_plt</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">tsp</span><span class="p">,</span> <span class="n">edges</span><span class="p">)</span>
     <span class="n">_draw_cities_plt</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">tsp</span><span class="p">)</span>
 </pre></div>
 
@@ -318,21 +357,25 @@ MatPlotLib directives, but are also great for inlining in Jupyter notebooks, etc
 
         
             <span class="def">def</span>
-            <span class="name">visualize_mst_pil</span><span class="signature">(tsp: <a href="tsp.html#TSP">tsp.core.tsp.TSP</a>, edges: Iterable[numpy.ndarray], path: str)</span>:
+            <span class="name">visualize_mst_pil</span><span class="signature">(
+    tsp: <a href="tsp.html#TSP">tsp.core.tsp.TSP</a>,
+    mst: Iterable[Tuple[float, Tuple[int, int]]],
+    path: str
+)</span>:
     </div>
 
                 <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">visualize_mst_pil</span><span class="p">(</span><span class="n">tsp</span><span class="p">:</span> <span class="n">TSP</span><span class="p">,</span> <span class="n">edges</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">NDArray</span><span class="p">],</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">visualize_mst_pil</span><span class="p">(</span><span class="n">tsp</span><span class="p">:</span> <span class="n">TSP</span><span class="p">,</span> <span class="n">mst</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]],</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Generate and save visualization of an MST using PIL backend.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        tsp (TSP): the problem</span>
-<span class="sd">        edges (Iterable[NDArray]): edges in MST as [[[x1, y1], [x2, y2]], ...]</span>
+<span class="sd">        mst (Iterable[Tuple[float, Typle[int, int]]]): edges in MST</span>
 <span class="sd">        path (str): path to save</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;RGB&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tsp</span><span class="o">.</span><span class="n">w</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">tsp</span><span class="o">.</span><span class="n">h</span> <span class="o">*</span> <span class="mi">2</span><span class="p">),</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;white&#39;</span><span class="p">)</span>
-    <span class="n">_draw_edges_pil</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">tsp</span><span class="p">,</span> <span class="n">edges</span><span class="p">)</span>
+    <span class="n">_draw_edges_pil</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">tsp</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">mst</span><span class="p">))[</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">_draw_cities_pil</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">tsp</span><span class="p">)</span>
     <span class="n">im</span><span class="o">.</span><span class="n">thumbnail</span><span class="p">((</span><span class="n">tsp</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="n">tsp</span><span class="o">.</span><span class="n">h</span><span class="p">))</span>
     <span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
@@ -346,7 +389,7 @@ MatPlotLib directives, but are also great for inlining in Jupyter notebooks, etc
 
 <ul>
 <li><strong>tsp (TSP):</strong>  the problem</li>
-<li><strong>edges (Iterable[NDArray]):</strong>  edges in MST as [[[x1, y1], [x2, y2]], ...]</li>
+<li><strong>mst (Iterable[Tuple[float, Typle[int, int]]]):</strong>  edges in MST</li>
 <li><strong>path (str):</strong>  path to save</li>
 </ul>
 </div>
@@ -487,19 +530,19 @@ MatPlotLib directives, but are also great for inlining in Jupyter notebooks, etc
             <span class="def">def</span>
             <span class="name">visualize_mst_plt</span><span class="signature">(
     tsp: <a href="tsp.html#TSP">tsp.core.tsp.TSP</a>,
-    edges: Iterable[numpy.ndarray],
+    mst: Iterable[Tuple[float, Tuple[int, int]]],
     ax: matplotlib.axes._subplots.SubplotBase = None
 )</span>:
     </div>
 
                 <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">visualize_mst_plt</span><span class="p">(</span><span class="n">tsp</span><span class="p">:</span> <span class="n">TSP</span><span class="p">,</span> <span class="n">edges</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">NDArray</span><span class="p">],</span> <span class="n">ax</span><span class="p">:</span> <span class="n">SubplotBase</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">visualize_mst_plt</span><span class="p">(</span><span class="n">tsp</span><span class="p">:</span> <span class="n">TSP</span><span class="p">,</span> <span class="n">mst</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]],</span> <span class="n">ax</span><span class="p">:</span> <span class="n">SubplotBase</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Generate visualization of an MST using MatPlotLib backend.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        tsp (TSP): the problem</span>
-<span class="sd">        edges (Iterable[NDArray]): edges in MST as [[[x1, y1], [x2, y2]], ...]</span>
+<span class="sd">        mst (Iterable[Tuple[float, Typle[int, int]]]): edges in MST</span>
 <span class="sd">        ax (SubplotBase): Matplotlib axes to plot on. Defaults to None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -511,7 +554,7 @@ MatPlotLib directives, but are also great for inlining in Jupyter notebooks, etc
     <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">,</span> <span class="s1">&#39;box&#39;</span><span class="p">)</span>
 
-    <span class="n">_draw_edges_plt</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">tsp</span><span class="p">,</span> <span class="n">edges</span><span class="p">)</span>
+    <span class="n">_draw_edges_plt</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">tsp</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">mst</span><span class="p">))[</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">_draw_cities_plt</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">tsp</span><span class="p">)</span>
 </pre></div>
 
@@ -523,7 +566,61 @@ MatPlotLib directives, but are also great for inlining in Jupyter notebooks, etc
 
 <ul>
 <li><strong>tsp (TSP):</strong>  the problem</li>
-<li><strong>edges (Iterable[NDArray]):</strong>  edges in MST as [[[x1, y1], [x2, y2]], ...]</li>
+<li><strong>mst (Iterable[Tuple[float, Typle[int, int]]]):</strong>  edges in MST</li>
+<li><strong>ax (SubplotBase):</strong>  Matplotlib axes to plot on. Defaults to None.</li>
+</ul>
+</div>
+
+
+                </section>
+                <section id="visualize_clusters_plt">
+                            <div class="attr function"><a class="headerlink" href="#visualize_clusters_plt">#&nbsp;&nbsp</a>
+
+        
+            <span class="def">def</span>
+            <span class="name">visualize_clusters_plt</span><span class="signature">(
+    tsp: <a href="tsp.html#TSP">tsp.core.tsp.TSP</a>,
+    mst: Iterable[Tuple[float, Tuple[int, int]]],
+    clusters: Iterable[<a href="pyramid.html#DSNode">tsp.core.pyramid.DSNode</a>],
+    ax: matplotlib.axes._subplots.SubplotBase = None
+)</span>:
+    </div>
+
+                <details>
+            <summary>View Source</summary>
+            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">visualize_clusters_plt</span><span class="p">(</span><span class="n">tsp</span><span class="p">:</span> <span class="n">TSP</span><span class="p">,</span> <span class="n">mst</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]],</span> <span class="n">clusters</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">DSNode</span><span class="p">],</span> <span class="n">ax</span><span class="p">:</span> <span class="n">SubplotBase</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate visualization of clusters using MatPlotLib backend.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tsp (TSP): the problem</span>
+<span class="sd">        mst (Iterable[NDArray]): edges in MST as [[[x1, y1], [x2, y2]], ...]</span>
+<span class="sd">        clusters (Iterable[DSNode]): forest of clusters</span>
+<span class="sd">        ax (SubplotBase): Matplotlib axes to plot on. Defaults to None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">tsp</span><span class="o">.</span><span class="n">w</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">tsp</span><span class="o">.</span><span class="n">h</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">,</span> <span class="s1">&#39;box&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">edges</span> <span class="ow">in</span> <span class="n">_isolate_edges</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">mst</span><span class="p">))[</span><span class="mi">1</span><span class="p">],</span> <span class="n">clusters</span><span class="p">):</span>
+        <span class="n">_draw_edges_plt</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">tsp</span><span class="p">,</span> <span class="n">edges</span><span class="p">)</span>
+    <span class="n">_draw_cities_plt</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">tsp</span><span class="p">)</span>
+</pre></div>
+
+        </details>
+
+            <div class="docstring"><p>Generate visualization of clusters using MatPlotLib backend.</p>
+
+<h6 id="args">Args</h6>
+
+<ul>
+<li><strong>tsp (TSP):</strong>  the problem</li>
+<li><strong>mst (Iterable[NDArray]):</strong>  edges in MST as [[[x1, y1], [x2, y2]], ...]</li>
+<li><strong>clusters (Iterable[DSNode]):</strong>  forest of clusters</li>
 <li><strong>ax (SubplotBase):</strong>  Matplotlib axes to plot on. Defaults to None.</li>
 </ul>
 </div>
