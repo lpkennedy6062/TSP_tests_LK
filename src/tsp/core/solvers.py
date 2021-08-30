@@ -1,8 +1,9 @@
 """Implements random, optimal, and human-approximate solvers.
 
 The new version of this API implements solvers as procedures which take in a TSP object as their
-single argument, and returns an array of integers corresponding to the indices of the vertices
-ordered as a tour. You can implement a new solver by following this format.
+single argument (plus additional keyword arguments specific to the model), and returns an array
+of integers corresponding to the indices of the vertices ordered as a tour. You can implement a new
+solver by following this format.
 
 [OLD DOCUMENTATION: Other solvers can be implemented by extending `Solver`, which functions as an
 abstract class. Due to a historical contingency in the depths of the past, the API is somewhat
@@ -35,11 +36,59 @@ from tsp.core.tsp import N_TSP
 from tsp.core.pyramid import pyramid_solve as pyramid_solve_
 
 
+def random_solve(tsp: N_TSP, **kwargs) -> NDArray:
+    """A solver which produces a random tour.
+
+    Args:
+        tsp (N_TSP): TSP to solve
+
+    Returns:
+        NDArray: solution as vertex indices
+    """
+    vertices = np.arange(tsp.cities.shape[0])
+    np.random.shuffle(vertices)
+    return vertices
+
+
+def concorde_solve(tsp: N_TSP, **kwargs) -> NDArray:
+    """An optimal solver with the Concorde backend.
+
+    Args:
+        tsp (N_TSP): TSP to solve
+
+    Returns:
+        NDArray: solution as vertex indices
+    """
+    E = tsp.to_edge_matrix()
+    outf = './tsp.temp'
+    with open(outf, 'w') as dest:
+        dest.write(dumps_matrix(E))
+
+    old_dir = os.getcwd()
+    tour = run_concorde(outf, start=0, solver="concorde")
+    os.unlink(outf)
+    os.chdir(old_dir)
+    return np.array(tour['tour'])
+
+
+def pyramid_solve(tsp: N_TSP, **kwargs) -> NDArray:
+    """A solver which implements a pyramid approximator. See `tsp.core.pyramid.pyramid_solve` for
+    possible keyword arguments.
+
+    Args:
+        tsp (N_TSP): TSP to solve
+
+    Returns:
+        NDArray: solution as vertex indices
+    """
+    return np.array(pyramid_solve_(tsp.cities, **kwargs))
+
+
 class Solver:
-    """Abstract class for generic TSP solvers."""
+    """[DEPRECATED] Abstract class for generic TSP solvers."""
 
     def __init__(self, tsp: N_TSP):
-        """Set up the solver based on the given problem.
+        """[DEPRECATED] Set up the solver based on the given problem.
 
         Args:
             tsp (N_TSP): problem to be solved.
@@ -47,7 +96,7 @@ class Solver:
         warnings.warn('Prefer the new solver API (see documentation for details)', DeprecationWarning)
 
     def __call__(self) -> NDArray:
-        """Run the solver and produce a tour.
+        """[DEPRECATED] Run the solver and produce a tour.
 
         Returns:
             NDArray: tour as indices of cities
@@ -55,7 +104,7 @@ class Solver:
         raise NotImplementedError
 
     def solve(self) -> NDArray:
-        """Run the solver and produce a tour.
+        """[DEPRECATED] Run the solver and produce a tour.
 
         Returns:
             NDArray: tour as indices of cities
@@ -64,7 +113,7 @@ class Solver:
 
 
 class RandomSolver(Solver):
-    """A solver which produces a random tour."""
+    """[DEPRECATED] A solver which produces a random tour."""
 
     def __init__(self, tsp: N_TSP):
         Solver.__init__(self, tsp)
@@ -76,7 +125,7 @@ class RandomSolver(Solver):
 
 
 class ConcordeSolver(Solver):
-    """An optimal solver with the Concorde backend."""
+    """[DEPRECATED] An optimal solver with the Concorde backend."""
 
     def __init__(self, tsp: N_TSP):
         Solver.__init__(self, tsp)
@@ -94,7 +143,7 @@ class ConcordeSolver(Solver):
 
 
 class PyramidSolver(Solver):
-    """A solver which implements a pyramid approximator."""
+    """[DEPRECATED] A solver which implements a pyramid approximator."""
 
     def __init__(self, tsp: N_TSP):
         Solver.__init__(self, tsp)
@@ -102,29 +151,3 @@ class PyramidSolver(Solver):
 
     def __call__(self) -> NDArray:
         return np.array(pyramid_solve_(self.m))
-
-
-def random_solve(tsp: N_TSP) -> NDArray:
-    """A solver which produces a random tour."""
-    vertices = np.arange(tsp.cities.shape[0])
-    np.random.shuffle(vertices)
-    return vertices
-
-
-def concorde_solve(tsp: N_TSP) -> NDArray:
-    """An optimal solver with the Concorde backend."""
-    E = tsp.to_edge_matrix()
-    outf = './tsp.temp'
-    with open(outf, 'w') as dest:
-        dest.write(dumps_matrix(E))
-
-    old_dir = os.getcwd()
-    tour = run_concorde(outf, start=0, solver="concorde")
-    os.unlink(outf)
-    os.chdir(old_dir)
-    return np.array(tour['tour'])
-
-
-def pyramid_solve(tsp: N_TSP) -> NDArray:
-    """A solver which implements a pyramid approximator."""
-    return np.array(pyramid_solve_(tsp.cities))
