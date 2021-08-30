@@ -27,7 +27,8 @@ And you're ready to go!
 ## Citations
 
 This library accompanies the forthcoming book *Problem Solving: Cognitive Mechanisms and Formal
-Models* by Zygmunt Pizlo. It has been used to generate results for the following abstracts:
+Models* by Zygmunt Pizlo (Cambridge UP, 2022). It has been used to generate results for the
+following abstracts:
 
 > Pizlo, Z. and VanDrunen, J. "The status of mental representations in cognitive functions." *Annual Interdisciplinary Conference*, 2020.
 > 
@@ -50,8 +51,9 @@ Other papers describing 3D TSP, not-Euclidean TSP with obstacles, and not-Euclid
 You are welcome to use this code without citation (it is also licensed with a
 [copyfree](https://copyfree.org/) license, so you can do *anything* with it in general). However,
 if experiments done with the help of this code make their way into a publication, I would greatly
-appreciate a citation or acknowledgement in some format which includes my full name (Jacob
-VanDrunen) and a link to this repository.
+appreciate a citation or acknowledgement in some format which includes my full name ([Jacob
+VanDrunen](https://jackv.co/)) and a link to this repository. Upon release of an official version,
+I will also include a Zenodo DOI here.
 
 ## Acknowledgements
 
@@ -59,4 +61,6 @@ Many thanks to Kevin Nam for tracking down innumerable bugs and usage difficulti
 Pizlo for guidance and encouragement through the years. Also thanks to the Undergraduate
 Research Opportunities Program at UC Irvine, the school of social sciences, and Zyg Pizlo for
 providing bits of funding here and there to projects ultimately motivating the development of this
-software.
+software. Finally, I would be remiss if I didn't thank Bad Coffee in Costa Mesa for providing me
+with a near-continuous supply of caffeine (and, more importantly, a place to get away and code)
+over the years I've been working on this codebase.
