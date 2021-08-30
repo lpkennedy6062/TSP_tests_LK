@@ -100,7 +100,7 @@ automate the calculation of statistics for experiments we've done.</p>
 <span class="kn">from</span> <span class="nn">tsp.experiment.batch</span> <span class="kn">import</span> <span class="n">load_list_batch</span><span class="p">,</span> <span class="n">load_problem_batch</span><span class="p">,</span> <span class="n">save_list_batch</span>
 
 
-<span class="k">def</span> <span class="nf">solve_batch</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Type</span><span class="p">],</span> <span class="n">dest</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="k">def</span> <span class="nf">solve_batch</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Type</span><span class="p">],</span> <span class="n">dest</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;Use a solver to generate tours for a batch of problems.</span>
 
 <span class="sd">    Args:</span>
@@ -117,7 +117,7 @@ automate the calculation of statistics for experiments we've done.</p>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">Type</span><span class="p">):</span>
             <span class="n">tours</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">solver</span><span class="p">(</span><span class="n">p</span><span class="p">)())</span>  <span class="c1"># for compatibility with old API</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">tours</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">solver</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+            <span class="n">tours</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">solver</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">dest</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">save_list_batch</span><span class="p">(</span><span class="n">tours</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="s1">&#39;sol&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">tours</span>
@@ -229,13 +229,14 @@ automate the calculation of statistics for experiments we've done.</p>
             <span class="name">solve_batch</span><span class="signature">(
     src: str,
     solver: Union[Callable, Type],
-    dest: str = None
+    dest: str = None,
+    **kwargs
 ) -&gt; List[List[int]]</span>:
     </div>
 
                 <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">solve_batch</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Type</span><span class="p">],</span> <span class="n">dest</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">solve_batch</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Type</span><span class="p">],</span> <span class="n">dest</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;Use a solver to generate tours for a batch of problems.</span>
 
 <span class="sd">    Args:</span>
@@ -252,7 +253,7 @@ automate the calculation of statistics for experiments we've done.</p>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">Type</span><span class="p">):</span>
             <span class="n">tours</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">solver</span><span class="p">(</span><span class="n">p</span><span class="p">)())</span>  <span class="c1"># for compatibility with old API</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">tours</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">solver</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+            <span class="n">tours</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">solver</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">dest</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">save_list_batch</span><span class="p">(</span><span class="n">tours</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="s1">&#39;sol&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">tours</span>
