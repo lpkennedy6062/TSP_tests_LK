@@ -47,6 +47,7 @@ def _intersect(p1: Point, q1: Point, p2: Point, q2: Point) -> bool:
 
 def _visible(a: Point, b: Point, obstacles: List[Line]):
     for c, d in obstacles:
+        c, d = tuple(c), tuple(d)
         if a == c or a == d or b == c or b == d:
             continue  # If one of the points is a vertex of the obstacle, it's visible
         if _intersect(a, b, c, d):
@@ -67,7 +68,7 @@ def calculate_visgraph(vertices: List[Point], obstacles: List[Line], bound: Tupl
     """
     # Obstacles should only be line segments at this point
     result = defaultdict(list)
-    points = vertices + list(it.chain(*obstacles))
+    points = list(map(tuple, vertices)) + list(map(tuple, it.chain(*obstacles)))
     if bound is not None:
         # We expect bound to take the form (x_max, y_max)
         # This prevents the graph from taking into account paths that would go outside the bound
