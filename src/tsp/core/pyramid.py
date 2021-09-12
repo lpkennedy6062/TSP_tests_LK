@@ -331,22 +331,22 @@ def _evaluate_tour(nodes: NDArray, indices: Iterable[int]) -> float:
     return distance
 
 
-def _partial_shortest_tour(nodes: NDArray, indices: Iterable[int], left: int = None, right: int = None) -> List[int]:
+def _partial_shortest_tour(nodes: NDArray, indices: Iterable[int], left: Iterable[int] = None, right: int = None) -> List[int]:
     """Brute force the shortest path (if left and right nodes provided) or tour (if not provided).
     Should only be used on computationally tractable subproblems.
 
     Args:
         nodes (NDArray): master list of coordinates of points
         indices (Iterable[int]): indices of points making up the path/tour
-        left (int, optional): Left (starting) node, if computing a path. Defaults to None.
+        left (Iterable[int], optional): Left (starting) nodes, if computing a path. Defaults to None.
         right (int, optional): Right (ending) node, if computing a path. Defaults to None.
 
     Returns:
         List[int]: shortest path/tour
     """
     if left is not None:  # Assume both left and right provided
-        nodes = [left] + nodes + [right]
-        indices = [i + 1 for i in indices]
+        nodes = left + nodes + [right]
+        indices = list(range(1, len(left))) + [i + len(left) for i in indices]
     min_score = float('inf')
     min_path = None
     for path in permutations(indices):
@@ -355,18 +355,18 @@ def _partial_shortest_tour(nodes: NDArray, indices: Iterable[int], left: int = N
             min_score = score
             min_path = path
     if left is not None:
-        return [i - 1 for i in min_path]
+        return [i - len(left) for i in min_path]
     return min_path
 
 
-def solve_level(nodes: NDArray, c: DSNode, k: int, left: int = None, right: int = None) -> List[int]:
+def solve_level(nodes: NDArray, c: DSNode, k: int, left: Iterable[int] = None, right: int = None) -> List[int]:
     """Find shortest path/tour through a branch of the tree.
 
     Args:
         nodes (NDArray): master list of coordinates of points
         c (DSNode): parent node of branch
         k (int): cluster size
-        left (int, optional): Left (starting) node, if computing a path. Defaults to None.
+        left (Iterable[int], optional): Left (starting) nodes, if computing a path. Defaults to None.
         right (int, optional): Right (ending) node, if computing a path. Defaults to None.
 
     Returns:
@@ -374,14 +374,29 @@ def solve_level(nodes: NDArray, c: DSNode, k: int, left: int = None, right: int 
     """
     children = c.split(k)
     if len(children) == 1:
-        return children
+        return 0, children
     centroids = [centroid(d, nodes) for d in children]
-    tour = _partial_shortest_tour(centroids, list(range(len(children))), left, right)
-    return [children[i] for i in tour]
+    centroids_left = [centroid(d, nodes) for d in left] if left is not None else None
+    tour = _partial_shortest_tour(centroids, list(range(len(children))), centroids_left, right)
+    return len(tour) - len(children), [(children[i] if i >= 0 else left[i + len(left)]) for i in tour]
 
 
-def pyramid_solve(nodes: NDArray, k: int = 6) -> List[int]:
-    """Find an approximately-optimal tour using heirarchical clustering algorithm.
+def _get_previous_nodes(result: List[int], new_result: List[int], k: int, s: int, nodes: NDArray) -> List[int]:
+    assert s > 0
+    if new_result:
+        # return [centroid(n, nodes) for n in new_result[-s:]]
+        return new_result[-s:]
+    return result[-1:]
+    # if s < k:
+    #     # return [centroid(n, nodes) for n in result[-s:]]
+    #     return result[-s:]
+    # else:
+    #     # return [centroid(n, nodes) for n in result[-(k-1):]]
+    #     return result[-(k-1):]
+
+
+def pyramid_solve(nodes: NDArray, k: int = 6, s: int = 1) -> List[int]:
+    """Find an approximately-optimal tour using hierarchical clustering algorithm.
 
     Args:
         nodes (NDArray): master list of coordinates of points
@@ -392,11 +407,19 @@ def pyramid_solve(nodes: NDArray, k: int = 6) -> List[int]:
     """
     k = k - 1
     c = cluster(nodes)
-    result = solve_level(nodes, c, k)
+    _, result = solve_level(nodes, c, k)
     while len(result) < nodes.shape[0]:
         new_result = []
         for i, c in enumerate(result):
-            new_result += solve_level(nodes, c, k, centroid(new_result[-1] if new_result else result[-1], nodes), centroid(result[(i + 1) % len(result)], nodes))
+            extra, next = solve_level(nodes, c, k, _get_previous_nodes(result, new_result, k, s, nodes), centroid(result[(i + 1) % len(result)], nodes))
+            if extra:
+                if new_result:
+                    new_result = new_result[:-extra] + next
+                else:
+                    result = result[:-extra] + next[:extra]
+                    new_result += next[extra:]
+            else:
+                new_result += next
         result = new_result
     result = [n.value for n in result]
     zero = result.index(0)
