@@ -20,9 +20,10 @@ there are now a constant number of cities (N) which compose the problem. Once th
 each of the N centroids which make up the top level are broken down into the N centroids beneath
 them, and a shortest path through these centroids is constructed and added to the final tour. This
 shortest path takes into account the centroid of the "next" cluster to be visited, as well as the
-last city in the shortest path through the "previous" cluster. This process of iterative refinement
-of the tour is repeated until all clusters have been broken up and only the cities of the original
-problem remain.
+last city in the shortest path through the "previous" cluster. If the parameter S is changed to be
+greater than 1, then the tour through an additional (at most) S-1 cities from the previous
+cluster(s) will be refined as well. This process of iterative refinement of the tour is repeated
+until all clusters have been broken up and only the cities of the original problem remain.
 
 See the documentation of `pyramid_debug` for another characterization of the operation of this
 pyramid model.
@@ -384,15 +385,8 @@ def solve_level(nodes: NDArray, c: DSNode, k: int, left: Iterable[int] = None, r
 def _get_previous_nodes(result: List[int], new_result: List[int], k: int, s: int, nodes: NDArray) -> List[int]:
     assert s > 0
     if new_result:
-        # return [centroid(n, nodes) for n in new_result[-s:]]
         return new_result[-s:]
     return result[-1:]
-    # if s < k:
-    #     # return [centroid(n, nodes) for n in result[-s:]]
-    #     return result[-s:]
-    # else:
-    #     # return [centroid(n, nodes) for n in result[-(k-1):]]
-    #     return result[-(k-1):]
 
 
 def pyramid_solve(nodes: NDArray, k: int = 6, s: int = 1) -> List[int]:
@@ -426,7 +420,7 @@ def pyramid_solve(nodes: NDArray, k: int = 6, s: int = 1) -> List[int]:
     return result[zero:] + result[:zero]
 
 
-def pyramid_debug(nodes: NDArray, k: int = 6) -> Iterator[List[int]]:
+def pyramid_debug(nodes: NDArray, k: int = 6, s: int = 1) -> Iterator[List[int]]:
     """Starts by yielding the centroids at the top level of the pyramid, then the level below, and so on, in the following pattern:
 
     1. tour of centroids at top of pyramid: [a, b, c, d, e, f]
@@ -445,12 +439,20 @@ def pyramid_debug(nodes: NDArray, k: int = 6) -> Iterator[List[int]]:
     """
     k = k - 1
     c = cluster(nodes)
-    result = solve_level(nodes, c, k)
+    _, result = solve_level(nodes, c, k)
     yield [centroid(d, nodes) for d in result]
     while len(result) < nodes.shape[0]:
         new_result = []
         for i, c in enumerate(result):
-            new_result += solve_level(nodes, c, k, centroid(new_result[-1] if new_result else result[-1], nodes), centroid(result[(i + 1) % len(result)], nodes))
+            extra, next = solve_level(nodes, c, k, _get_previous_nodes(result, new_result, k, s, nodes), centroid(result[(i + 1) % len(result)], nodes))
+            if extra:
+                if new_result:
+                    new_result = new_result[:-extra] + next
+                else:
+                    result = result[:-extra] + next[:extra]
+                    new_result += next[extra:]
+            else:
+                new_result += next
             yield [centroid(d, nodes) for d in new_result + result[i + 1:]]
         result = new_result
         yield [centroid(d, nodes) for d in result]
