@@ -2,7 +2,7 @@
 literature to approximate human solutions to the TSP.
 
 Most all of this is not of interest to the casual user of the library, as the important bits are
-wrapped by `tsp.core.solvers.PyramidSolver`. Following is a rundown of the pyramid algorithm.
+wrapped by `tsp.core.solvers.pyramid_solve`. Following is a rundown of the pyramid algorithm.
 
 First, we construct a minimum spanning tree (MST) of the cities in the problem using
 Borůvka's algorithm. During the MST-construction stage, the algorithm constructs a dendrogram using
@@ -12,8 +12,8 @@ as they are joined together by adding edges to the MST until one dendrogram resu
 This dendrogram can be conceptualized as a pyramid. The top level of a pyramid can be derived by
 breaking up the dendrogram into N subtrees by slicing off the N branches nearest to the top,
 collecting all of the cities in each of the trees and finding their centers of gravity. This
-produces a cluster of N centroids in the space of the original problem. This can be done at any
-level of the tree, so a subtree can in turn be broken up into its component clusters.
+produces a cluster of at most N centroids in the space of the original problem. This can be done at
+any level of the tree, so a subtree can in turn be broken up into its component clusters.
 
 At the top level of the pyramid, the shortest tour can be found precisely in constant time because
 there are now a constant number of cities (N) which compose the problem. Once this tour is found,
