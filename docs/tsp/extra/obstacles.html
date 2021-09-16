@@ -827,7 +827,7 @@ line segments arranged in some kind of template, the code for that can be found 
 
         
             <span class="def">def</span>
-            <span class="name">to_edge_matrix</span><span class="signature">(self) -&gt; numpy.ndarray</span>:
+            <span class="name">to_edge_matrix</span><span class="signature">(self) -&gt; numpy.ndarray[typing.Any, numpy.dtype[+ScalarType]]</span>:
     </div>
 
                 <details>
@@ -861,7 +861,10 @@ line segments arranged in some kind of template, the code for that can be found 
 
         
             <span class="def">def</span>
-            <span class="name">tour_segments</span><span class="signature">(self, tour: Iterable[int]) -&gt; Iterator[numpy.ndarray]</span>:
+            <span class="name">tour_segments</span><span class="signature">(
+    self,
+    tour: Iterable[int]
+) -&gt; Iterator[numpy.ndarray[Any, numpy.dtype[+ScalarType]]]</span>:
     </div>
 
                 <details>

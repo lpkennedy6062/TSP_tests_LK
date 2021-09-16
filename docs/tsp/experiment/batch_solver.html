@@ -287,8 +287,8 @@ automate the calculation of statistics for experiments we've done.</p>
             <span class="def">def</span>
             <span class="name">score_tours_absolute</span><span class="signature">(
     problems: List[<a href="../core/tsp.html#N_TSP">tsp.core.tsp.N_TSP</a>],
-    tours: List[Union[int, numpy.ndarray]]
-) -&gt; numpy.ndarray</span>:
+    tours: List[Union[int, numpy.ndarray[Any, numpy.dtype[+ScalarType]]]]
+) -&gt; numpy.ndarray[typing.Any, numpy.dtype[+ScalarType]]</span>:
     </div>
 
                 <details>
@@ -334,7 +334,10 @@ automate the calculation of statistics for experiments we've done.</p>
 
         
             <span class="def">def</span>
-            <span class="name">score_batch</span><span class="signature">(problems_path: str, tours_path: str) -&gt; numpy.ndarray</span>:
+            <span class="name">score_batch</span><span class="signature">(
+    problems_path: str,
+    tours_path: str
+) -&gt; numpy.ndarray[typing.Any, numpy.dtype[+ScalarType]]</span>:
     </div>
 
                 <details>
@@ -381,9 +384,9 @@ automate the calculation of statistics for experiments we've done.</p>
             <span class="def">def</span>
             <span class="name">score_tours_relative</span><span class="signature">(
     problems: List[<a href="../core/tsp.html#N_TSP">tsp.core.tsp.N_TSP</a>],
-    tours: List[Union[int, numpy.ndarray]],
-    base_tours: List[Union[int, numpy.ndarray]]
-) -&gt; Tuple[numpy.ndarray, float, float]</span>:
+    tours: List[Union[int, numpy.ndarray[Any, numpy.dtype[+ScalarType]]]],
+    base_tours: List[Union[int, numpy.ndarray[Any, numpy.dtype[+ScalarType]]]]
+) -&gt; Tuple[numpy.ndarray[Any, numpy.dtype[+ScalarType]], float, float]</span>:
     </div>
 
                 <details>
@@ -437,7 +440,7 @@ automate the calculation of statistics for experiments we've done.</p>
     problems_path: str,
     tours_path: str,
     base_tours_path: str
-) -&gt; Tuple[numpy.ndarray, float, float]</span>:
+) -&gt; Tuple[numpy.ndarray[Any, numpy.dtype[+ScalarType]], float, float]</span>:
     </div>
 
                 <details>
@@ -489,7 +492,7 @@ automate the calculation of statistics for experiments we've done.</p>
     problems_path: str,
     tours_path: str,
     base_tours_path: str
-) -&gt; Tuple[numpy.ndarray, float, float]</span>:
+) -&gt; Tuple[numpy.ndarray[Any, numpy.dtype[+ScalarType]], float, float]</span>:
     </div>
 
                 <details>
