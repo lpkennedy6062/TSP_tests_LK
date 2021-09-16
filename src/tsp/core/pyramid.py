@@ -10,7 +10,7 @@ a disjoint-set data structure which stores the Borůvka's clusters as trees, bui
 as they are joined together by adding edges to the MST until one dendrogram results.
 
 This dendrogram can be conceptualized as a pyramid. The top level of a pyramid can be derived by
-breaking up the dendrogram into N subtrees by slicing off the N branches nearest to the top,
+breaking up the dendrogram into N subtrees by slicing the N-1 branches nearest to the top,
 collecting all of the cities in each of the trees and finding their centers of gravity. This
 produces a cluster of at most N centroids in the space of the original problem. This can be done at
 any level of the tree, so a subtree can in turn be broken up into its component clusters.
@@ -280,15 +280,19 @@ def mst(nodes: NDArray) -> Set:
     return cluster_boruvka(nodes)[0]
 
 
-def cluster(nodes: NDArray) -> DSNode:
+def cluster(nodes: NDArray, clustering: str = 'boruvka') -> DSNode:
     """Agglomerate nodes into dendrogram (shorthand for `cluster_boruvka(nodes)[1]`).
+    Now can manually specify which MST algorithm to use.
 
     Args:
         nodes (NDArray): ndarray((v, n))
+        clustering (str, optional): either 'boruvka' or 'kruskal'. Defaults to 'boruvka'.
 
     Returns:
         DSNode: root of agglomerated tree
     """
+    if clustering.lower() == 'kruskal':
+        return cluster_kruskal(nodes)[1]
     return cluster_boruvka(nodes)[1]
 
 
@@ -374,7 +378,7 @@ def solve_level(nodes: NDArray, c: DSNode, k: int, left: Iterable[int] = None, r
         List[int]: shortest path/tour
     """
     children = c.split(k)
-    if len(children) == 1:
+    if len(children) == 1 and len(left) < 2:
         return 0, children
     centroids = [centroid(d, nodes) for d in children]
     centroids_left = [centroid(d, nodes) for d in left] if left is not None else None
@@ -389,18 +393,20 @@ def _get_previous_nodes(result: List[int], new_result: List[int], k: int, s: int
     return result[-1:]
 
 
-def pyramid_solve(nodes: NDArray, k: int = 6, s: int = 1) -> List[int]:
+def pyramid_solve(nodes: NDArray, k: int = 6, s: int = 1, clustering: str = 'boruvka') -> List[int]:
     """Find an approximately-optimal tour using hierarchical clustering algorithm.
 
     Args:
         nodes (NDArray): master list of coordinates of points
         k (int, optional): Cluster size. Defaults to 6.
+        s (int, optional): Number of previous cities to account for in partial tour (refines k+s-1 cities). Defaults to 1.
+        clustering (str, optional): MST algorithm to use for clustering, either 'boruvka' or 'kruskal'. Defaults to 'boruvka'.
 
     Returns:
         List[int]: tour
     """
     k = k - 1
-    c = cluster(nodes)
+    c = cluster(nodes, clustering)
     _, result = solve_level(nodes, c, k)
     while len(result) < nodes.shape[0]:
         new_result = []
@@ -420,7 +426,7 @@ def pyramid_solve(nodes: NDArray, k: int = 6, s: int = 1) -> List[int]:
     return result[zero:] + result[:zero]
 
 
-def pyramid_debug(nodes: NDArray, k: int = 6, s: int = 1) -> Iterator[List[int]]:
+def pyramid_debug(nodes: NDArray, k: int = 6, s: int = 1, clustering: str = 'boruvka') -> Iterator[List[int]]:
     """Starts by yielding the centroids at the top level of the pyramid, then the level below, and so on, in the following pattern:
 
     1. tour of centroids at top of pyramid: [a, b, c, d, e, f]
@@ -438,7 +444,7 @@ def pyramid_debug(nodes: NDArray, k: int = 6, s: int = 1) -> Iterator[List[int]]
         Iterator[List[int]]: [description]
     """
     k = k - 1
-    c = cluster(nodes)
+    c = cluster(nodes, clustering)
     _, result = solve_level(nodes, c, k)
     yield [centroid(d, nodes) for d in result]
     while len(result) < nodes.shape[0]:
