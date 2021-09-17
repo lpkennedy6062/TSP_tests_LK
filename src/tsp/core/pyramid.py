@@ -337,7 +337,7 @@ def _evaluate_tour(nodes: NDArray, indices: Iterable[int]) -> float:
 
 
 def _partial_shortest_tour(nodes: NDArray, indices: Iterable[int], left: Iterable[int] = None, right: int = None) -> List[int]:
-    """Brute force the shortest path (if left and right nodes provided) or tour (if not provided).
+    """Brute force the shortest open tour (if left and right nodes provided) or closed tour (if not provided).
     Should only be used on computationally tractable subproblems.
 
     Args:
@@ -439,6 +439,8 @@ def pyramid_debug(nodes: NDArray, k: int = 6, s: int = 1, clustering: str = 'bor
     Args:
         nodes (NDArray): master list of coordinates of points
         k (int, optional): Cluster size. Defaults to 6.
+        s (int, optional): Number of previous cities to account for in partial tour (refines k+s-1 cities). Defaults to 1.
+        clustering (str, optional): MST algorithm to use for clustering, either 'boruvka' or 'kruskal'. Defaults to 'boruvka'.
 
     Yields:
         Iterator[List[int]]: [description]

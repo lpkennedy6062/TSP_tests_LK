@@ -480,7 +480,7 @@ pyramid model.</p>
 
 
 <span class="k">def</span> <span class="nf">_partial_shortest_tour</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">left</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Brute force the shortest path (if left and right nodes provided) or tour (if not provided).</span>
+    <span class="sd">&quot;&quot;&quot;Brute force the shortest open tour (if left and right nodes provided) or closed tour (if not provided).</span>
 <span class="sd">    Should only be used on computationally tractable subproblems.</span>
 
 <span class="sd">    Args:</span>
@@ -582,6 +582,8 @@ pyramid model.</p>
 <span class="sd">    Args:</span>
 <span class="sd">        nodes (NDArray): master list of coordinates of points</span>
 <span class="sd">        k (int, optional): Cluster size. Defaults to 6.</span>
+<span class="sd">        s (int, optional): Number of previous cities to account for in partial tour (refines k+s-1 cities). Defaults to 1.</span>
+<span class="sd">        clustering (str, optional): MST algorithm to use for clustering, either &#39;boruvka&#39; or &#39;kruskal&#39;. Defaults to &#39;boruvka&#39;.</span>
 
 <span class="sd">    Yields:</span>
 <span class="sd">        Iterator[List[int]]: [description]</span>
@@ -1525,6 +1527,8 @@ Now can manually specify which MST algorithm to use.</p>
 <span class="sd">    Args:</span>
 <span class="sd">        nodes (NDArray): master list of coordinates of points</span>
 <span class="sd">        k (int, optional): Cluster size. Defaults to 6.</span>
+<span class="sd">        s (int, optional): Number of previous cities to account for in partial tour (refines k+s-1 cities). Defaults to 1.</span>
+<span class="sd">        clustering (str, optional): MST algorithm to use for clustering, either &#39;boruvka&#39; or &#39;kruskal&#39;. Defaults to &#39;boruvka&#39;.</span>
 
 <span class="sd">    Yields:</span>
 <span class="sd">        Iterator[List[int]]: [description]</span>
@@ -1568,6 +1572,8 @@ Now can manually specify which MST algorithm to use.</p>
 <ul>
 <li><strong>nodes (NDArray):</strong>  master list of coordinates of points</li>
 <li><strong>k (int, optional):</strong>  Cluster size. Defaults to 6.</li>
+<li><strong>s (int, optional):</strong>  Number of previous cities to account for in partial tour (refines k+s-1 cities). Defaults to 1.</li>
+<li><strong>clustering (str, optional):</strong>  MST algorithm to use for clustering, either 'boruvka' or 'kruskal'. Defaults to 'boruvka'.</li>
 </ul>
 
 <h6 id="yields">Yields</h6>
