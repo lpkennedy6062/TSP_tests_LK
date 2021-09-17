@@ -112,7 +112,7 @@
 literature to approximate human solutions to the TSP.</p>
 
 <p>Most all of this is not of interest to the casual user of the library, as the important bits are
-wrapped by <code><a href="solvers.html#PyramidSolver">tsp.core.solvers.PyramidSolver</a></code>. Following is a rundown of the pyramid algorithm.</p>
+wrapped by <code><a href="solvers.html#pyramid_solve">tsp.core.solvers.pyramid_solve</a></code>. Following is a rundown of the pyramid algorithm.</p>
 
 <p>First, we construct a minimum spanning tree (MST) of the cities in the problem using
 Borůvka's algorithm. During the MST-construction stage, the algorithm constructs a dendrogram using
@@ -120,19 +120,20 @@ a disjoint-set data structure which stores the Borůvka's clusters as trees, bui
 as they are joined together by adding edges to the MST until one dendrogram results.</p>
 
 <p>This dendrogram can be conceptualized as a pyramid. The top level of a pyramid can be derived by
-breaking up the dendrogram into N subtrees by slicing off the N branches nearest to the top,
+breaking up the dendrogram into N subtrees by slicing the N-1 branches nearest to the top,
 collecting all of the cities in each of the trees and finding their centers of gravity. This
-produces a cluster of N centroids in the space of the original problem. This can be done at any
-level of the tree, so a subtree can in turn be broken up into its component clusters.</p>
+produces a cluster of at most N centroids in the space of the original problem. This can be done at
+any level of the tree, so a subtree can in turn be broken up into its component clusters.</p>
 
 <p>At the top level of the pyramid, the shortest tour can be found precisely in constant time because
 there are now a constant number of cities (N) which compose the problem. Once this tour is found,
 each of the N centroids which make up the top level are broken down into the N centroids beneath
 them, and a shortest path through these centroids is constructed and added to the final tour. This
 shortest path takes into account the centroid of the "next" cluster to be visited, as well as the
-last city in the shortest path through the "previous" cluster. This process of iterative refinement
-of the tour is repeated until all clusters have been broken up and only the cities of the original
-problem remain.</p>
+last city in the shortest path through the "previous" cluster. If the parameter S is changed to be
+greater than 1, then the tour through an additional (at most) S-1 cities from the previous
+cluster(s) will be refined as well. This process of iterative refinement of the tour is repeated
+until all clusters have been broken up and only the cities of the original problem remain.</p>
 
 <p>See the documentation of <code><a href="#pyramid_debug">pyramid_debug</a></code> for another characterization of the operation of this
 pyramid model.</p>
@@ -144,7 +145,7 @@ pyramid model.</p>
 <span class="sd">literature to approximate human solutions to the TSP.</span>
 
 <span class="sd">Most all of this is not of interest to the casual user of the library, as the important bits are</span>
-<span class="sd">wrapped by `tsp.core.solvers.PyramidSolver`. Following is a rundown of the pyramid algorithm.</span>
+<span class="sd">wrapped by `tsp.core.solvers.pyramid_solve`. Following is a rundown of the pyramid algorithm.</span>
 
 <span class="sd">First, we construct a minimum spanning tree (MST) of the cities in the problem using</span>
 <span class="sd">Borůvka&#39;s algorithm. During the MST-construction stage, the algorithm constructs a dendrogram using</span>
@@ -152,19 +153,20 @@ pyramid model.</p>
 <span class="sd">as they are joined together by adding edges to the MST until one dendrogram results.</span>
 
 <span class="sd">This dendrogram can be conceptualized as a pyramid. The top level of a pyramid can be derived by</span>
-<span class="sd">breaking up the dendrogram into N subtrees by slicing off the N branches nearest to the top,</span>
+<span class="sd">breaking up the dendrogram into N subtrees by slicing the N-1 branches nearest to the top,</span>
 <span class="sd">collecting all of the cities in each of the trees and finding their centers of gravity. This</span>
-<span class="sd">produces a cluster of N centroids in the space of the original problem. This can be done at any</span>
-<span class="sd">level of the tree, so a subtree can in turn be broken up into its component clusters.</span>
+<span class="sd">produces a cluster of at most N centroids in the space of the original problem. This can be done at</span>
+<span class="sd">any level of the tree, so a subtree can in turn be broken up into its component clusters.</span>
 
 <span class="sd">At the top level of the pyramid, the shortest tour can be found precisely in constant time because</span>
 <span class="sd">there are now a constant number of cities (N) which compose the problem. Once this tour is found,</span>
 <span class="sd">each of the N centroids which make up the top level are broken down into the N centroids beneath</span>
 <span class="sd">them, and a shortest path through these centroids is constructed and added to the final tour. This</span>
 <span class="sd">shortest path takes into account the centroid of the &quot;next&quot; cluster to be visited, as well as the</span>
-<span class="sd">last city in the shortest path through the &quot;previous&quot; cluster. This process of iterative refinement</span>
-<span class="sd">of the tour is repeated until all clusters have been broken up and only the cities of the original</span>
-<span class="sd">problem remain.</span>
+<span class="sd">last city in the shortest path through the &quot;previous&quot; cluster. If the parameter S is changed to be</span>
+<span class="sd">greater than 1, then the tour through an additional (at most) S-1 cities from the previous</span>
+<span class="sd">cluster(s) will be refined as well. This process of iterative refinement of the tour is repeated</span>
+<span class="sd">until all clusters have been broken up and only the cities of the original problem remain.</span>
 
 <span class="sd">See the documentation of `pyramid_debug` for another characterization of the operation of this</span>
 <span class="sd">pyramid model.</span>
@@ -421,15 +423,19 @@ pyramid model.</p>
     <span class="k">return</span> <span class="n">cluster_boruvka</span><span class="p">(</span><span class="n">nodes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">cluster</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DSNode</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">cluster</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">clustering</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;boruvka&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DSNode</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Agglomerate nodes into dendrogram (shorthand for `cluster_boruvka(nodes)[1]`).</span>
+<span class="sd">    Now can manually specify which MST algorithm to use.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        nodes (NDArray): ndarray((v, n))</span>
+<span class="sd">        clustering (str, optional): either &#39;boruvka&#39; or &#39;kruskal&#39;. Defaults to &#39;boruvka&#39;.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        DSNode: root of agglomerated tree</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">clustering</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;kruskal&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">cluster_kruskal</span><span class="p">(</span><span class="n">nodes</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">cluster_boruvka</span><span class="p">(</span><span class="n">nodes</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
 
 
@@ -473,22 +479,22 @@ pyramid model.</p>
     <span class="k">return</span> <span class="n">distance</span>
 
 
-<span class="k">def</span> <span class="nf">_partial_shortest_tour</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">left</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Brute force the shortest path (if left and right nodes provided) or tour (if not provided).</span>
+<span class="k">def</span> <span class="nf">_partial_shortest_tour</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">left</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Brute force the shortest open tour (if left and right nodes provided) or closed tour (if not provided).</span>
 <span class="sd">    Should only be used on computationally tractable subproblems.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        nodes (NDArray): master list of coordinates of points</span>
 <span class="sd">        indices (Iterable[int]): indices of points making up the path/tour</span>
-<span class="sd">        left (int, optional): Left (starting) node, if computing a path. Defaults to None.</span>
+<span class="sd">        left (Iterable[int], optional): Left (starting) nodes, if computing a path. Defaults to None.</span>
 <span class="sd">        right (int, optional): Right (ending) node, if computing a path. Defaults to None.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        List[int]: shortest path/tour</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">left</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Assume both left and right provided</span>
-        <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">left</span><span class="p">]</span> <span class="o">+</span> <span class="n">nodes</span> <span class="o">+</span> <span class="p">[</span><span class="n">right</span><span class="p">]</span>
-        <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">]</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="n">nodes</span> <span class="o">+</span> <span class="p">[</span><span class="n">right</span><span class="p">]</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)))</span> <span class="o">+</span> <span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">]</span>
     <span class="n">min_score</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)</span>
     <span class="n">min_path</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">permutations</span><span class="p">(</span><span class="n">indices</span><span class="p">):</span>
@@ -497,55 +503,73 @@ pyramid model.</p>
             <span class="n">min_score</span> <span class="o">=</span> <span class="n">score</span>
             <span class="n">min_path</span> <span class="o">=</span> <span class="n">path</span>
     <span class="k">if</span> <span class="n">left</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">min_path</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">min_path</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">min_path</span>
 
 
-<span class="k">def</span> <span class="nf">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="n">DSNode</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">left</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="n">DSNode</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">left</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Find shortest path/tour through a branch of the tree.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        nodes (NDArray): master list of coordinates of points</span>
 <span class="sd">        c (DSNode): parent node of branch</span>
 <span class="sd">        k (int): cluster size</span>
-<span class="sd">        left (int, optional): Left (starting) node, if computing a path. Defaults to None.</span>
+<span class="sd">        left (Iterable[int], optional): Left (starting) nodes, if computing a path. Defaults to None.</span>
 <span class="sd">        right (int, optional): Right (ending) node, if computing a path. Defaults to None.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        List[int]: shortest path/tour</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">children</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">children</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="n">children</span>
     <span class="n">centroids</span> <span class="o">=</span> <span class="p">[</span><span class="n">centroid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">children</span><span class="p">]</span>
-    <span class="n">tour</span> <span class="o">=</span> <span class="n">_partial_shortest_tour</span><span class="p">(</span><span class="n">centroids</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">))),</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">children</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tour</span><span class="p">]</span>
+    <span class="n">centroids_left</span> <span class="o">=</span> <span class="p">[</span><span class="n">centroid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">left</span><span class="p">]</span> <span class="k">if</span> <span class="n">left</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">tour</span> <span class="o">=</span> <span class="n">_partial_shortest_tour</span><span class="p">(</span><span class="n">centroids</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">))),</span> <span class="n">centroids_left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">tour</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">),</span> <span class="p">[(</span><span class="n">children</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">left</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tour</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">pyramid_solve</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Find an approximately-optimal tour using heirarchical clustering algorithm.</span>
+<span class="k">def</span> <span class="nf">_get_previous_nodes</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">new_result</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="k">assert</span> <span class="n">s</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">new_result</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">new_result</span><span class="p">[</span><span class="o">-</span><span class="n">s</span><span class="p">:]</span>
+    <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span>
+
+
+<span class="k">def</span> <span class="nf">pyramid_solve</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">clustering</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;boruvka&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Find an approximately-optimal tour using hierarchical clustering algorithm.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        nodes (NDArray): master list of coordinates of points</span>
 <span class="sd">        k (int, optional): Cluster size. Defaults to 6.</span>
+<span class="sd">        s (int, optional): Number of previous cities to account for in partial tour (refines k+s-1 cities). Defaults to 1.</span>
+<span class="sd">        clustering (str, optional): MST algorithm to use for clustering, either &#39;boruvka&#39; or &#39;kruskal&#39;. Defaults to &#39;boruvka&#39;.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        List[int]: tour</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">k</span> <span class="o">=</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">cluster</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">cluster</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">clustering</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
     <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">nodes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
         <span class="n">new_result</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
-            <span class="n">new_result</span> <span class="o">+=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">centroid</span><span class="p">(</span><span class="n">new_result</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">new_result</span> <span class="k">else</span> <span class="n">result</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">nodes</span><span class="p">),</span> <span class="n">centroid</span><span class="p">(</span><span class="n">result</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)],</span> <span class="n">nodes</span><span class="p">))</span>
+            <span class="n">extra</span><span class="p">,</span> <span class="nb">next</span> <span class="o">=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">_get_previous_nodes</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">new_result</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">nodes</span><span class="p">),</span> <span class="n">centroid</span><span class="p">(</span><span class="n">result</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)],</span> <span class="n">nodes</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">extra</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">new_result</span><span class="p">:</span>
+                    <span class="n">new_result</span> <span class="o">=</span> <span class="n">new_result</span><span class="p">[:</span><span class="o">-</span><span class="n">extra</span><span class="p">]</span> <span class="o">+</span> <span class="nb">next</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="p">[:</span><span class="o">-</span><span class="n">extra</span><span class="p">]</span> <span class="o">+</span> <span class="nb">next</span><span class="p">[:</span><span class="n">extra</span><span class="p">]</span>
+                    <span class="n">new_result</span> <span class="o">+=</span> <span class="nb">next</span><span class="p">[</span><span class="n">extra</span><span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_result</span> <span class="o">+=</span> <span class="nb">next</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">new_result</span>
     <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
     <span class="n">zero</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="n">zero</span><span class="p">:]</span> <span class="o">+</span> <span class="n">result</span><span class="p">[:</span><span class="n">zero</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">pyramid_debug</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="k">def</span> <span class="nf">pyramid_debug</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">clustering</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;boruvka&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;Starts by yielding the centroids at the top level of the pyramid, then the level below, and so on, in the following pattern:</span>
 
 <span class="sd">    1. tour of centroids at top of pyramid: [a, b, c, d, e, f]</span>
@@ -558,18 +582,28 @@ pyramid model.</p>
 <span class="sd">    Args:</span>
 <span class="sd">        nodes (NDArray): master list of coordinates of points</span>
 <span class="sd">        k (int, optional): Cluster size. Defaults to 6.</span>
+<span class="sd">        s (int, optional): Number of previous cities to account for in partial tour (refines k+s-1 cities). Defaults to 1.</span>
+<span class="sd">        clustering (str, optional): MST algorithm to use for clustering, either &#39;boruvka&#39; or &#39;kruskal&#39;. Defaults to &#39;boruvka&#39;.</span>
 
 <span class="sd">    Yields:</span>
 <span class="sd">        Iterator[List[int]]: [description]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">k</span> <span class="o">=</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">cluster</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">cluster</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">clustering</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
     <span class="k">yield</span> <span class="p">[</span><span class="n">centroid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
     <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">nodes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
         <span class="n">new_result</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
-            <span class="n">new_result</span> <span class="o">+=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">centroid</span><span class="p">(</span><span class="n">new_result</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">new_result</span> <span class="k">else</span> <span class="n">result</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">nodes</span><span class="p">),</span> <span class="n">centroid</span><span class="p">(</span><span class="n">result</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)],</span> <span class="n">nodes</span><span class="p">))</span>
+            <span class="n">extra</span><span class="p">,</span> <span class="nb">next</span> <span class="o">=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">_get_previous_nodes</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">new_result</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">nodes</span><span class="p">),</span> <span class="n">centroid</span><span class="p">(</span><span class="n">result</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)],</span> <span class="n">nodes</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">extra</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">new_result</span><span class="p">:</span>
+                    <span class="n">new_result</span> <span class="o">=</span> <span class="n">new_result</span><span class="p">[:</span><span class="o">-</span><span class="n">extra</span><span class="p">]</span> <span class="o">+</span> <span class="nb">next</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="p">[:</span><span class="o">-</span><span class="n">extra</span><span class="p">]</span> <span class="o">+</span> <span class="nb">next</span><span class="p">[:</span><span class="n">extra</span><span class="p">]</span>
+                    <span class="n">new_result</span> <span class="o">+=</span> <span class="nb">next</span><span class="p">[</span><span class="n">extra</span><span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_result</span> <span class="o">+=</span> <span class="nb">next</span>
             <span class="k">yield</span> <span class="p">[</span><span class="n">centroid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">new_result</span> <span class="o">+</span> <span class="n">result</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]]</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">new_result</span>
         <span class="k">yield</span> <span class="p">[</span><span class="n">centroid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
@@ -1072,7 +1106,10 @@ pyramid model.</p>
 
         
             <span class="def">def</span>
-            <span class="name">centroid</span><span class="signature">(c: <a href="#DSNode">tsp.core.pyramid.DSNode</a>, nodes: numpy.ndarray) -&gt; numpy.ndarray</span>:
+            <span class="name">centroid</span><span class="signature">(
+    c: <a href="#DSNode">tsp.core.pyramid.DSNode</a>,
+    nodes: numpy.ndarray
+) -&gt; numpy.ndarray[typing.Any, numpy.dtype[+ScalarType]]</span>:
     </div>
 
                 <details>
@@ -1286,31 +1323,40 @@ Uses Boruvka's algorithm: which should produce a more "balanced" tree.</p>
 
         
             <span class="def">def</span>
-            <span class="name">cluster</span><span class="signature">(nodes: numpy.ndarray) -&gt; <a href="#DSNode">tsp.core.pyramid.DSNode</a></span>:
+            <span class="name">cluster</span><span class="signature">(
+    nodes: numpy.ndarray,
+    clustering: str = &#39;boruvka&#39;
+) -&gt; <a href="#DSNode">tsp.core.pyramid.DSNode</a></span>:
     </div>
 
                 <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">cluster</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DSNode</span><span class="p">:</span>
+            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">cluster</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">clustering</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;boruvka&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DSNode</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Agglomerate nodes into dendrogram (shorthand for `cluster_boruvka(nodes)[1]`).</span>
+<span class="sd">    Now can manually specify which MST algorithm to use.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        nodes (NDArray): ndarray((v, n))</span>
+<span class="sd">        clustering (str, optional): either &#39;boruvka&#39; or &#39;kruskal&#39;. Defaults to &#39;boruvka&#39;.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        DSNode: root of agglomerated tree</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">clustering</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;kruskal&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">cluster_kruskal</span><span class="p">(</span><span class="n">nodes</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">cluster_boruvka</span><span class="p">(</span><span class="n">nodes</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
 </pre></div>
 
         </details>
 
-            <div class="docstring"><p>Agglomerate nodes into dendrogram (shorthand for <code>cluster_boruvka(nodes)[1]</code>).</p>
+            <div class="docstring"><p>Agglomerate nodes into dendrogram (shorthand for <code>cluster_boruvka(nodes)[1]</code>).
+Now can manually specify which MST algorithm to use.</p>
 
 <h6 id="args">Args</h6>
 
 <ul>
 <li><strong>nodes (NDArray):</strong>  ndarray((v, n))</li>
+<li><strong>clustering (str, optional):</strong>  either 'boruvka' or 'kruskal'. Defaults to 'boruvka'.</li>
 </ul>
 
 <h6 id="returns">Returns</h6>
@@ -1331,32 +1377,33 @@ Uses Boruvka's algorithm: which should produce a more "balanced" tree.</p>
     nodes: numpy.ndarray,
     c: <a href="#DSNode">tsp.core.pyramid.DSNode</a>,
     k: int,
-    left: int = None,
+    left: Iterable[int] = None,
     right: int = None
 ) -&gt; List[int]</span>:
     </div>
 
                 <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="n">DSNode</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">left</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="n">DSNode</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">left</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Find shortest path/tour through a branch of the tree.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        nodes (NDArray): master list of coordinates of points</span>
 <span class="sd">        c (DSNode): parent node of branch</span>
 <span class="sd">        k (int): cluster size</span>
-<span class="sd">        left (int, optional): Left (starting) node, if computing a path. Defaults to None.</span>
+<span class="sd">        left (Iterable[int], optional): Left (starting) nodes, if computing a path. Defaults to None.</span>
 <span class="sd">        right (int, optional): Right (ending) node, if computing a path. Defaults to None.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        List[int]: shortest path/tour</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">children</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">children</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="n">children</span>
     <span class="n">centroids</span> <span class="o">=</span> <span class="p">[</span><span class="n">centroid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">children</span><span class="p">]</span>
-    <span class="n">tour</span> <span class="o">=</span> <span class="n">_partial_shortest_tour</span><span class="p">(</span><span class="n">centroids</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">))),</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">children</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tour</span><span class="p">]</span>
+    <span class="n">centroids_left</span> <span class="o">=</span> <span class="p">[</span><span class="n">centroid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">left</span><span class="p">]</span> <span class="k">if</span> <span class="n">left</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">tour</span> <span class="o">=</span> <span class="n">_partial_shortest_tour</span><span class="p">(</span><span class="n">centroids</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">))),</span> <span class="n">centroids_left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">tour</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">),</span> <span class="p">[(</span><span class="n">children</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">left</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tour</span><span class="p">]</span>
 </pre></div>
 
         </details>
@@ -1369,7 +1416,7 @@ Uses Boruvka's algorithm: which should produce a more "balanced" tree.</p>
 <li><strong>nodes (NDArray):</strong>  master list of coordinates of points</li>
 <li><strong>c (DSNode):</strong>  parent node of branch</li>
 <li><strong>k (int):</strong>  cluster size</li>
-<li><strong>left (int, optional):</strong>  Left (starting) node, if computing a path. Defaults to None.</li>
+<li><strong>left (Iterable[int], optional):</strong>  Left (starting) nodes, if computing a path. Defaults to None.</li>
 <li><strong>right (int, optional):</strong>  Right (ending) node, if computing a path. Defaults to None.</li>
 </ul>
 
@@ -1387,28 +1434,43 @@ Uses Boruvka's algorithm: which should produce a more "balanced" tree.</p>
 
         
             <span class="def">def</span>
-            <span class="name">pyramid_solve</span><span class="signature">(nodes: numpy.ndarray, k: int = 6) -&gt; List[int]</span>:
+            <span class="name">pyramid_solve</span><span class="signature">(
+    nodes: numpy.ndarray,
+    k: int = 6,
+    s: int = 1,
+    clustering: str = &#39;boruvka&#39;
+) -&gt; List[int]</span>:
     </div>
 
                 <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">pyramid_solve</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Find an approximately-optimal tour using heirarchical clustering algorithm.</span>
+            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">pyramid_solve</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">clustering</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;boruvka&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Find an approximately-optimal tour using hierarchical clustering algorithm.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        nodes (NDArray): master list of coordinates of points</span>
 <span class="sd">        k (int, optional): Cluster size. Defaults to 6.</span>
+<span class="sd">        s (int, optional): Number of previous cities to account for in partial tour (refines k+s-1 cities). Defaults to 1.</span>
+<span class="sd">        clustering (str, optional): MST algorithm to use for clustering, either &#39;boruvka&#39; or &#39;kruskal&#39;. Defaults to &#39;boruvka&#39;.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        List[int]: tour</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">k</span> <span class="o">=</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">cluster</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">cluster</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">clustering</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
     <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">nodes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
         <span class="n">new_result</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
-            <span class="n">new_result</span> <span class="o">+=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">centroid</span><span class="p">(</span><span class="n">new_result</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">new_result</span> <span class="k">else</span> <span class="n">result</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">nodes</span><span class="p">),</span> <span class="n">centroid</span><span class="p">(</span><span class="n">result</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)],</span> <span class="n">nodes</span><span class="p">))</span>
+            <span class="n">extra</span><span class="p">,</span> <span class="nb">next</span> <span class="o">=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">_get_previous_nodes</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">new_result</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">nodes</span><span class="p">),</span> <span class="n">centroid</span><span class="p">(</span><span class="n">result</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)],</span> <span class="n">nodes</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">extra</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">new_result</span><span class="p">:</span>
+                    <span class="n">new_result</span> <span class="o">=</span> <span class="n">new_result</span><span class="p">[:</span><span class="o">-</span><span class="n">extra</span><span class="p">]</span> <span class="o">+</span> <span class="nb">next</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="p">[:</span><span class="o">-</span><span class="n">extra</span><span class="p">]</span> <span class="o">+</span> <span class="nb">next</span><span class="p">[:</span><span class="n">extra</span><span class="p">]</span>
+                    <span class="n">new_result</span> <span class="o">+=</span> <span class="nb">next</span><span class="p">[</span><span class="n">extra</span><span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_result</span> <span class="o">+=</span> <span class="nb">next</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">new_result</span>
     <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
     <span class="n">zero</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -1417,13 +1479,15 @@ Uses Boruvka's algorithm: which should produce a more "balanced" tree.</p>
 
         </details>
 
-            <div class="docstring"><p>Find an approximately-optimal tour using heirarchical clustering algorithm.</p>
+            <div class="docstring"><p>Find an approximately-optimal tour using hierarchical clustering algorithm.</p>
 
 <h6 id="args">Args</h6>
 
 <ul>
 <li><strong>nodes (NDArray):</strong>  master list of coordinates of points</li>
 <li><strong>k (int, optional):</strong>  Cluster size. Defaults to 6.</li>
+<li><strong>s (int, optional):</strong>  Number of previous cities to account for in partial tour (refines k+s-1 cities). Defaults to 1.</li>
+<li><strong>clustering (str, optional):</strong>  MST algorithm to use for clustering, either 'boruvka' or 'kruskal'. Defaults to 'boruvka'.</li>
 </ul>
 
 <h6 id="returns">Returns</h6>
@@ -1440,12 +1504,17 @@ Uses Boruvka's algorithm: which should produce a more "balanced" tree.</p>
 
         
             <span class="def">def</span>
-            <span class="name">pyramid_debug</span><span class="signature">(nodes: numpy.ndarray, k: int = 6) -&gt; Iterator[List[int]]</span>:
+            <span class="name">pyramid_debug</span><span class="signature">(
+    nodes: numpy.ndarray,
+    k: int = 6,
+    s: int = 1,
+    clustering: str = &#39;boruvka&#39;
+) -&gt; Iterator[List[int]]</span>:
     </div>
 
                 <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">pyramid_debug</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">pyramid_debug</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">clustering</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;boruvka&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;Starts by yielding the centroids at the top level of the pyramid, then the level below, and so on, in the following pattern:</span>
 
 <span class="sd">    1. tour of centroids at top of pyramid: [a, b, c, d, e, f]</span>
@@ -1458,18 +1527,28 @@ Uses Boruvka's algorithm: which should produce a more "balanced" tree.</p>
 <span class="sd">    Args:</span>
 <span class="sd">        nodes (NDArray): master list of coordinates of points</span>
 <span class="sd">        k (int, optional): Cluster size. Defaults to 6.</span>
+<span class="sd">        s (int, optional): Number of previous cities to account for in partial tour (refines k+s-1 cities). Defaults to 1.</span>
+<span class="sd">        clustering (str, optional): MST algorithm to use for clustering, either &#39;boruvka&#39; or &#39;kruskal&#39;. Defaults to &#39;boruvka&#39;.</span>
 
 <span class="sd">    Yields:</span>
 <span class="sd">        Iterator[List[int]]: [description]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">k</span> <span class="o">=</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">cluster</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">cluster</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">clustering</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
     <span class="k">yield</span> <span class="p">[</span><span class="n">centroid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
     <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">nodes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
         <span class="n">new_result</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
-            <span class="n">new_result</span> <span class="o">+=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">centroid</span><span class="p">(</span><span class="n">new_result</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">new_result</span> <span class="k">else</span> <span class="n">result</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">nodes</span><span class="p">),</span> <span class="n">centroid</span><span class="p">(</span><span class="n">result</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)],</span> <span class="n">nodes</span><span class="p">))</span>
+            <span class="n">extra</span><span class="p">,</span> <span class="nb">next</span> <span class="o">=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">_get_previous_nodes</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">new_result</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">nodes</span><span class="p">),</span> <span class="n">centroid</span><span class="p">(</span><span class="n">result</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)],</span> <span class="n">nodes</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">extra</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">new_result</span><span class="p">:</span>
+                    <span class="n">new_result</span> <span class="o">=</span> <span class="n">new_result</span><span class="p">[:</span><span class="o">-</span><span class="n">extra</span><span class="p">]</span> <span class="o">+</span> <span class="nb">next</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="p">[:</span><span class="o">-</span><span class="n">extra</span><span class="p">]</span> <span class="o">+</span> <span class="nb">next</span><span class="p">[:</span><span class="n">extra</span><span class="p">]</span>
+                    <span class="n">new_result</span> <span class="o">+=</span> <span class="nb">next</span><span class="p">[</span><span class="n">extra</span><span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_result</span> <span class="o">+=</span> <span class="nb">next</span>
             <span class="k">yield</span> <span class="p">[</span><span class="n">centroid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">new_result</span> <span class="o">+</span> <span class="n">result</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]]</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">new_result</span>
         <span class="k">yield</span> <span class="p">[</span><span class="n">centroid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
@@ -1493,6 +1572,8 @@ Uses Boruvka's algorithm: which should produce a more "balanced" tree.</p>
 <ul>
 <li><strong>nodes (NDArray):</strong>  master list of coordinates of points</li>
 <li><strong>k (int, optional):</strong>  Cluster size. Defaults to 6.</li>
+<li><strong>s (int, optional):</strong>  Number of previous cities to account for in partial tour (refines k+s-1 cities). Defaults to 1.</li>
+<li><strong>clustering (str, optional):</strong>  MST algorithm to use for clustering, either 'boruvka' or 'kruskal'. Defaults to 'boruvka'.</li>
 </ul>
 
 <h6 id="yields">Yields</h6>

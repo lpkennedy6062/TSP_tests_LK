@@ -394,7 +394,9 @@ respectively.</p>
 
         
             <span class="def">def</span>
-            <span class="name">distance</span><span class="signature">(path: Iterable[numpy.ndarray]) -&gt; float</span>:
+            <span class="name">distance</span><span class="signature">(
+    path: Iterable[numpy.ndarray[Any, numpy.dtype[+ScalarType]]]
+) -&gt; float</span>:
     </div>
 
                 <details>
@@ -795,7 +797,7 @@ respectively.</p>
 
         
             <span class="def">def</span>
-            <span class="name">to_edge_matrix</span><span class="signature">(self) -&gt; numpy.ndarray</span>:
+            <span class="name">to_edge_matrix</span><span class="signature">(self) -&gt; numpy.ndarray[typing.Any, numpy.dtype[+ScalarType]]</span>:
     </div>
 
                 <details>
@@ -833,7 +835,11 @@ respectively.</p>
 
         
             <span class="def">def</span>
-            <span class="name">solve</span><span class="signature">(self, solver: Union[Callable, Type], **kwargs) -&gt; numpy.ndarray</span>:
+            <span class="name">solve</span><span class="signature">(
+    self,
+    solver: Union[Callable, Type],
+    **kwargs
+) -&gt; numpy.ndarray[typing.Any, numpy.dtype[+ScalarType]]</span>:
     </div>
 
                 <details>
@@ -876,7 +882,10 @@ respectively.</p>
 
         
             <span class="def">def</span>
-            <span class="name">tour_segments</span><span class="signature">(self, tour: Iterable[int]) -&gt; Iterator[numpy.ndarray]</span>:
+            <span class="name">tour_segments</span><span class="signature">(
+    self,
+    tour: Iterable[int]
+) -&gt; Iterator[numpy.ndarray[Any, numpy.dtype[+ScalarType]]]</span>:
     </div>
 
                 <details>
@@ -919,7 +928,10 @@ respectively.</p>
 
         
             <span class="def">def</span>
-            <span class="name">convert_tour_segments</span><span class="signature">(self, tour_segments: Iterable[numpy.ndarray]) -&gt; Iterator[int]</span>:
+            <span class="name">convert_tour_segments</span><span class="signature">(
+    self,
+    tour_segments: Iterable[numpy.ndarray[Any, numpy.dtype[+ScalarType]]]
+) -&gt; Iterator[int]</span>:
     </div>
 
                 <details>
@@ -1015,7 +1027,10 @@ respectively.</p>
 
         
             <span class="def">def</span>
-            <span class="name">score_tour_segments</span><span class="signature">(self, tour_segments: Iterable[numpy.ndarray]) -&gt; float</span>:
+            <span class="name">score_tour_segments</span><span class="signature">(
+    self,
+    tour_segments: Iterable[numpy.ndarray[Any, numpy.dtype[+ScalarType]]]
+) -&gt; float</span>:
     </div>
 
                 <details>
@@ -1056,7 +1071,10 @@ respectively.</p>
 
         
             <span class="def">def</span>
-            <span class="name">score</span><span class="signature">(self, tour: Iterable[Union[int, numpy.ndarray]]) -&gt; float</span>:
+            <span class="name">score</span><span class="signature">(
+    self,
+    tour: Iterable[Union[int, numpy.ndarray[Any, numpy.dtype[+ScalarType]]]]
+) -&gt; float</span>:
     </div>
 
                 <details>

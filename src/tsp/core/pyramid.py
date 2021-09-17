@@ -2,7 +2,7 @@
 literature to approximate human solutions to the TSP.
 
 Most all of this is not of interest to the casual user of the library, as the important bits are
-wrapped by `tsp.core.solvers.PyramidSolver`. Following is a rundown of the pyramid algorithm.
+wrapped by `tsp.core.solvers.pyramid_solve`. Following is a rundown of the pyramid algorithm.
 
 First, we construct a minimum spanning tree (MST) of the cities in the problem using
 Borůvka's algorithm. During the MST-construction stage, the algorithm constructs a dendrogram using
@@ -10,19 +10,20 @@ a disjoint-set data structure which stores the Borůvka's clusters as trees, bui
 as they are joined together by adding edges to the MST until one dendrogram results.
 
 This dendrogram can be conceptualized as a pyramid. The top level of a pyramid can be derived by
-breaking up the dendrogram into N subtrees by slicing off the N branches nearest to the top,
+breaking up the dendrogram into N subtrees by slicing the N-1 branches nearest to the top,
 collecting all of the cities in each of the trees and finding their centers of gravity. This
-produces a cluster of N centroids in the space of the original problem. This can be done at any
-level of the tree, so a subtree can in turn be broken up into its component clusters.
+produces a cluster of at most N centroids in the space of the original problem. This can be done at
+any level of the tree, so a subtree can in turn be broken up into its component clusters.
 
 At the top level of the pyramid, the shortest tour can be found precisely in constant time because
 there are now a constant number of cities (N) which compose the problem. Once this tour is found,
 each of the N centroids which make up the top level are broken down into the N centroids beneath
 them, and a shortest path through these centroids is constructed and added to the final tour. This
 shortest path takes into account the centroid of the "next" cluster to be visited, as well as the
-last city in the shortest path through the "previous" cluster. This process of iterative refinement
-of the tour is repeated until all clusters have been broken up and only the cities of the original
-problem remain.
+last city in the shortest path through the "previous" cluster. If the parameter S is changed to be
+greater than 1, then the tour through an additional (at most) S-1 cities from the previous
+cluster(s) will be refined as well. This process of iterative refinement of the tour is repeated
+until all clusters have been broken up and only the cities of the original problem remain.
 
 See the documentation of `pyramid_debug` for another characterization of the operation of this
 pyramid model.
@@ -279,15 +280,19 @@ def mst(nodes: NDArray) -> Set:
     return cluster_boruvka(nodes)[0]
 
 
-def cluster(nodes: NDArray) -> DSNode:
+def cluster(nodes: NDArray, clustering: str = 'boruvka') -> DSNode:
     """Agglomerate nodes into dendrogram (shorthand for `cluster_boruvka(nodes)[1]`).
+    Now can manually specify which MST algorithm to use.
 
     Args:
         nodes (NDArray): ndarray((v, n))
+        clustering (str, optional): either 'boruvka' or 'kruskal'. Defaults to 'boruvka'.
 
     Returns:
         DSNode: root of agglomerated tree
     """
+    if clustering.lower() == 'kruskal':
+        return cluster_kruskal(nodes)[1]
     return cluster_boruvka(nodes)[1]
 
 
@@ -331,22 +336,22 @@ def _evaluate_tour(nodes: NDArray, indices: Iterable[int]) -> float:
     return distance
 
 
-def _partial_shortest_tour(nodes: NDArray, indices: Iterable[int], left: int = None, right: int = None) -> List[int]:
-    """Brute force the shortest path (if left and right nodes provided) or tour (if not provided).
+def _partial_shortest_tour(nodes: NDArray, indices: Iterable[int], left: Iterable[int] = None, right: int = None) -> List[int]:
+    """Brute force the shortest open tour (if left and right nodes provided) or closed tour (if not provided).
     Should only be used on computationally tractable subproblems.
 
     Args:
         nodes (NDArray): master list of coordinates of points
         indices (Iterable[int]): indices of points making up the path/tour
-        left (int, optional): Left (starting) node, if computing a path. Defaults to None.
+        left (Iterable[int], optional): Left (starting) nodes, if computing a path. Defaults to None.
         right (int, optional): Right (ending) node, if computing a path. Defaults to None.
 
     Returns:
         List[int]: shortest path/tour
     """
     if left is not None:  # Assume both left and right provided
-        nodes = [left] + nodes + [right]
-        indices = [i + 1 for i in indices]
+        nodes = left + nodes + [right]
+        indices = list(range(1, len(left))) + [i + len(left) for i in indices]
     min_score = float('inf')
     min_path = None
     for path in permutations(indices):
@@ -355,55 +360,73 @@ def _partial_shortest_tour(nodes: NDArray, indices: Iterable[int], left: int = N
             min_score = score
             min_path = path
     if left is not None:
-        return [i - 1 for i in min_path]
+        return [i - len(left) for i in min_path]
     return min_path
 
 
-def solve_level(nodes: NDArray, c: DSNode, k: int, left: int = None, right: int = None) -> List[int]:
+def solve_level(nodes: NDArray, c: DSNode, k: int, left: Iterable[int] = None, right: int = None) -> List[int]:
     """Find shortest path/tour through a branch of the tree.
 
     Args:
         nodes (NDArray): master list of coordinates of points
         c (DSNode): parent node of branch
         k (int): cluster size
-        left (int, optional): Left (starting) node, if computing a path. Defaults to None.
+        left (Iterable[int], optional): Left (starting) nodes, if computing a path. Defaults to None.
         right (int, optional): Right (ending) node, if computing a path. Defaults to None.
 
     Returns:
         List[int]: shortest path/tour
     """
     children = c.split(k)
-    if len(children) == 1:
-        return children
+    if len(children) == 1 and len(left) < 2:
+        return 0, children
     centroids = [centroid(d, nodes) for d in children]
-    tour = _partial_shortest_tour(centroids, list(range(len(children))), left, right)
-    return [children[i] for i in tour]
+    centroids_left = [centroid(d, nodes) for d in left] if left is not None else None
+    tour = _partial_shortest_tour(centroids, list(range(len(children))), centroids_left, right)
+    return len(tour) - len(children), [(children[i] if i >= 0 else left[i + len(left)]) for i in tour]
 
 
-def pyramid_solve(nodes: NDArray, k: int = 6) -> List[int]:
-    """Find an approximately-optimal tour using heirarchical clustering algorithm.
+def _get_previous_nodes(result: List[int], new_result: List[int], k: int, s: int, nodes: NDArray) -> List[int]:
+    assert s > 0
+    if new_result:
+        return new_result[-s:]
+    return result[-1:]
+
+
+def pyramid_solve(nodes: NDArray, k: int = 6, s: int = 1, clustering: str = 'boruvka') -> List[int]:
+    """Find an approximately-optimal tour using hierarchical clustering algorithm.
 
     Args:
         nodes (NDArray): master list of coordinates of points
         k (int, optional): Cluster size. Defaults to 6.
+        s (int, optional): Number of previous cities to account for in partial tour (refines k+s-1 cities). Defaults to 1.
+        clustering (str, optional): MST algorithm to use for clustering, either 'boruvka' or 'kruskal'. Defaults to 'boruvka'.
 
     Returns:
         List[int]: tour
     """
     k = k - 1
-    c = cluster(nodes)
-    result = solve_level(nodes, c, k)
+    c = cluster(nodes, clustering)
+    _, result = solve_level(nodes, c, k)
     while len(result) < nodes.shape[0]:
         new_result = []
         for i, c in enumerate(result):
-            new_result += solve_level(nodes, c, k, centroid(new_result[-1] if new_result else result[-1], nodes), centroid(result[(i + 1) % len(result)], nodes))
+            extra, next = solve_level(nodes, c, k, _get_previous_nodes(result, new_result, k, s, nodes), centroid(result[(i + 1) % len(result)], nodes))
+            if extra:
+                if new_result:
+                    new_result = new_result[:-extra] + next
+                else:
+                    result = result[:-extra] + next[:extra]
+                    new_result += next[extra:]
+            else:
+                new_result += next
         result = new_result
     result = [n.value for n in result]
     zero = result.index(0)
     return result[zero:] + result[:zero]
 
 
-def pyramid_debug(nodes: NDArray, k: int = 6) -> Iterator[List[int]]:
+def pyramid_debug(nodes: NDArray, k: int = 6, s: int = 1, clustering: str = 'boruvka') -> Iterator[List[int]]:
     """Starts by yielding the centroids at the top level of the pyramid, then the level below, and so on, in the following pattern:
 
     1. tour of centroids at top of pyramid: [a, b, c, d, e, f]
@@ -416,18 +439,28 @@ def pyramid_debug(nodes: NDArray, k: int = 6) -> Iterator[List[int]]:
     Args:
         nodes (NDArray): master list of coordinates of points
         k (int, optional): Cluster size. Defaults to 6.
+        s (int, optional): Number of previous cities to account for in partial tour (refines k+s-1 cities). Defaults to 1.
+        clustering (str, optional): MST algorithm to use for clustering, either 'boruvka' or 'kruskal'. Defaults to 'boruvka'.
 
     Yields:
         Iterator[List[int]]: [description]
     """
     k = k - 1
-    c = cluster(nodes)
-    result = solve_level(nodes, c, k)
+    c = cluster(nodes, clustering)
+    _, result = solve_level(nodes, c, k)
     yield [centroid(d, nodes) for d in result]
     while len(result) < nodes.shape[0]:
         new_result = []
         for i, c in enumerate(result):
-            new_result += solve_level(nodes, c, k, centroid(new_result[-1] if new_result else result[-1], nodes), centroid(result[(i + 1) % len(result)], nodes))
+            extra, next = solve_level(nodes, c, k, _get_previous_nodes(result, new_result, k, s, nodes), centroid(result[(i + 1) % len(result)], nodes))
+            if extra:
+                if new_result:
+                    new_result = new_result[:-extra] + next
+                else:
+                    result = result[:-extra] + next[:extra]
+                    new_result += next[extra:]
+            else:
+                new_result += next
             yield [centroid(d, nodes) for d in new_result + result[i + 1:]]
         result = new_result
         yield [centroid(d, nodes) for d in result]
