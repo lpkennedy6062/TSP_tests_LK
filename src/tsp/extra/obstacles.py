@@ -111,11 +111,11 @@ class TSP_O(TSP):
         self.vg = None
         self.E = None
 
-    def add_obstacle(self, *vertices: int):
+    def add_obstacle(self, *vertices: Tuple[int]):
         """Inefficiently add obstacles to the problem.
 
         Args:
-            vertices ([int, int]): obstacle vertices as [x1, y1], ...
+            vertices Tuple[int]: obstacle vertices as [x1, y1], ...
         """
         self.obstacles = list(self.obstacles)
         self.obstacles.append(np.array([tuple(int(i) for i in v) for v in vertices]))
@@ -239,8 +239,8 @@ class TSP_O(TSP):
         """
         for _ in range(n):
             template(
+                self.add_obstacle,
                 (start_offsets[0], self.w - start_offsets[0]),
-                (start_offsets[1], self.h - start_offsets[1]),
-                self.add_obstacle
+                (start_offsets[1], self.h - start_offsets[1])
             )
         self.to_visgraph(True)
