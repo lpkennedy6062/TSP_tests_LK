@@ -378,7 +378,7 @@ def solve_level(nodes: NDArray, c: DSNode, k: int, left: Iterable[int] = None, r
         List[int]: shortest path/tour
     """
     children = c.split(k)
-    if len(children) == 1 and len(left) < 2:
+    if len(children) == 1:  # and len(left) < 2:
         return 0, children
     centroids = [centroid(d, nodes) for d in children]
     centroids_left = [centroid(d, nodes) for d in left] if left is not None else None
