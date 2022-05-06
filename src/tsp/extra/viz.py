@@ -38,6 +38,7 @@ def visualize_obstacles_pil(tsp: TSP_O, tour: Iterable[Union[int, NDArray]], pat
 
 def _draw_obstacles_plt(ax: SubplotBase, tsp: TSP_O):
     for a, b in tsp.obstacles:
+        a, b = list(a), list(b)  # copy objects
         a[1] = tsp.h - a[1]
         b[1] = tsp.h - b[1]
         ax.plot(*zip(a, b), 'k-')
