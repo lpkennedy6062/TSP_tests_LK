@@ -1,5 +1,6 @@
 """Implements a hierarchical clustering ("pyramid") algorithm similar to those used in the
-literature to approximate human solutions to the TSP.
+literature to approximate human solutions to the TSP. The important bits of this module are
+wrapped by `tsp.core.solvers.pyramid_solve`.
 
 This code is a replication and improvement of the "graph pyramid" described in [1]. The improved
 algorithm is described in detail in a paper by J. VanDrunen, K. Nam, M. A. Beers, and Z. Pizlo,
@@ -129,7 +130,6 @@ def pyramid_solve(tsp: N_TSP, k: int = 6, s: int = 1) -> NDArray:
         nodes (N_TSP): TSP to solve
         k (int, optional): Cluster size. Defaults to 6.
         s (int, optional): Number of previous cities to account for in partial tour (refines k+s-1 cities, where the extra 1 is the endpoint, for historical reasons). Defaults to 1.
-        clustering (str, optional): MST algorithm to use for clustering, either 'boruvka' or 'kruskal'. Defaults to 'boruvka'.
 
     Returns:
         NDArray: tour

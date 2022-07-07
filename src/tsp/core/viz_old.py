@@ -3,7 +3,6 @@
 
 
 from typing import Iterable, Tuple
-from matplotlib import pyplot as plt
 from matplotlib.axes import SubplotBase
 
 from tsp.core.pyramid_old import DSNode
