@@ -29,7 +29,7 @@ def visualize_clusters_plt(tsp: TSP, mst: Iterable[Tuple[float, Tuple[int, int]]
         clusters (Iterable[DSNode]): forest of clusters
         ax (SubplotBase): Matplotlib axes to plot on. Defaults to None.
     """
-    _init_plot(ax, tsp)
+    ax = _init_plot(ax, tsp)
 
     for edges in _isolate_edges(list(zip(*mst))[1], clusters):
         _draw_edges_plt(ax, tsp, edges)

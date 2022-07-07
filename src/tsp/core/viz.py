@@ -157,6 +157,8 @@ def _init_plot(ax: SubplotBase, tsp: TSP):
     ax.set_yticks([])
     ax.set_aspect('equal', 'box')
 
+    return ax
+
 
 def visualize_tsp_plt(tsp: TSP, tour: Iterable[Union[int, NDArray]], ax: SubplotBase = None):
     """Generate visualization of a TSP using MatPlotLib backend.
@@ -166,7 +168,7 @@ def visualize_tsp_plt(tsp: TSP, tour: Iterable[Union[int, NDArray]], ax: Subplot
         tour (Iterable[Union[int, NDArray]]): tour either as indices of vertices or as segments
         ax (SubplotBase): Matplotlib axes to plot on. Defaults to None.
     """
-    _init_plot(ax, tsp)
+    ax = _init_plot(ax, tsp)
 
     if len(tour):
         _draw_tour_plt(ax, tsp, tour)
@@ -181,7 +183,7 @@ def visualize_mst_plt(tsp: TSP, mst: Iterable[Tuple[float, Tuple[int, int]]], ax
         mst (Iterable[Tuple[float, Typle[int, int]]]): edges in MST
         ax (SubplotBase): Matplotlib axes to plot on. Defaults to None.
     """
-    _init_plot(ax, tsp)
+    ax = _init_plot(ax, tsp)
 
     _draw_edges_plt(ax, tsp, list(zip(*mst))[1])
     _draw_cities_plt(ax, tsp)
