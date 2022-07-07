@@ -31,67 +31,7 @@
                     <h2>API Documentation</h2>
                         <ul class="memberlist">
             <li>
-                    <a class="class" href="#DSNode">DSNode</a>
-                            <ul class="memberlist">
-                        <li>
-                                <a class="function" href="#DSNode.__init__">DSNode</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#DSNode.find">find</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#DSNode.split">split</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#DSNode.values">values</a>
-                        </li>
-                </ul>
-
-            </li>
-            <li>
-                    <a class="class" href="#DSTree">DSTree</a>
-                            <ul class="memberlist">
-                        <li>
-                                <a class="function" href="#DSTree.__init__">DSTree</a>
-                        </li>
-                        <li>
-                                <a class="variable" href="#DSTree.sets">sets</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#DSTree.make_set">make_set</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#DSTree.find">find</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#DSTree.union">union</a>
-                        </li>
-                </ul>
-
-            </li>
-            <li>
-                    <a class="function" href="#centroid">centroid</a>
-            </li>
-            <li>
-                    <a class="function" href="#cluster_kruskal">cluster_kruskal</a>
-            </li>
-            <li>
-                    <a class="function" href="#cluster_boruvka">cluster_boruvka</a>
-            </li>
-            <li>
-                    <a class="function" href="#mst">mst</a>
-            </li>
-            <li>
-                    <a class="function" href="#cluster">cluster</a>
-            </li>
-            <li>
-                    <a class="function" href="#solve_level">solve_level</a>
-            </li>
-            <li>
                     <a class="function" href="#pyramid_solve">pyramid_solve</a>
-            </li>
-            <li>
-                    <a class="function" href="#pyramid_debug">pyramid_debug</a>
             </li>
     </ul>
 
@@ -109,1372 +49,227 @@
 <a href="./../../tsp.html">tsp</a><wbr>.<a href="./../core.html">core</a><wbr>.pyramid    </h1>
 
                         <div class="docstring"><p>Implements a hierarchical clustering ("pyramid") algorithm similar to those used in the
-literature to approximate human solutions to the TSP.</p>
+literature to approximate human solutions to the TSP. The important bits of this module are
+wrapped by <code><a href="solvers.html#pyramid_solve">tsp.core.solvers.pyramid_solve</a></code>.</p>
 
-<p>Most all of this is not of interest to the casual user of the library, as the important bits are
-wrapped by <code><a href="solvers.html#pyramid_solve">tsp.core.solvers.pyramid_solve</a></code>. Following is a rundown of the pyramid algorithm.</p>
+<p>This code is a replication and improvement of the "graph pyramid" described in [1]. The improved
+algorithm is described in detail in a paper by J. VanDrunen, K. Nam, M. A. Beers, and Z. Pizlo,
+currently in preparation.</p>
 
-<p>First, we construct a minimum spanning tree (MST) of the cities in the problem using
-Borůvka's algorithm. During the MST-construction stage, the algorithm constructs a dendrogram using
-a disjoint-set data structure which stores the Borůvka's clusters as trees, building them upwards
-as they are joined together by adding edges to the MST until one dendrogram results.</p>
-
-<p>This dendrogram can be conceptualized as a pyramid. The top level of a pyramid can be derived by
-breaking up the dendrogram into N subtrees by slicing the N-1 branches nearest to the top,
-collecting all of the cities in each of the trees and finding their centers of gravity. This
-produces a cluster of at most N centroids in the space of the original problem. This can be done at
-any level of the tree, so a subtree can in turn be broken up into its component clusters.</p>
-
-<p>At the top level of the pyramid, the shortest tour can be found precisely in constant time because
-there are now a constant number of cities (N) which compose the problem. Once this tour is found,
-each of the N centroids which make up the top level are broken down into the N centroids beneath
-them, and a shortest path through these centroids is constructed and added to the final tour. This
-shortest path takes into account the centroid of the "next" cluster to be visited, as well as the
-last city in the shortest path through the "previous" cluster. If the parameter S is changed to be
-greater than 1, then the tour through an additional (at most) S-1 cities from the previous
-cluster(s) will be refined as well. This process of iterative refinement of the tour is repeated
-until all clusters have been broken up and only the cities of the original problem remain.</p>
-
-<p>See the documentation of <code><a href="#pyramid_debug">pyramid_debug</a></code> for another characterization of the operation of this
-pyramid model.</p>
+<p>[1] Haxhimusa, Y., Kropatsch, W. G., Pizlo, Z., &amp; Ion, A. (2009). Approximate graph pyramid
+solution of the E-TSP.</p>
 </div>
 
                         <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="sd">&quot;&quot;&quot;Implements a hierarchical clustering (&quot;pyramid&quot;) algorithm similar to those used in the</span>
-<span class="sd">literature to approximate human solutions to the TSP.</span>
+<span class="sd">literature to approximate human solutions to the TSP. The important bits of this module are</span>
+<span class="sd">wrapped by `tsp.core.solvers.pyramid_solve`.</span>
 
-<span class="sd">Most all of this is not of interest to the casual user of the library, as the important bits are</span>
-<span class="sd">wrapped by `tsp.core.solvers.pyramid_solve`. Following is a rundown of the pyramid algorithm.</span>
+<span class="sd">This code is a replication and improvement of the &quot;graph pyramid&quot; described in [1]. The improved</span>
+<span class="sd">algorithm is described in detail in a paper by J. VanDrunen, K. Nam, M. A. Beers, and Z. Pizlo,</span>
+<span class="sd">currently in preparation.</span>
 
-<span class="sd">First, we construct a minimum spanning tree (MST) of the cities in the problem using</span>
-<span class="sd">Borůvka&#39;s algorithm. During the MST-construction stage, the algorithm constructs a dendrogram using</span>
-<span class="sd">a disjoint-set data structure which stores the Borůvka&#39;s clusters as trees, building them upwards</span>
-<span class="sd">as they are joined together by adding edges to the MST until one dendrogram results.</span>
-
-<span class="sd">This dendrogram can be conceptualized as a pyramid. The top level of a pyramid can be derived by</span>
-<span class="sd">breaking up the dendrogram into N subtrees by slicing the N-1 branches nearest to the top,</span>
-<span class="sd">collecting all of the cities in each of the trees and finding their centers of gravity. This</span>
-<span class="sd">produces a cluster of at most N centroids in the space of the original problem. This can be done at</span>
-<span class="sd">any level of the tree, so a subtree can in turn be broken up into its component clusters.</span>
-
-<span class="sd">At the top level of the pyramid, the shortest tour can be found precisely in constant time because</span>
-<span class="sd">there are now a constant number of cities (N) which compose the problem. Once this tour is found,</span>
-<span class="sd">each of the N centroids which make up the top level are broken down into the N centroids beneath</span>
-<span class="sd">them, and a shortest path through these centroids is constructed and added to the final tour. This</span>
-<span class="sd">shortest path takes into account the centroid of the &quot;next&quot; cluster to be visited, as well as the</span>
-<span class="sd">last city in the shortest path through the &quot;previous&quot; cluster. If the parameter S is changed to be</span>
-<span class="sd">greater than 1, then the tour through an additional (at most) S-1 cities from the previous</span>
-<span class="sd">cluster(s) will be refined as well. This process of iterative refinement of the tour is repeated</span>
-<span class="sd">until all clusters have been broken up and only the cities of the original problem remain.</span>
-
-<span class="sd">See the documentation of `pyramid_debug` for another characterization of the operation of this</span>
-<span class="sd">pyramid model.</span>
+<span class="sd">[1] Haxhimusa, Y., Kropatsch, W. G., Pizlo, Z., &amp; Ion, A. (2009). Approximate graph pyramid</span>
+<span class="sd">solution of the E-TSP.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Hashable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span>
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">permutations</span>
-<span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">PriorityQueue</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">import</span> <span class="nn">itertools</span> <span class="k">as</span> <span class="nn">it</span>
+
 <span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">NDArray</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-
-<span class="k">class</span> <span class="nc">DSNode</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Implements a disjoint-set dendrogram.&quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">children</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DSNode</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Args:</span>
-<span class="sd">            value (Any): value to store at this node (can be literally anything)</span>
-<span class="sd">            children (List[DSNode], optional): Nodes immediately below this one. Defaults to [].</span>
-<span class="sd">            height (int, optional): Numerical value expressing the depth of the tree below it. Defaults to 0.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">children</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">children</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span>
-
-    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">DSNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">&lt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">height</span>
-
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">DSNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">==</span> <span class="n">obj</span><span class="o">.</span><span class="n">height</span>
-
-    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DSNode</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Recursively finds the root of the tree.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            DSNode: root</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span>
-
-    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">DSNode</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the depth + 1 clusters produced by descending the dendrogram.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            depth (int, optional): how many levels down the dendrogram to split. Defaults to 1.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            List[DSNode]: depth + 1 roots of the subtrees</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">depth</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="p">]</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[:]</span>
-        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">depth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="n">to_split</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">to_split</span><span class="p">)</span>
-            <span class="n">result</span> <span class="o">+=</span> <span class="n">to_split</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">result</span>
-
-    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;List this node&#39;s value and all values below it.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            List[Any]: values</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+<span class="kn">from</span> <span class="nn">tsp.core.tsp</span> <span class="kn">import</span> <span class="n">N_TSP</span>
+<span class="kn">from</span> <span class="nn">tsp.core.tree_split</span> <span class="kn">import</span> <span class="n">do_split</span>
 
 
-<span class="k">class</span> <span class="nc">DSTree</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Container for building the disjoint-set dendrogram.&quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Hashable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Args:</span>
-<span class="sd">            values (List[Any], optional): Initial leaves to initialize. Defaults to None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sets</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_unions</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">make_set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">sets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Number of disjoint sets in the tree.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            int: number of sets</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sets</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unions</span>
-
-    <span class="k">def</span> <span class="nf">make_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize a new set/leaf of tree.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            value (Any): value to store at node</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sets</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="n">DSNode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DSNode</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Find root of tree containing node which stores value.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            value (Hashable): value of node of interest</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            DSNode: root of tree</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sets</span><span class="p">[</span><span class="n">value</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">union</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DSNode</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create a union of set containing x and set containing y.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            x (Hashable): value which picks out first set</span>
-<span class="sd">            y (Hashable): value which picks out second set</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            DSNode: root of new tree which is the union of the sets (or not-new if they&#39;re both in the same set)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">x_parent</span><span class="p">,</span> <span class="n">y_parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">x_parent</span> <span class="ow">is</span> <span class="n">y_parent</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">x_parent</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_unions</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">new_parent</span> <span class="o">=</span> <span class="n">DSNode</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="n">x_parent</span><span class="p">,</span> <span class="n">y_parent</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unions</span><span class="p">)</span>
-        <span class="n">x_parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">new_parent</span>
-        <span class="n">y_parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">new_parent</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">new_parent</span>
-        <span class="k">return</span> <span class="n">new_parent</span>
-
-
-<span class="k">def</span> <span class="nf">_calculate_centroid</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">DSNode</span><span class="p">,</span> <span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Given a node in a disjoint-set dendrogram, calculate the center of gravity of all its children.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        c (DSNode): parent node of relevance</span>
-<span class="sd">        nodes (NDArray): master list of coordinates of points</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Tuple[float, NDArray]: (number of children, centroid)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nodes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
-    <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-            <span class="n">total</span> <span class="o">+=</span> <span class="n">child</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">result</span> <span class="o">+=</span> <span class="n">child</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">child</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">def</span> <span class="nf">_cheapest_insertion</span><span class="p">(</span><span class="n">centroids</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">prev_centroid</span><span class="p">,</span> <span class="n">next_centroid</span><span class="p">):</span>
+    <span class="n">min_distance</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">partial_tour</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">permutations</span><span class="p">(</span><span class="n">nodes</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">prev_centroid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">partial_tour_centroids</span> <span class="o">=</span> <span class="p">[</span><span class="n">prev_centroid</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">centroids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">partial_tour</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">next_centroid</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">total</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">result</span> <span class="o">+=</span> <span class="n">nodes</span><span class="p">[</span><span class="n">child</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">total</span><span class="p">,</span> <span class="n">result</span> <span class="o">//</span> <span class="n">total</span>
+            <span class="n">partial_tour_centroids</span> <span class="o">=</span> <span class="p">[</span><span class="n">centroids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">partial_tour</span><span class="p">]</span>
+            <span class="n">partial_tour_centroids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">partial_tour_centroids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># make closed tour!</span>
+        <span class="n">distance</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">partial_tour_centroids</span><span class="p">)):</span>
+            <span class="n">distance</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">partial_tour_centroids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">partial_tour_centroids</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])))</span>
+        <span class="k">if</span> <span class="n">distance</span> <span class="o">&lt;</span> <span class="n">min_distance</span><span class="p">:</span>
+            <span class="n">min_distance</span> <span class="o">=</span> <span class="n">distance</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">partial_tour</span>
+    <span class="k">return</span> <span class="n">result</span>
 
 
-<span class="k">def</span> <span class="nf">centroid</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">DSNode</span><span class="p">,</span> <span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Gets pre-computed centroid of node in tree.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        c (DSNode): parent node of relevance</span>
-<span class="sd">        nodes (NDArray): master list of coordinates of points</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        NDArray: centroid</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">nodes</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">def</span> <span class="nf">_find_parent</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">parents</span><span class="p">):</span>
+    <span class="k">while</span> <span class="n">parents</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="n">i</span><span class="p">:</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">parents</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">i</span>
 
 
-<span class="k">def</span> <span class="nf">cluster_kruskal</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Set</span><span class="p">,</span> <span class="n">DSNode</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Agglomerate nodes based on their MST, given coordinates in n-dimensions.</span>
-<span class="sd">    Uses Kruskal&#39;s algorithm, which runs in O(v^2 log v)</span>
+<span class="k">def</span> <span class="nf">_cluster_boruvka</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="n">nodes</span><span class="p">]</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">v</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))))</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        nodes (NDArray): ndarray((v, n))</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">edges</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">])))</span>
+                <span class="n">edges</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="n">i_lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">edges</span><span class="p">[</span><span class="n">i_lower</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="n">i_lower</span><span class="p">]</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        Tuple[Set, DSNode]: (edges in MST, root of agglomerated tree)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-    <span class="n">edges</span> <span class="o">=</span> <span class="n">PriorityQueue</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="n">tree</span> <span class="o">=</span> <span class="n">DSTree</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)):</span>
-        <span class="n">tree</span><span class="o">.</span><span class="n">make_set</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)):</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">nodes</span><span class="p">[</span><span class="n">j</span><span class="p">])))</span>
-            <span class="n">edges</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)))</span>
-    <span class="k">while</span> <span class="n">tree</span><span class="o">.</span><span class="n">sets</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">old_root</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">root</span>
-        <span class="n">edge_length</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">edges</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-        <span class="n">c</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="n">e</span><span class="p">)</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">_calculate_centroid</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">old_root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">old_root</span> <span class="o">!=</span> <span class="n">c</span><span class="p">:</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">edge_length</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">tree</span><span class="o">.</span><span class="n">root</span>
+        <span class="n">minimum_edges</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span> <span class="p">:</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)}</span>
+        <span class="k">for</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">c1</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">c2</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="n">edges</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">minimum_edges</span><span class="p">[</span><span class="n">c1</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">minimum_edges</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="n">edge</span><span class="p">],</span> <span class="n">edge</span><span class="p">,</span> <span class="n">c2</span>
+                <span class="k">if</span> <span class="n">edges</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">minimum_edges</span><span class="p">[</span><span class="n">c2</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">minimum_edges</span><span class="p">[</span><span class="n">c2</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="n">edge</span><span class="p">],</span> <span class="n">edge</span><span class="p">,</span> <span class="n">c1</span>
 
+        <span class="n">parents</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+        <span class="n">edge_tracker</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">c1</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">c2</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">minimum_edges</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">c1_parent</span> <span class="o">=</span> <span class="n">_find_parent</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">parents</span><span class="p">)</span>
+            <span class="n">c2_parent</span> <span class="o">=</span> <span class="n">_find_parent</span><span class="p">(</span><span class="n">c2</span><span class="p">,</span> <span class="n">parents</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">c1_parent</span> <span class="o">!=</span> <span class="n">c2_parent</span><span class="p">:</span>
+                <span class="n">parents</span><span class="p">[</span><span class="n">c2_parent</span><span class="p">]</span> <span class="o">=</span> <span class="n">c1_parent</span>
+                <span class="n">edge_tracker</span><span class="p">[</span><span class="n">c1_parent</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">cluster_boruvka</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Set</span><span class="p">,</span> <span class="n">DSNode</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Agglomerate nodes based on their MST, given coordinates in n-dimensions.</span>
-<span class="sd">    Uses Boruvka&#39;s algorithm: which should produce a more &quot;balanced&quot; tree.</span>
+        <span class="n">parents</span> <span class="o">=</span> <span class="p">[</span><span class="n">_find_parent</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">parents</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">parents</span><span class="p">]</span>
+        <span class="n">vertex_tracker</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="n">centroid_tracker</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parents</span><span class="p">):</span>
+            <span class="n">vertex_tracker</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">centroid_tracker</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">p</span><span class="p">:</span>
+                <span class="n">edge_tracker</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">edge_tracker</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="k">del</span> <span class="n">edge_tracker</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        nodes (NDArray): ndarray((v, n))</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+        <span class="n">v</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">e</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">parents</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vertex_tracker</span><span class="p">[</span><span class="n">p</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">k</span><span class="p">:</span>
+                <span class="n">split_v</span><span class="p">,</span> <span class="n">split_e</span> <span class="o">=</span> <span class="n">do_split</span><span class="p">(</span>
+                    <span class="n">vertex_tracker</span><span class="p">[</span><span class="n">p</span><span class="p">],</span>
+                    <span class="nb">list</span><span class="p">(</span><span class="n">edge_tracker</span><span class="p">[</span><span class="n">p</span><span class="p">]),</span>
+                    <span class="n">edges</span><span class="p">,</span>
+                    <span class="n">k</span>
+                <span class="p">)</span>
+                <span class="n">split_c</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">vertices</span> <span class="ow">in</span> <span class="n">split_v</span><span class="p">:</span>
+                    <span class="n">split_c</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">c</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">vertices</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+                <span class="n">c</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">split_c</span><span class="p">)</span>
+                <span class="n">v</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">split_v</span><span class="p">)</span>
+                <span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">split_e</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">c</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">centroid_tracker</span><span class="p">[</span><span class="n">p</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+                <span class="n">v</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vertex_tracker</span><span class="p">[</span><span class="n">p</span><span class="p">])</span>
+                <span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">edge_tracker</span><span class="p">[</span><span class="n">p</span><span class="p">]))</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        Tuple[Set, DSNode]: (edges in MST, root of agglomerated tree)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-    <span class="n">v</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
-    <span class="n">tree</span> <span class="o">=</span> <span class="n">DSTree</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
-        <span class="n">tree</span><span class="o">.</span><span class="n">make_set</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-        <span class="n">edges</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">nodes</span><span class="p">[</span><span class="n">j</span><span class="p">])))</span>
-            <span class="n">edges</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-    <span class="n">i_lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">edges</span><span class="p">[</span><span class="n">i_lower</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="n">i_lower</span><span class="p">]</span>
-    <span class="k">while</span> <span class="n">tree</span><span class="o">.</span><span class="n">sets</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">clusters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">find</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="n">tree</span><span class="o">.</span><span class="n">_sets</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
-        <span class="n">minimum_edges</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span> <span class="p">:</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">clusters</span><span class="p">))}</span>
-        <span class="k">for</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">clusters</span><span class="p">)),</span> <span class="mi">2</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">clusters</span><span class="p">[</span><span class="n">c1</span><span class="p">],</span> <span class="n">clusters</span><span class="p">[</span><span class="n">c2</span><span class="p">]):</span>
-                <span class="k">if</span> <span class="n">edges</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">minimum_edges</span><span class="p">[</span><span class="n">c1</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
-                    <span class="n">minimum_edges</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="n">e</span>
-                <span class="k">if</span> <span class="n">edges</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">minimum_edges</span><span class="p">[</span><span class="n">c2</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
-                    <span class="n">minimum_edges</span><span class="p">[</span><span class="n">c2</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="n">e</span>
-        <span class="k">for</span> <span class="n">edge_length</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">minimum_edges</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-            <span class="n">old_root</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">root</span>
-            <span class="n">c</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="n">e</span><span class="p">)</span>
-            <span class="n">c</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">_calculate_centroid</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">old_root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">old_root</span> <span class="o">!=</span> <span class="n">c</span><span class="p">:</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">edge_length</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">tree</span><span class="o">.</span><span class="n">root</span>
-
-
-<span class="k">def</span> <span class="nf">mst</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Generate an MST (shorthand for `cluster_boruvka(nodes)[0]`).</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        nodes (NDArray): ndarray((v, n))</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Set: edges in MST</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">cluster_boruvka</span><span class="p">(</span><span class="n">nodes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">e</span>
 
 
-<span class="k">def</span> <span class="nf">cluster</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">clustering</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;boruvka&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DSNode</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Agglomerate nodes into dendrogram (shorthand for `cluster_boruvka(nodes)[1]`).</span>
-<span class="sd">    Now can manually specify which MST algorithm to use.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        nodes (NDArray): ndarray((v, n))</span>
-<span class="sd">        clustering (str, optional): either &#39;boruvka&#39; or &#39;kruskal&#39;. Defaults to &#39;boruvka&#39;.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        DSNode: root of agglomerated tree</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">clustering</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;kruskal&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">cluster_kruskal</span><span class="p">(</span><span class="n">nodes</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">cluster_boruvka</span><span class="p">(</span><span class="n">nodes</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">def</span> <span class="nf">_solve_level</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">subcluster</span><span class="p">,</span> <span class="n">prev_centroid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prev_centroids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">next_centroid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">prev_centroids</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">prev_centroids</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">centroids</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="n">level</span><span class="p">]</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">level</span><span class="p">][</span><span class="n">subcluster</span><span class="p">]</span> <span class="o">+</span> <span class="n">prev_centroids</span>
+    <span class="k">return</span> <span class="n">_cheapest_insertion</span><span class="p">(</span><span class="n">centroids</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">prev_centroid</span><span class="p">,</span> <span class="n">next_centroid</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_evaluate_path</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Computes length of path.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        nodes (NDArray): master list of coordinates of points</span>
-<span class="sd">        indices (Iterable[int]): indices of points making up the path</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        float: length</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">current</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">distance</span> <span class="o">=</span> <span class="mf">0.</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
-        <span class="n">distance</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">current</span><span class="p">)))</span>
-        <span class="n">current</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-    <span class="n">distance</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">current</span><span class="p">)))</span>
-    <span class="k">return</span> <span class="n">distance</span>
-
-
-<span class="k">def</span> <span class="nf">_evaluate_tour</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Computes length of path with return to first node in the path.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        nodes (NDArray): master list of coordinates of points</span>
-<span class="sd">        indices (Iterable[int]): indices of points making up the tour (without repeat of first point)</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        float: length</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">current</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
-    <span class="n">first</span> <span class="o">=</span> <span class="n">current</span>
-    <span class="n">indices</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-    <span class="n">distance</span> <span class="o">=</span> <span class="mf">0.</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
-        <span class="n">distance</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">current</span><span class="p">)))</span>
-        <span class="n">current</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-    <span class="n">distance</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">current</span> <span class="o">-</span> <span class="n">first</span><span class="p">)))</span>
-    <span class="k">return</span> <span class="n">distance</span>
-
-
-<span class="k">def</span> <span class="nf">_partial_shortest_tour</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">left</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Brute force the shortest open tour (if left and right nodes provided) or closed tour (if not provided).</span>
-<span class="sd">    Should only be used on computationally tractable subproblems.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        nodes (NDArray): master list of coordinates of points</span>
-<span class="sd">        indices (Iterable[int]): indices of points making up the path/tour</span>
-<span class="sd">        left (Iterable[int], optional): Left (starting) nodes, if computing a path. Defaults to None.</span>
-<span class="sd">        right (int, optional): Right (ending) node, if computing a path. Defaults to None.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        List[int]: shortest path/tour</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">left</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Assume both left and right provided</span>
-        <span class="n">nodes</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="n">nodes</span> <span class="o">+</span> <span class="p">[</span><span class="n">right</span><span class="p">]</span>
-        <span class="n">indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)))</span> <span class="o">+</span> <span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">]</span>
-    <span class="n">min_score</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)</span>
-    <span class="n">min_path</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">permutations</span><span class="p">(</span><span class="n">indices</span><span class="p">):</span>
-        <span class="n">score</span> <span class="o">=</span> <span class="n">_evaluate_path</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span> <span class="k">if</span> <span class="n">left</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_evaluate_tour</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">score</span> <span class="o">&lt;</span> <span class="n">min_score</span><span class="p">:</span>
-            <span class="n">min_score</span> <span class="o">=</span> <span class="n">score</span>
-            <span class="n">min_path</span> <span class="o">=</span> <span class="n">path</span>
-    <span class="k">if</span> <span class="n">left</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">min_path</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">min_path</span>
-
-
-<span class="k">def</span> <span class="nf">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="n">DSNode</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">left</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Find shortest path/tour through a branch of the tree.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        nodes (NDArray): master list of coordinates of points</span>
-<span class="sd">        c (DSNode): parent node of branch</span>
-<span class="sd">        k (int): cluster size</span>
-<span class="sd">        left (Iterable[int], optional): Left (starting) nodes, if computing a path. Defaults to None.</span>
-<span class="sd">        right (int, optional): Right (ending) node, if computing a path. Defaults to None.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        List[int]: shortest path/tour</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">children</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="n">children</span>
-    <span class="n">centroids</span> <span class="o">=</span> <span class="p">[</span><span class="n">centroid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">children</span><span class="p">]</span>
-    <span class="n">centroids_left</span> <span class="o">=</span> <span class="p">[</span><span class="n">centroid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">left</span><span class="p">]</span> <span class="k">if</span> <span class="n">left</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
-    <span class="n">tour</span> <span class="o">=</span> <span class="n">_partial_shortest_tour</span><span class="p">(</span><span class="n">centroids</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">))),</span> <span class="n">centroids_left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
-    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">tour</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">),</span> <span class="p">[(</span><span class="n">children</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">left</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tour</span><span class="p">]</span>
-
-
-<span class="k">def</span> <span class="nf">_get_previous_nodes</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">new_result</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-    <span class="k">assert</span> <span class="n">s</span> <span class="o">&gt;</span> <span class="mi">0</span>
-    <span class="k">if</span> <span class="n">new_result</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">new_result</span><span class="p">[</span><span class="o">-</span><span class="n">s</span><span class="p">:]</span>
-    <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span>
-
-
-<span class="k">def</span> <span class="nf">pyramid_solve</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">clustering</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;boruvka&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">pyramid_solve</span><span class="p">(</span><span class="n">tsp</span><span class="p">:</span> <span class="n">N_TSP</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Find an approximately-optimal tour using hierarchical clustering algorithm.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        nodes (NDArray): master list of coordinates of points</span>
+<span class="sd">        nodes (N_TSP): TSP to solve</span>
 <span class="sd">        k (int, optional): Cluster size. Defaults to 6.</span>
-<span class="sd">        s (int, optional): Number of previous cities to account for in partial tour (refines k+s-1 cities). Defaults to 1.</span>
-<span class="sd">        clustering (str, optional): MST algorithm to use for clustering, either &#39;boruvka&#39; or &#39;kruskal&#39;. Defaults to &#39;boruvka&#39;.</span>
+<span class="sd">        s (int, optional): Number of previous cities to account for in partial tour (refines k+s-1 cities, where the extra 1 is the endpoint, for historical reasons). Defaults to 1.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        List[int]: tour</span>
+<span class="sd">        NDArray: tour</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">k</span> <span class="o">=</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">cluster</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">clustering</span><span class="p">)</span>
-    <span class="n">_</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
-    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">nodes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="n">tsp</span><span class="o">.</span><span class="n">cities</span><span class="p">))</span>
+    <span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_cluster_boruvka</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="n">level</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">_solve_level</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">level</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">level</span> <span class="o">-=</span> <span class="mi">1</span>
         <span class="n">new_result</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
-            <span class="n">extra</span><span class="p">,</span> <span class="nb">next</span> <span class="o">=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">_get_previous_nodes</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">new_result</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">nodes</span><span class="p">),</span> <span class="n">centroid</span><span class="p">(</span><span class="n">result</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)],</span> <span class="n">nodes</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">extra</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">new_result</span><span class="p">:</span>
-                    <span class="n">new_result</span> <span class="o">=</span> <span class="n">new_result</span><span class="p">[:</span><span class="o">-</span><span class="n">extra</span><span class="p">]</span> <span class="o">+</span> <span class="nb">next</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">subcluster</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">new_result</span><span class="p">:</span>
+                <span class="n">prev_tour</span> <span class="o">=</span> <span class="n">new_result</span><span class="p">[</span><span class="o">-</span><span class="n">s</span><span class="p">:]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">prev_tour</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">new_result</span> <span class="o">=</span> <span class="n">new_result</span><span class="p">[:</span><span class="o">-</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">prev_tour</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
+                    <span class="n">new_result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_solve_level</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">subcluster</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="n">level</span><span class="p">][</span><span class="n">prev_tour</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">prev_tour</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">c</span><span class="p">[</span><span class="n">level</span><span class="p">][</span><span class="n">new_result</span><span class="p">[</span><span class="mi">0</span><span class="p">]]))</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="p">[:</span><span class="o">-</span><span class="n">extra</span><span class="p">]</span> <span class="o">+</span> <span class="nb">next</span><span class="p">[:</span><span class="n">extra</span><span class="p">]</span>
-                    <span class="n">new_result</span> <span class="o">+=</span> <span class="nb">next</span><span class="p">[</span><span class="n">extra</span><span class="p">:]</span>
+                    <span class="n">new_result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_solve_level</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">subcluster</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="n">level</span><span class="p">][</span><span class="n">prev_tour</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">prev_tour</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">c</span><span class="p">[</span><span class="n">level</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="n">result</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)]]))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">new_result</span> <span class="o">+=</span> <span class="nb">next</span>
+                <span class="n">new_result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_solve_level</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">subcluster</span><span class="p">,</span> <span class="n">prev_centroid</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">level</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="n">result</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]],</span> <span class="n">next_centroid</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">level</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="n">result</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)]]))</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">new_result</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
-    <span class="n">zero</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="n">zero</span><span class="p">:]</span> <span class="o">+</span> <span class="n">result</span><span class="p">[:</span><span class="n">zero</span><span class="p">]</span>
-
-
-<span class="k">def</span> <span class="nf">pyramid_debug</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">clustering</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;boruvka&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;Starts by yielding the centroids at the top level of the pyramid, then the level below, and so on, in the following pattern:</span>
-
-<span class="sd">    1. tour of centroids at top of pyramid: [a, b, c, d, e, f]</span>
-<span class="sd">    2. [cluster below a, b, c, d, e, f]</span>
-<span class="sd">    3. [cluster below a, cluster below b, c, d, e, f]</span>
-<span class="sd">    4. ...</span>
-<span class="sd">    5. [cluster below a, cluster below b, ..., cluster below f]</span>
-<span class="sd">    6. Repeating from 1 for the next level of the pyramid (which is the tour produced in 5).</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        nodes (NDArray): master list of coordinates of points</span>
-<span class="sd">        k (int, optional): Cluster size. Defaults to 6.</span>
-<span class="sd">        s (int, optional): Number of previous cities to account for in partial tour (refines k+s-1 cities). Defaults to 1.</span>
-<span class="sd">        clustering (str, optional): MST algorithm to use for clustering, either &#39;boruvka&#39; or &#39;kruskal&#39;. Defaults to &#39;boruvka&#39;.</span>
-
-<span class="sd">    Yields:</span>
-<span class="sd">        Iterator[List[int]]: [description]</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">k</span> <span class="o">=</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">cluster</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">clustering</span><span class="p">)</span>
-    <span class="n">_</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
-    <span class="k">yield</span> <span class="p">[</span><span class="n">centroid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
-    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">nodes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-        <span class="n">new_result</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
-            <span class="n">extra</span><span class="p">,</span> <span class="nb">next</span> <span class="o">=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">_get_previous_nodes</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">new_result</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">nodes</span><span class="p">),</span> <span class="n">centroid</span><span class="p">(</span><span class="n">result</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)],</span> <span class="n">nodes</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">extra</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">new_result</span><span class="p">:</span>
-                    <span class="n">new_result</span> <span class="o">=</span> <span class="n">new_result</span><span class="p">[:</span><span class="o">-</span><span class="n">extra</span><span class="p">]</span> <span class="o">+</span> <span class="nb">next</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="p">[:</span><span class="o">-</span><span class="n">extra</span><span class="p">]</span> <span class="o">+</span> <span class="nb">next</span><span class="p">[:</span><span class="n">extra</span><span class="p">]</span>
-                    <span class="n">new_result</span> <span class="o">+=</span> <span class="nb">next</span><span class="p">[</span><span class="n">extra</span><span class="p">:]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">new_result</span> <span class="o">+=</span> <span class="nb">next</span>
-            <span class="k">yield</span> <span class="p">[</span><span class="n">centroid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">new_result</span> <span class="o">+</span> <span class="n">result</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]]</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">new_result</span>
-        <span class="k">yield</span> <span class="p">[</span><span class="n">centroid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 </pre></div>
 
         </details>
 
             </section>
-                <section id="DSNode">
-                                <div class="attr class">
-        <a class="headerlink" href="#DSNode">#&nbsp;&nbsp</a>
-
-        
-        <span class="def">class</span>
-        <span class="name">DSNode</span>:
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">DSNode</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Implements a disjoint-set dendrogram.&quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">children</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DSNode</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Args:</span>
-<span class="sd">            value (Any): value to store at this node (can be literally anything)</span>
-<span class="sd">            children (List[DSNode], optional): Nodes immediately below this one. Defaults to [].</span>
-<span class="sd">            height (int, optional): Numerical value expressing the depth of the tree below it. Defaults to 0.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">children</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">children</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span>
-
-    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">DSNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">&lt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">height</span>
-
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">DSNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">==</span> <span class="n">obj</span><span class="o">.</span><span class="n">height</span>
-
-    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DSNode</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Recursively finds the root of the tree.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            DSNode: root</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span>
-
-    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">DSNode</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the depth + 1 clusters produced by descending the dendrogram.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            depth (int, optional): how many levels down the dendrogram to split. Defaults to 1.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            List[DSNode]: depth + 1 roots of the subtrees</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">depth</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="p">]</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[:]</span>
-        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">depth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="n">to_split</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">to_split</span><span class="p">)</span>
-            <span class="n">result</span> <span class="o">+=</span> <span class="n">to_split</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">result</span>
-
-    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;List this node&#39;s value and all values below it.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            List[Any]: values</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
-</pre></div>
-
-        </details>
-
-            <div class="docstring"><p>Implements a disjoint-set dendrogram.</p>
-</div>
-
-
-                            <div id="DSNode.__init__" class="classattr">
-                                        <div class="attr function"><a class="headerlink" href="#DSNode.__init__">#&nbsp;&nbsp</a>
-
-        
-            <span class="name">DSNode</span><span class="signature">(
-    value: Any,
-    children: List[<a href="#DSNode">tsp.core.pyramid.DSNode</a>] = None,
-    height: int = 0
-)</span>
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">children</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DSNode</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Args:</span>
-<span class="sd">            value (Any): value to store at this node (can be literally anything)</span>
-<span class="sd">            children (List[DSNode], optional): Nodes immediately below this one. Defaults to [].</span>
-<span class="sd">            height (int, optional): Numerical value expressing the depth of the tree below it. Defaults to 0.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">children</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">children</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span>
-</pre></div>
-
-        </details>
-
-            <div class="docstring"><h6 id="args">Args</h6>
-
-<ul>
-<li><strong>value (Any):</strong>  value to store at this node (can be literally anything)</li>
-<li><strong>children (List[DSNode], optional):</strong>  Nodes immediately below this one. Defaults to [].</li>
-<li><strong>height (int, optional):</strong>  Numerical value expressing the depth of the tree below it. Defaults to 0.</li>
-</ul>
-</div>
-
-
-                            </div>
-                            <div id="DSNode.find" class="classattr">
-                                        <div class="attr function"><a class="headerlink" href="#DSNode.find">#&nbsp;&nbsp</a>
-
-        
-            <span class="def">def</span>
-            <span class="name">find</span><span class="signature">(self) -&gt; <a href="#DSNode">tsp.core.pyramid.DSNode</a></span>:
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DSNode</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Recursively finds the root of the tree.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            DSNode: root</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span>
-</pre></div>
-
-        </details>
-
-            <div class="docstring"><p>Recursively finds the root of the tree.</p>
-
-<h6 id="returns">Returns</h6>
-
-<blockquote>
-  <p>DSNode: root</p>
-</blockquote>
-</div>
-
-
-                            </div>
-                            <div id="DSNode.split" class="classattr">
-                                        <div class="attr function"><a class="headerlink" href="#DSNode.split">#&nbsp;&nbsp</a>
-
-        
-            <span class="def">def</span>
-            <span class="name">split</span><span class="signature">(self, depth: int = 1) -&gt; List[<a href="#DSNode">tsp.core.pyramid.DSNode</a>]</span>:
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">DSNode</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the depth + 1 clusters produced by descending the dendrogram.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            depth (int, optional): how many levels down the dendrogram to split. Defaults to 1.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            List[DSNode]: depth + 1 roots of the subtrees</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">depth</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="p">]</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[:]</span>
-        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">depth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="n">to_split</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">to_split</span><span class="p">)</span>
-            <span class="n">result</span> <span class="o">+=</span> <span class="n">to_split</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">result</span>
-</pre></div>
-
-        </details>
-
-            <div class="docstring"><p>Returns the depth + 1 clusters produced by descending the dendrogram.</p>
-
-<h6 id="args">Args</h6>
-
-<ul>
-<li><strong>depth (int, optional):</strong>  how many levels down the dendrogram to split. Defaults to 1.</li>
-</ul>
-
-<h6 id="returns">Returns</h6>
-
-<blockquote>
-  <p>List[DSNode]: depth + 1 roots of the subtrees</p>
-</blockquote>
-</div>
-
-
-                            </div>
-                            <div id="DSNode.values" class="classattr">
-                                        <div class="attr function"><a class="headerlink" href="#DSNode.values">#&nbsp;&nbsp</a>
-
-        
-            <span class="def">def</span>
-            <span class="name">values</span><span class="signature">(self) -&gt; List[Any]</span>:
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;List this node&#39;s value and all values below it.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            List[Any]: values</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
-</pre></div>
-
-        </details>
-
-            <div class="docstring"><p>List this node's value and all values below it.</p>
-
-<h6 id="returns">Returns</h6>
-
-<blockquote>
-  <p>List[Any]: values</p>
-</blockquote>
-</div>
-
-
-                            </div>
-                </section>
-                <section id="DSTree">
-                                <div class="attr class">
-        <a class="headerlink" href="#DSTree">#&nbsp;&nbsp</a>
-
-        
-        <span class="def">class</span>
-        <span class="name">DSTree</span>:
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">DSTree</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Container for building the disjoint-set dendrogram.&quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Hashable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Args:</span>
-<span class="sd">            values (List[Any], optional): Initial leaves to initialize. Defaults to None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sets</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_unions</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">make_set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">sets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Number of disjoint sets in the tree.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            int: number of sets</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sets</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unions</span>
-
-    <span class="k">def</span> <span class="nf">make_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize a new set/leaf of tree.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            value (Any): value to store at node</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sets</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="n">DSNode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DSNode</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Find root of tree containing node which stores value.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            value (Hashable): value of node of interest</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            DSNode: root of tree</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sets</span><span class="p">[</span><span class="n">value</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">union</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DSNode</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create a union of set containing x and set containing y.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            x (Hashable): value which picks out first set</span>
-<span class="sd">            y (Hashable): value which picks out second set</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            DSNode: root of new tree which is the union of the sets (or not-new if they&#39;re both in the same set)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">x_parent</span><span class="p">,</span> <span class="n">y_parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">x_parent</span> <span class="ow">is</span> <span class="n">y_parent</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">x_parent</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_unions</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">new_parent</span> <span class="o">=</span> <span class="n">DSNode</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="n">x_parent</span><span class="p">,</span> <span class="n">y_parent</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unions</span><span class="p">)</span>
-        <span class="n">x_parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">new_parent</span>
-        <span class="n">y_parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">new_parent</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">new_parent</span>
-        <span class="k">return</span> <span class="n">new_parent</span>
-</pre></div>
-
-        </details>
-
-            <div class="docstring"><p>Container for building the disjoint-set dendrogram.</p>
-</div>
-
-
-                            <div id="DSTree.__init__" class="classattr">
-                                        <div class="attr function"><a class="headerlink" href="#DSTree.__init__">#&nbsp;&nbsp</a>
-
-        
-            <span class="name">DSTree</span><span class="signature">(values: List[Hashable] = None)</span>
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Hashable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Args:</span>
-<span class="sd">            values (List[Any], optional): Initial leaves to initialize. Defaults to None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sets</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_unions</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">make_set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-</pre></div>
-
-        </details>
-
-            <div class="docstring"><h6 id="args">Args</h6>
-
-<ul>
-<li><strong>values (List[Any], optional):</strong>  Initial leaves to initialize. Defaults to None.</li>
-</ul>
-</div>
-
-
-                            </div>
-                            <div id="DSTree.sets" class="classattr">
-                                            <div class="attr variable"><a class="headerlink" href="#DSTree.sets">#&nbsp;&nbsp</a>
-
-        <span class="name">sets</span><span class="annotation">: int</span>
-    </div>
-
-            <div class="docstring"><p>Number of disjoint sets in the tree.</p>
-
-<h6 id="returns">Returns</h6>
-
-<blockquote>
-  <p>int: number of sets</p>
-</blockquote>
-</div>
-
-
-                            </div>
-                            <div id="DSTree.make_set" class="classattr">
-                                        <div class="attr function"><a class="headerlink" href="#DSTree.make_set">#&nbsp;&nbsp</a>
-
-        
-            <span class="def">def</span>
-            <span class="name">make_set</span><span class="signature">(self, value: Hashable)</span>:
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">make_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize a new set/leaf of tree.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            value (Any): value to store at node</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sets</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="n">DSNode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-</pre></div>
-
-        </details>
-
-            <div class="docstring"><p>Initialize a new set/leaf of tree.</p>
-
-<h6 id="args">Args</h6>
-
-<ul>
-<li><strong>value (Any):</strong>  value to store at node</li>
-</ul>
-</div>
-
-
-                            </div>
-                            <div id="DSTree.find" class="classattr">
-                                        <div class="attr function"><a class="headerlink" href="#DSTree.find">#&nbsp;&nbsp</a>
-
-        
-            <span class="def">def</span>
-            <span class="name">find</span><span class="signature">(self, value: Hashable) -&gt; <a href="#DSNode">tsp.core.pyramid.DSNode</a></span>:
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DSNode</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Find root of tree containing node which stores value.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            value (Hashable): value of node of interest</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            DSNode: root of tree</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sets</span><span class="p">[</span><span class="n">value</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
-</pre></div>
-
-        </details>
-
-            <div class="docstring"><p>Find root of tree containing node which stores value.</p>
-
-<h6 id="args">Args</h6>
-
-<ul>
-<li><strong>value (Hashable):</strong>  value of node of interest</li>
-</ul>
-
-<h6 id="returns">Returns</h6>
-
-<blockquote>
-  <p>DSNode: root of tree</p>
-</blockquote>
-</div>
-
-
-                            </div>
-                            <div id="DSTree.union" class="classattr">
-                                        <div class="attr function"><a class="headerlink" href="#DSTree.union">#&nbsp;&nbsp</a>
-
-        
-            <span class="def">def</span>
-            <span class="name">union</span><span class="signature">(self, x: Hashable, y: Hashable) -&gt; <a href="#DSNode">tsp.core.pyramid.DSNode</a></span>:
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">union</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DSNode</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create a union of set containing x and set containing y.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            x (Hashable): value which picks out first set</span>
-<span class="sd">            y (Hashable): value which picks out second set</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            DSNode: root of new tree which is the union of the sets (or not-new if they&#39;re both in the same set)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">x_parent</span><span class="p">,</span> <span class="n">y_parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">x_parent</span> <span class="ow">is</span> <span class="n">y_parent</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">x_parent</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_unions</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">new_parent</span> <span class="o">=</span> <span class="n">DSNode</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="n">x_parent</span><span class="p">,</span> <span class="n">y_parent</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unions</span><span class="p">)</span>
-        <span class="n">x_parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">new_parent</span>
-        <span class="n">y_parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">new_parent</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">new_parent</span>
-        <span class="k">return</span> <span class="n">new_parent</span>
-</pre></div>
-
-        </details>
-
-            <div class="docstring"><p>Create a union of set containing x and set containing y.</p>
-
-<h6 id="args">Args</h6>
-
-<ul>
-<li><strong>x (Hashable):</strong>  value which picks out first set</li>
-<li><strong>y (Hashable):</strong>  value which picks out second set</li>
-</ul>
-
-<h6 id="returns">Returns</h6>
-
-<blockquote>
-  <p>DSNode: root of new tree which is the union of the sets (or not-new if they're both in the same set)</p>
-</blockquote>
-</div>
-
-
-                            </div>
-                </section>
-                <section id="centroid">
-                            <div class="attr function"><a class="headerlink" href="#centroid">#&nbsp;&nbsp</a>
-
-        
-            <span class="def">def</span>
-            <span class="name">centroid</span><span class="signature">(
-    c: <a href="#DSNode">tsp.core.pyramid.DSNode</a>,
-    nodes: numpy.ndarray
-) -&gt; numpy.ndarray[typing.Any, numpy.dtype[+ScalarType]]</span>:
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">centroid</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">DSNode</span><span class="p">,</span> <span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Gets pre-computed centroid of node in tree.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        c (DSNode): parent node of relevance</span>
-<span class="sd">        nodes (NDArray): master list of coordinates of points</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        NDArray: centroid</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">nodes</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-</pre></div>
-
-        </details>
-
-            <div class="docstring"><p>Gets pre-computed centroid of node in tree.</p>
-
-<h6 id="args">Args</h6>
-
-<ul>
-<li><strong>c (DSNode):</strong>  parent node of relevance</li>
-<li><strong>nodes (NDArray):</strong>  master list of coordinates of points</li>
-</ul>
-
-<h6 id="returns">Returns</h6>
-
-<blockquote>
-  <p>NDArray: centroid</p>
-</blockquote>
-</div>
-
-
-                </section>
-                <section id="cluster_kruskal">
-                            <div class="attr function"><a class="headerlink" href="#cluster_kruskal">#&nbsp;&nbsp</a>
-
-        
-            <span class="def">def</span>
-            <span class="name">cluster_kruskal</span><span class="signature">(nodes: numpy.ndarray) -&gt; Tuple[Set, <a href="#DSNode">tsp.core.pyramid.DSNode</a>]</span>:
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">cluster_kruskal</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Set</span><span class="p">,</span> <span class="n">DSNode</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Agglomerate nodes based on their MST, given coordinates in n-dimensions.</span>
-<span class="sd">    Uses Kruskal&#39;s algorithm, which runs in O(v^2 log v)</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        nodes (NDArray): ndarray((v, n))</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Tuple[Set, DSNode]: (edges in MST, root of agglomerated tree)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-    <span class="n">edges</span> <span class="o">=</span> <span class="n">PriorityQueue</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="n">tree</span> <span class="o">=</span> <span class="n">DSTree</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)):</span>
-        <span class="n">tree</span><span class="o">.</span><span class="n">make_set</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)):</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">nodes</span><span class="p">[</span><span class="n">j</span><span class="p">])))</span>
-            <span class="n">edges</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)))</span>
-    <span class="k">while</span> <span class="n">tree</span><span class="o">.</span><span class="n">sets</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">old_root</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">root</span>
-        <span class="n">edge_length</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">edges</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-        <span class="n">c</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="n">e</span><span class="p">)</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">_calculate_centroid</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">old_root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">old_root</span> <span class="o">!=</span> <span class="n">c</span><span class="p">:</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">edge_length</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">tree</span><span class="o">.</span><span class="n">root</span>
-</pre></div>
-
-        </details>
-
-            <div class="docstring"><p>Agglomerate nodes based on their MST, given coordinates in n-dimensions.
-Uses Kruskal's algorithm, which runs in O(v^2 log v)</p>
-
-<h6 id="args">Args</h6>
-
-<ul>
-<li><strong>nodes (NDArray):</strong>  ndarray((v, n))</li>
-</ul>
-
-<h6 id="returns">Returns</h6>
-
-<blockquote>
-  <p>Tuple[Set, DSNode]: (edges in MST, root of agglomerated tree)</p>
-</blockquote>
-</div>
-
-
-                </section>
-                <section id="cluster_boruvka">
-                            <div class="attr function"><a class="headerlink" href="#cluster_boruvka">#&nbsp;&nbsp</a>
-
-        
-            <span class="def">def</span>
-            <span class="name">cluster_boruvka</span><span class="signature">(nodes: numpy.ndarray) -&gt; Tuple[Set, <a href="#DSNode">tsp.core.pyramid.DSNode</a>]</span>:
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">cluster_boruvka</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Set</span><span class="p">,</span> <span class="n">DSNode</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Agglomerate nodes based on their MST, given coordinates in n-dimensions.</span>
-<span class="sd">    Uses Boruvka&#39;s algorithm: which should produce a more &quot;balanced&quot; tree.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        nodes (NDArray): ndarray((v, n))</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Tuple[Set, DSNode]: (edges in MST, root of agglomerated tree)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-    <span class="n">v</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
-    <span class="n">tree</span> <span class="o">=</span> <span class="n">DSTree</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
-        <span class="n">tree</span><span class="o">.</span><span class="n">make_set</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-        <span class="n">edges</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">nodes</span><span class="p">[</span><span class="n">j</span><span class="p">])))</span>
-            <span class="n">edges</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-    <span class="n">i_lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">edges</span><span class="p">[</span><span class="n">i_lower</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="n">i_lower</span><span class="p">]</span>
-    <span class="k">while</span> <span class="n">tree</span><span class="o">.</span><span class="n">sets</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">clusters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">find</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="n">tree</span><span class="o">.</span><span class="n">_sets</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
-        <span class="n">minimum_edges</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span> <span class="p">:</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">clusters</span><span class="p">))}</span>
-        <span class="k">for</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">clusters</span><span class="p">)),</span> <span class="mi">2</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">clusters</span><span class="p">[</span><span class="n">c1</span><span class="p">],</span> <span class="n">clusters</span><span class="p">[</span><span class="n">c2</span><span class="p">]):</span>
-                <span class="k">if</span> <span class="n">edges</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">minimum_edges</span><span class="p">[</span><span class="n">c1</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
-                    <span class="n">minimum_edges</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="n">e</span>
-                <span class="k">if</span> <span class="n">edges</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">minimum_edges</span><span class="p">[</span><span class="n">c2</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
-                    <span class="n">minimum_edges</span><span class="p">[</span><span class="n">c2</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="n">e</span>
-        <span class="k">for</span> <span class="n">edge_length</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">minimum_edges</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-            <span class="n">old_root</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">root</span>
-            <span class="n">c</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="n">e</span><span class="p">)</span>
-            <span class="n">c</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">_calculate_centroid</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">old_root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">old_root</span> <span class="o">!=</span> <span class="n">c</span><span class="p">:</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">edge_length</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">tree</span><span class="o">.</span><span class="n">root</span>
-</pre></div>
-
-        </details>
-
-            <div class="docstring"><p>Agglomerate nodes based on their MST, given coordinates in n-dimensions.
-Uses Boruvka's algorithm: which should produce a more "balanced" tree.</p>
-
-<h6 id="args">Args</h6>
-
-<ul>
-<li><strong>nodes (NDArray):</strong>  ndarray((v, n))</li>
-</ul>
-
-<h6 id="returns">Returns</h6>
-
-<blockquote>
-  <p>Tuple[Set, DSNode]: (edges in MST, root of agglomerated tree)</p>
-</blockquote>
-</div>
-
-
-                </section>
-                <section id="mst">
-                            <div class="attr function"><a class="headerlink" href="#mst">#&nbsp;&nbsp</a>
-
-        
-            <span class="def">def</span>
-            <span class="name">mst</span><span class="signature">(nodes: numpy.ndarray) -&gt; Set</span>:
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">mst</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Generate an MST (shorthand for `cluster_boruvka(nodes)[0]`).</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        nodes (NDArray): ndarray((v, n))</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Set: edges in MST</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">cluster_boruvka</span><span class="p">(</span><span class="n">nodes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-</pre></div>
-
-        </details>
-
-            <div class="docstring"><p>Generate an MST (shorthand for <code>cluster_boruvka(nodes)[0]</code>).</p>
-
-<h6 id="args">Args</h6>
-
-<ul>
-<li><strong>nodes (NDArray):</strong>  ndarray((v, n))</li>
-</ul>
-
-<h6 id="returns">Returns</h6>
-
-<blockquote>
-  <p>Set: edges in MST</p>
-</blockquote>
-</div>
-
-
-                </section>
-                <section id="cluster">
-                            <div class="attr function"><a class="headerlink" href="#cluster">#&nbsp;&nbsp</a>
-
-        
-            <span class="def">def</span>
-            <span class="name">cluster</span><span class="signature">(
-    nodes: numpy.ndarray,
-    clustering: str = &#39;boruvka&#39;
-) -&gt; <a href="#DSNode">tsp.core.pyramid.DSNode</a></span>:
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">cluster</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">clustering</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;boruvka&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DSNode</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Agglomerate nodes into dendrogram (shorthand for `cluster_boruvka(nodes)[1]`).</span>
-<span class="sd">    Now can manually specify which MST algorithm to use.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        nodes (NDArray): ndarray((v, n))</span>
-<span class="sd">        clustering (str, optional): either &#39;boruvka&#39; or &#39;kruskal&#39;. Defaults to &#39;boruvka&#39;.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        DSNode: root of agglomerated tree</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">clustering</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;kruskal&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">cluster_kruskal</span><span class="p">(</span><span class="n">nodes</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">cluster_boruvka</span><span class="p">(</span><span class="n">nodes</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-</pre></div>
-
-        </details>
-
-            <div class="docstring"><p>Agglomerate nodes into dendrogram (shorthand for <code>cluster_boruvka(nodes)[1]</code>).
-Now can manually specify which MST algorithm to use.</p>
-
-<h6 id="args">Args</h6>
-
-<ul>
-<li><strong>nodes (NDArray):</strong>  ndarray((v, n))</li>
-<li><strong>clustering (str, optional):</strong>  either 'boruvka' or 'kruskal'. Defaults to 'boruvka'.</li>
-</ul>
-
-<h6 id="returns">Returns</h6>
-
-<blockquote>
-  <p>DSNode: root of agglomerated tree</p>
-</blockquote>
-</div>
-
-
-                </section>
-                <section id="solve_level">
-                            <div class="attr function"><a class="headerlink" href="#solve_level">#&nbsp;&nbsp</a>
-
-        
-            <span class="def">def</span>
-            <span class="name">solve_level</span><span class="signature">(
-    nodes: numpy.ndarray,
-    c: <a href="#DSNode">tsp.core.pyramid.DSNode</a>,
-    k: int,
-    left: Iterable[int] = None,
-    right: int = None
-) -&gt; List[int]</span>:
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="n">DSNode</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">left</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Find shortest path/tour through a branch of the tree.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        nodes (NDArray): master list of coordinates of points</span>
-<span class="sd">        c (DSNode): parent node of branch</span>
-<span class="sd">        k (int): cluster size</span>
-<span class="sd">        left (Iterable[int], optional): Left (starting) nodes, if computing a path. Defaults to None.</span>
-<span class="sd">        right (int, optional): Right (ending) node, if computing a path. Defaults to None.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        List[int]: shortest path/tour</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">children</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="n">children</span>
-    <span class="n">centroids</span> <span class="o">=</span> <span class="p">[</span><span class="n">centroid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">children</span><span class="p">]</span>
-    <span class="n">centroids_left</span> <span class="o">=</span> <span class="p">[</span><span class="n">centroid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">left</span><span class="p">]</span> <span class="k">if</span> <span class="n">left</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
-    <span class="n">tour</span> <span class="o">=</span> <span class="n">_partial_shortest_tour</span><span class="p">(</span><span class="n">centroids</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">))),</span> <span class="n">centroids_left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
-    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">tour</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">),</span> <span class="p">[(</span><span class="n">children</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">left</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tour</span><span class="p">]</span>
-</pre></div>
-
-        </details>
-
-            <div class="docstring"><p>Find shortest path/tour through a branch of the tree.</p>
-
-<h6 id="args">Args</h6>
-
-<ul>
-<li><strong>nodes (NDArray):</strong>  master list of coordinates of points</li>
-<li><strong>c (DSNode):</strong>  parent node of branch</li>
-<li><strong>k (int):</strong>  cluster size</li>
-<li><strong>left (Iterable[int], optional):</strong>  Left (starting) nodes, if computing a path. Defaults to None.</li>
-<li><strong>right (int, optional):</strong>  Right (ending) node, if computing a path. Defaults to None.</li>
-</ul>
-
-<h6 id="returns">Returns</h6>
-
-<blockquote>
-  <p>List[int]: shortest path/tour</p>
-</blockquote>
-</div>
-
-
-                </section>
                 <section id="pyramid_solve">
                             <div class="attr function"><a class="headerlink" href="#pyramid_solve">#&nbsp;&nbsp</a>
 
         
             <span class="def">def</span>
             <span class="name">pyramid_solve</span><span class="signature">(
-    nodes: numpy.ndarray,
+    tsp: <a href="tsp.html#N_TSP">tsp.core.tsp.N_TSP</a>,
     k: int = 6,
-    s: int = 1,
-    clustering: str = &#39;boruvka&#39;
-) -&gt; List[int]</span>:
+    s: int = 1
+) -&gt; numpy.ndarray[typing.Any, numpy.dtype[+ScalarType]]</span>:
     </div>
 
                 <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">pyramid_solve</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">clustering</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;boruvka&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">pyramid_solve</span><span class="p">(</span><span class="n">tsp</span><span class="p">:</span> <span class="n">N_TSP</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Find an approximately-optimal tour using hierarchical clustering algorithm.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        nodes (NDArray): master list of coordinates of points</span>
+<span class="sd">        nodes (N_TSP): TSP to solve</span>
 <span class="sd">        k (int, optional): Cluster size. Defaults to 6.</span>
-<span class="sd">        s (int, optional): Number of previous cities to account for in partial tour (refines k+s-1 cities). Defaults to 1.</span>
-<span class="sd">        clustering (str, optional): MST algorithm to use for clustering, either &#39;boruvka&#39; or &#39;kruskal&#39;. Defaults to &#39;boruvka&#39;.</span>
+<span class="sd">        s (int, optional): Number of previous cities to account for in partial tour (refines k+s-1 cities, where the extra 1 is the endpoint, for historical reasons). Defaults to 1.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        List[int]: tour</span>
+<span class="sd">        NDArray: tour</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">k</span> <span class="o">=</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">cluster</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">clustering</span><span class="p">)</span>
-    <span class="n">_</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
-    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">nodes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="n">tsp</span><span class="o">.</span><span class="n">cities</span><span class="p">))</span>
+    <span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_cluster_boruvka</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="n">level</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">_solve_level</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">level</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">level</span> <span class="o">-=</span> <span class="mi">1</span>
         <span class="n">new_result</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
-            <span class="n">extra</span><span class="p">,</span> <span class="nb">next</span> <span class="o">=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">_get_previous_nodes</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">new_result</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">nodes</span><span class="p">),</span> <span class="n">centroid</span><span class="p">(</span><span class="n">result</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)],</span> <span class="n">nodes</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">extra</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">new_result</span><span class="p">:</span>
-                    <span class="n">new_result</span> <span class="o">=</span> <span class="n">new_result</span><span class="p">[:</span><span class="o">-</span><span class="n">extra</span><span class="p">]</span> <span class="o">+</span> <span class="nb">next</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">subcluster</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">new_result</span><span class="p">:</span>
+                <span class="n">prev_tour</span> <span class="o">=</span> <span class="n">new_result</span><span class="p">[</span><span class="o">-</span><span class="n">s</span><span class="p">:]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">prev_tour</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">new_result</span> <span class="o">=</span> <span class="n">new_result</span><span class="p">[:</span><span class="o">-</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">prev_tour</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
+                    <span class="n">new_result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_solve_level</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">subcluster</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="n">level</span><span class="p">][</span><span class="n">prev_tour</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">prev_tour</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">c</span><span class="p">[</span><span class="n">level</span><span class="p">][</span><span class="n">new_result</span><span class="p">[</span><span class="mi">0</span><span class="p">]]))</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="p">[:</span><span class="o">-</span><span class="n">extra</span><span class="p">]</span> <span class="o">+</span> <span class="nb">next</span><span class="p">[:</span><span class="n">extra</span><span class="p">]</span>
-                    <span class="n">new_result</span> <span class="o">+=</span> <span class="nb">next</span><span class="p">[</span><span class="n">extra</span><span class="p">:]</span>
+                    <span class="n">new_result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_solve_level</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">subcluster</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="n">level</span><span class="p">][</span><span class="n">prev_tour</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">prev_tour</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">c</span><span class="p">[</span><span class="n">level</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="n">result</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)]]))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">new_result</span> <span class="o">+=</span> <span class="nb">next</span>
+                <span class="n">new_result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_solve_level</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">subcluster</span><span class="p">,</span> <span class="n">prev_centroid</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">level</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="n">result</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]],</span> <span class="n">next_centroid</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">level</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="n">result</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)]]))</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">new_result</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
-    <span class="n">zero</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="n">zero</span><span class="p">:]</span> <span class="o">+</span> <span class="n">result</span><span class="p">[:</span><span class="n">zero</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 </pre></div>
 
         </details>
@@ -1484,102 +279,15 @@ Now can manually specify which MST algorithm to use.</p>
 <h6 id="args">Args</h6>
 
 <ul>
-<li><strong>nodes (NDArray):</strong>  master list of coordinates of points</li>
+<li><strong>nodes (N_TSP):</strong>  TSP to solve</li>
 <li><strong>k (int, optional):</strong>  Cluster size. Defaults to 6.</li>
-<li><strong>s (int, optional):</strong>  Number of previous cities to account for in partial tour (refines k+s-1 cities). Defaults to 1.</li>
-<li><strong>clustering (str, optional):</strong>  MST algorithm to use for clustering, either 'boruvka' or 'kruskal'. Defaults to 'boruvka'.</li>
+<li><strong>s (int, optional):</strong>  Number of previous cities to account for in partial tour (refines k+s-1 cities, where the extra 1 is the endpoint, for historical reasons). Defaults to 1.</li>
 </ul>
 
 <h6 id="returns">Returns</h6>
 
 <blockquote>
-  <p>List[int]: tour</p>
-</blockquote>
-</div>
-
-
-                </section>
-                <section id="pyramid_debug">
-                            <div class="attr function"><a class="headerlink" href="#pyramid_debug">#&nbsp;&nbsp</a>
-
-        
-            <span class="def">def</span>
-            <span class="name">pyramid_debug</span><span class="signature">(
-    nodes: numpy.ndarray,
-    k: int = 6,
-    s: int = 1,
-    clustering: str = &#39;boruvka&#39;
-) -&gt; Iterator[List[int]]</span>:
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">pyramid_debug</span><span class="p">(</span><span class="n">nodes</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">clustering</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;boruvka&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;Starts by yielding the centroids at the top level of the pyramid, then the level below, and so on, in the following pattern:</span>
-
-<span class="sd">    1. tour of centroids at top of pyramid: [a, b, c, d, e, f]</span>
-<span class="sd">    2. [cluster below a, b, c, d, e, f]</span>
-<span class="sd">    3. [cluster below a, cluster below b, c, d, e, f]</span>
-<span class="sd">    4. ...</span>
-<span class="sd">    5. [cluster below a, cluster below b, ..., cluster below f]</span>
-<span class="sd">    6. Repeating from 1 for the next level of the pyramid (which is the tour produced in 5).</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        nodes (NDArray): master list of coordinates of points</span>
-<span class="sd">        k (int, optional): Cluster size. Defaults to 6.</span>
-<span class="sd">        s (int, optional): Number of previous cities to account for in partial tour (refines k+s-1 cities). Defaults to 1.</span>
-<span class="sd">        clustering (str, optional): MST algorithm to use for clustering, either &#39;boruvka&#39; or &#39;kruskal&#39;. Defaults to &#39;boruvka&#39;.</span>
-
-<span class="sd">    Yields:</span>
-<span class="sd">        Iterator[List[int]]: [description]</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">k</span> <span class="o">=</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">cluster</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">clustering</span><span class="p">)</span>
-    <span class="n">_</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
-    <span class="k">yield</span> <span class="p">[</span><span class="n">centroid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
-    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">nodes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-        <span class="n">new_result</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
-            <span class="n">extra</span><span class="p">,</span> <span class="nb">next</span> <span class="o">=</span> <span class="n">solve_level</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">_get_previous_nodes</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">new_result</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">nodes</span><span class="p">),</span> <span class="n">centroid</span><span class="p">(</span><span class="n">result</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)],</span> <span class="n">nodes</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">extra</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">new_result</span><span class="p">:</span>
-                    <span class="n">new_result</span> <span class="o">=</span> <span class="n">new_result</span><span class="p">[:</span><span class="o">-</span><span class="n">extra</span><span class="p">]</span> <span class="o">+</span> <span class="nb">next</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="p">[:</span><span class="o">-</span><span class="n">extra</span><span class="p">]</span> <span class="o">+</span> <span class="nb">next</span><span class="p">[:</span><span class="n">extra</span><span class="p">]</span>
-                    <span class="n">new_result</span> <span class="o">+=</span> <span class="nb">next</span><span class="p">[</span><span class="n">extra</span><span class="p">:]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">new_result</span> <span class="o">+=</span> <span class="nb">next</span>
-            <span class="k">yield</span> <span class="p">[</span><span class="n">centroid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">new_result</span> <span class="o">+</span> <span class="n">result</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]]</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">new_result</span>
-        <span class="k">yield</span> <span class="p">[</span><span class="n">centroid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
-</pre></div>
-
-        </details>
-
-            <div class="docstring"><p>Starts by yielding the centroids at the top level of the pyramid, then the level below, and so on, in the following pattern:</p>
-
-<ol>
-<li>tour of centroids at top of pyramid: [a, b, c, d, e, f]</li>
-<li>[cluster below a, b, c, d, e, f]</li>
-<li>[cluster below a, cluster below b, c, d, e, f]</li>
-<li>...</li>
-<li>[cluster below a, cluster below b, ..., cluster below f]</li>
-<li>Repeating from 1 for the next level of the pyramid (which is the tour produced in 5).</li>
-</ol>
-
-<h6 id="args">Args</h6>
-
-<ul>
-<li><strong>nodes (NDArray):</strong>  master list of coordinates of points</li>
-<li><strong>k (int, optional):</strong>  Cluster size. Defaults to 6.</li>
-<li><strong>s (int, optional):</strong>  Number of previous cities to account for in partial tour (refines k+s-1 cities). Defaults to 1.</li>
-<li><strong>clustering (str, optional):</strong>  MST algorithm to use for clustering, either 'boruvka' or 'kruskal'. Defaults to 'boruvka'.</li>
-</ul>
-
-<h6 id="yields">Yields</h6>
-
-<blockquote>
-  <p>Iterator[List[int]]: [description]</p>
+  <p>NDArray: tour</p>
 </blockquote>
 </div>
 

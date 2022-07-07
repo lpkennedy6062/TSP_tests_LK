@@ -80,17 +80,17 @@ def do_split(vertices: List, edges: List, D: NDArray, r: int) -> Tuple[List, Lis
     the subtree. For them, because edge length was 1, this just amounted to counting edges. For us,
     we have to add up edge lengths. So how would this algorithm actually work?
 
-    a)   Given a subtree that has size > r,
-    a.1) consider all edges and compute d_max for each of the two new root vertexes if split was to
-         occur by removing this edge.
-    a.2) split at the edge where d_max of the two trees is as equal as possible. Doing this
-         conceptually will give us, at each split, two trees that could fit in circles of
-         approximately the same radius.
+    1.   Given a subtree that has size > r,
+        1. consider all edges and compute d_max for each of the two new root vertexes if split was
+           to occur by removing this edge.
+        2. split at the edge where d_max of the two trees is as equal as possible. Doing this
+           conceptually will give us, at each split, two trees that could fit in circles of
+           approximately the same radius.
 
     Args:
-        vertices (List): List of vertices (defining the cluster): `[i, j, k]`
-        edges (List): List of edges: `[(i, j), ...]`
-        D (NDArray): Distance matrix: can be accessed with `D[i,j]`
+        vertices (List): List of vertices (defining the cluster) `[i, j, k]`
+        edges (List): List of edges `[(i, j), ...]`
+        D (NDArray): Distance matrix can be accessed with `D[i,j]`
         r (int): Maximum cluster size
 
     Returns:

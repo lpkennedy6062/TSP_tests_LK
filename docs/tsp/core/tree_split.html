@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="pdoc 7.1.1" />
-    <title>tsp.extra.viz API documentation</title>
+    <title>tsp.core.tree_split API documentation</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2264%22%20height%3D%2264%22%20viewBox%3D%2244.5%202.5%2015%2015%22%3E%3Cpath%20d%3D%22M49.351%2021.041c-.233-.721-.546-2.408-.772-4.076-.042-.09-.067-.187-.046-.288-.166-1.347-.277-2.625-.241-3.351-1.378-1.008-2.271-2.586-2.271-4.362%200-.976.272-1.935.788-2.774.057-.094.122-.18.184-.268-.033-.167-.052-.339-.052-.516%200-1.477%201.202-2.679%202.679-2.679.791%200%201.496.352%201.987.9a6.3%206.3%200%200%201%201.001.029c.492-.564%201.207-.929%202.012-.929%201.477%200%202.679%201.202%202.679%202.679a2.65%202.65%200%200%201-.269%201.148c.383.747.595%201.572.595%202.41%200%202.311-1.507%204.29-3.635%205.107.037.699.147%202.27.423%203.294l.137.461c.156%202.136-4.612%205.166-5.199%203.215zm.127-4.919a4.78%204.78%200%200%200%20.775-.584c-.172-.115-.505-.254-.88-.378zm.331%202.302l.828-.502c-.202-.143-.576-.328-.984-.49zm.45%202.157l.701-.403c-.214-.115-.536-.249-.891-.376l.19.779zM49.13%204.141c0%20.152.123.276.276.276s.275-.124.275-.276-.123-.276-.276-.276-.275.124-.275.276zm.735-.389a1.15%201.15%200%200%201%20.314.783%201.16%201.16%200%200%201-1.162%201.162c-.457%200-.842-.27-1.032-.653-.026.117-.042.238-.042.362a1.68%201.68%200%200%200%201.679%201.679%201.68%201.68%200%200%200%201.679-1.679c0-.843-.626-1.535-1.436-1.654zm3.076%201.654a1.68%201.68%200%200%200%201.679%201.679%201.68%201.68%200%200%200%201.679-1.679c0-.037-.009-.072-.011-.109-.21.3-.541.508-.935.508a1.16%201.16%200%200%201-1.162-1.162%201.14%201.14%200%200%201%20.474-.912c-.015%200-.03-.005-.045-.005-.926.001-1.679.754-1.679%201.68zm1.861-1.265c0%20.152.123.276.276.276s.275-.124.275-.276-.123-.276-.276-.276-.275.124-.275.276zm1.823%204.823c0-.52-.103-1.035-.288-1.52-.466.394-1.06.64-1.717.64-1.144%200-2.116-.725-2.499-1.738-.383%201.012-1.355%201.738-2.499%201.738-.867%200-1.631-.421-2.121-1.062-.307.605-.478%201.267-.478%201.942%200%202.486%202.153%204.51%204.801%204.51s4.801-2.023%204.801-4.51zm-3.032%209.156l-.146-.492c-.276-1.02-.395-2.457-.444-3.268a6.11%206.11%200%200%201-1.18.115%206.01%206.01%200%200%201-2.536-.562l.006.175c.802.215%201.848.612%202.021%201.25.079.295-.021.601-.274.837l-.598.501c.667.304%201.243.698%201.311%201.179.02.144.022.507-.393.787l-.564.365c1.285.521%201.361.96%201.381%201.126.018.142.011.496-.427.746l-.854.489c.064-1.19%201.985-2.585%202.697-3.248zM49.34%209.925c0-.667%201-.667%201%200%200%20.653.818%201.205%201.787%201.205s1.787-.552%201.787-1.205c0-.667%201-.667%201%200%200%201.216-1.25%202.205-2.787%202.205s-2.787-.989-2.787-2.205zm-.887-7.633c-.093.077-.205.114-.317.114a.5.5%200%200%201-.318-.886L49.183.397a.5.5%200%200%201%20.703.068.5.5%200%200%201-.069.703zm7.661-.065c-.086%200-.173-.022-.253-.068l-1.523-.893c-.575-.337-.069-1.2.506-.863l1.523.892a.5.5%200%200%201%20.179.685c-.094.158-.261.247-.432.247z%22%20fill%3D%22%233bb300%22/%3E%3C/svg%3E"/>
 
 
@@ -16,11 +16,11 @@
             <label id="navtoggle" for="togglestate" class="pdoc-button"><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke-linecap='round' stroke="currentColor" stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg></label>
             <input id="togglestate" type="checkbox">
             <div>
-                        <a class="pdoc-button module-list-button" href="../extra.html">
+                        <a class="pdoc-button module-list-button" href="../core.html">
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-left" viewBox="0 0 16 16">
   <path fill-rule="evenodd" d="M10 3.5a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 1 1 0v2A1.5 1.5 0 0 1 9.5 14h-8A1.5 1.5 0 0 1 0 12.5v-9A1.5 1.5 0 0 1 1.5 2h8A1.5 1.5 0 0 1 11 3.5v2a.5.5 0 0 1-1 0v-2z"/>
   <path fill-rule="evenodd" d="M4.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H14.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3z"/>
-</svg>                            &nbsp;tsp.extra</a>
+</svg>                            &nbsp;tsp.core</a>
 
                         <input type="search" placeholder="Search..." role="searchbox" aria-label="search"
                                pattern=".+" required>
@@ -31,13 +31,7 @@
                     <h2>API Documentation</h2>
                         <ul class="memberlist">
             <li>
-                    <a class="function" href="#visualize_obstacles_pil">visualize_obstacles_pil</a>
-            </li>
-            <li>
-                    <a class="function" href="#visualize_obstacles_plt">visualize_obstacles_plt</a>
-            </li>
-            <li>
-                    <a class="function" href="#visualize_color_pil">visualize_color_pil</a>
+                    <a class="function" href="#do_split">do_split</a>
             </li>
     </ul>
 
@@ -52,239 +46,321 @@
     <main class="pdoc">
             <section>
                     <h1 class="modulename">
-<a href="./../../tsp.html">tsp</a><wbr>.<a href="./../extra.html">extra</a><wbr>.viz    </h1>
+<a href="./../../tsp.html">tsp</a><wbr>.<a href="./../core.html">core</a><wbr>.tree_split    </h1>
 
-                        <div class="docstring"><p>Procedures for visualizing TSP-Os and TSPs with color using the PIL and MatPlotLib backends.</p>
+                        <div class="docstring"><p>This code implements algorithms for splitting trees to optimal height found in [1,2].</p>
+
+<p>This code is copyright Mark Beers and released under the terms found in the LICENSE file at the
+root of this repository (ISC or COIL license).</p>
+
+<p>[1] Kropatsch, W. G., Saib, M., &amp; Schreyer, M. (2002). The Optimal Height of a Graph Pyramid.</p>
+
+<p>[2] Kropatsch, W. G., Haxhimusa, Y., &amp; Pizlo, Z. (2004). Integral Trees: Subtree Depth and Diameter.</p>
 </div>
 
                         <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="sd">&quot;&quot;&quot;Procedures for visualizing TSP-Os and TSPs with color using the PIL and MatPlotLib backends.</span>
+            <div class="codehilite"><pre><span></span><span class="sd">&quot;&quot;&quot;This code implements algorithms for splitting trees to optimal height found in [1,2].</span>
+
+<span class="sd">This code is copyright Mark Beers and released under the terms found in the LICENSE file at the</span>
+<span class="sd">root of this repository (ISC or COIL license).</span>
+
+<span class="sd">[1] Kropatsch, W. G., Saib, M., &amp; Schreyer, M. (2002). The Optimal Height of a Graph Pyramid.</span>
+
+<span class="sd">[2] Kropatsch, W. G., Haxhimusa, Y., &amp; Pizlo, Z. (2004). Integral Trees: Subtree Depth and Diameter.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">NDArray</span>
-<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageDraw</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">matplotlib.axes</span> <span class="kn">import</span> <span class="n">SubplotBase</span>
-
-<span class="kn">from</span> <span class="nn">tsp.core.viz</span> <span class="kn">import</span> <span class="n">_draw_cities_pil</span><span class="p">,</span> <span class="n">_draw_tour_pil</span><span class="p">,</span> <span class="n">visualize_tsp_plt</span>
-<span class="kn">from</span> <span class="nn">tsp.extra.obstacles</span> <span class="kn">import</span> <span class="n">TSP_O</span>
-<span class="kn">from</span> <span class="nn">tsp.extra.color</span> <span class="kn">import</span> <span class="n">TSP_Color</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">distance_matrix</span>
 
 
-<span class="k">def</span> <span class="nf">_draw_obstacles_pil</span><span class="p">(</span><span class="n">im</span><span class="p">:</span> <span class="n">Image</span><span class="p">,</span> <span class="n">tsp</span><span class="p">:</span> <span class="n">TSP_O</span><span class="p">):</span>
-    <span class="n">draw</span> <span class="o">=</span> <span class="n">ImageDraw</span><span class="o">.</span><span class="n">Draw</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">tsp</span><span class="o">.</span><span class="n">obstacles</span><span class="p">:</span>
-        <span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">([(</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">)],</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_get_child_edges</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">reject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get children of a particular vertex.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">children</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">reject</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">)):</span>
+                <span class="n">children</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)]</span> <span class="o">+</span> <span class="n">_get_child_edges</span><span class="p">(</span><span class="n">j</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">v</span> <span class="k">else</span> <span class="n">i</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">children</span>
 
 
-<span class="k">def</span> <span class="nf">visualize_obstacles_pil</span><span class="p">(</span><span class="n">tsp</span><span class="p">:</span> <span class="n">TSP_O</span><span class="p">,</span> <span class="n">tour</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]],</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generate and save visualization of a TSP_O using PIL backend.</span>
+<span class="k">def</span> <span class="nf">_get_child_verts</span><span class="p">(</span><span class="n">child_edges</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">child_edges</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">_get_dmax</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This hideous creation:</span>
+<span class="sd">    1) finds the distances from each node in the MST to all the leaves.</span>
+<span class="sd">    2) Computes and return the maximum of all of these numbers. This is</span>
+<span class="sd">        the greatest distance from one leaf to another leaf in the tree.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">inner</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dcur</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
+        <span class="n">child_edges</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">next_v</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">edge_lengths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dcur</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+                <span class="n">child_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_get_child_edges</span><span class="p">(</span><span class="n">j</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">v</span> <span class="k">else</span> <span class="n">i</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)))</span>
+                <span class="n">next_v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">v</span> <span class="k">else</span> <span class="n">i</span><span class="p">)</span>
+                <span class="n">edge_lengths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">D</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">])</span>
+
+        <span class="n">return_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">child_edges</span><span class="p">)):</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="n">inner</span><span class="p">(</span><span class="n">next_v</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">dcur</span> <span class="o">+</span> <span class="n">edge_lengths</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">child_edges</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">D</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">return_list</span> <span class="o">+=</span> <span class="n">g</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">return_list</span> <span class="o">+=</span> <span class="p">[</span><span class="n">g</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">return_list</span>
+
+    <span class="n">verts</span> <span class="o">=</span> <span class="n">_get_child_verts</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+    <span class="n">dmax_by_v</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">verts</span><span class="p">:</span>
+        <span class="n">dmax_by_v</span> <span class="o">+=</span> <span class="p">[</span><span class="n">inner</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">D</span><span class="p">)]</span>
+
+    <span class="n">dmax_flat</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">dmax_by_v</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dmax_flat</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">dmax_flat</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">do_split</span><span class="p">(</span><span class="n">vertices</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">edges</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">D</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">List</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;It should be doable to apply concept of algorithm from [1] for splitting subtrees that are</span>
+<span class="sd">    too large. The only difference is that we have edges with distances that aren&#39;t all 1, whereas</span>
+<span class="sd">    in [2], &quot;Edge length l(e) = 1 is used in all examples&quot;. They made a split by removing the</span>
+<span class="sd">    &quot;central edge&quot;, which was the edge such that the two resulting subtrees had maximally similar</span>
+<span class="sd">    d_max, where in their case d_max was distance from root of new subtree to the furthest leaf of</span>
+<span class="sd">    the subtree. For them, because edge length was 1, this just amounted to counting edges. For us,</span>
+<span class="sd">    we have to add up edge lengths. So how would this algorithm actually work?</span>
+
+<span class="sd">    1.   Given a subtree that has size &gt; r,</span>
+<span class="sd">        1. consider all edges and compute d_max for each of the two new root vertexes if split was</span>
+<span class="sd">           to occur by removing this edge.</span>
+<span class="sd">        2. split at the edge where d_max of the two trees is as equal as possible. Doing this</span>
+<span class="sd">           conceptually will give us, at each split, two trees that could fit in circles of</span>
+<span class="sd">           approximately the same radius.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        tsp (TSP_O): the problem</span>
-<span class="sd">        tour (Iterable[Union[int, NDArray]]): tour either as indices of vertices or as segments</span>
-<span class="sd">        path (str): path to save</span>
+<span class="sd">        vertices (List): List of vertices (defining the cluster) `[i, j, k]`</span>
+<span class="sd">        edges (List): List of edges `[(i, j), ...]`</span>
+<span class="sd">        D (NDArray): Distance matrix can be accessed with `D[i,j]`</span>
+<span class="sd">        r (int): Maximum cluster size</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Tuple[List, List]: Lists of vertices defining split clusters, lists of edges</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;RGB&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tsp</span><span class="o">.</span><span class="n">w</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">tsp</span><span class="o">.</span><span class="n">h</span> <span class="o">*</span> <span class="mi">2</span><span class="p">),</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;white&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tour</span><span class="p">):</span>
-        <span class="n">_draw_tour_pil</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">tsp</span><span class="p">,</span> <span class="n">tour</span><span class="p">)</span>
-    <span class="n">_draw_cities_pil</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">tsp</span><span class="p">)</span>
-    <span class="n">_draw_obstacles_pil</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">tsp</span><span class="p">)</span>
-    <span class="n">im</span><span class="o">.</span><span class="n">thumbnail</span><span class="p">((</span><span class="n">tsp</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="n">tsp</span><span class="o">.</span><span class="n">h</span><span class="p">))</span>
-    <span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vertices</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">r</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">vertices</span><span class="p">],</span> <span class="p">[</span><span class="n">edges</span><span class="p">]</span>
+
+    <span class="n">best_split_ij</span><span class="p">,</span> <span class="n">smallest_delta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">ci_best</span><span class="p">,</span> <span class="n">cj_best</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+        <span class="c1"># split edge ij</span>
+        <span class="n">ci</span> <span class="o">=</span> <span class="n">_get_child_edges</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">))</span>
+        <span class="n">dmax_i</span> <span class="o">=</span> <span class="n">_get_dmax</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
+        <span class="n">cj</span> <span class="o">=</span> <span class="n">_get_child_edges</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">))</span>
+        <span class="n">dmax_j</span> <span class="o">=</span> <span class="n">_get_dmax</span><span class="p">(</span><span class="n">cj</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dmax_j</span> <span class="o">-</span> <span class="n">dmax_i</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">delta</span> <span class="o">&lt;</span> <span class="n">smallest_delta</span><span class="p">:</span>
+            <span class="n">best_split_ij</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+            <span class="n">smallest_delta</span> <span class="o">=</span> <span class="n">delta</span>
+            <span class="n">ci_best</span> <span class="o">=</span> <span class="n">ci</span>
+            <span class="n">cj_best</span> <span class="o">=</span> <span class="n">cj</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ci_best</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">vertices_i</span> <span class="o">=</span> <span class="p">[</span><span class="n">best_split_ij</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">vertices_i</span> <span class="o">=</span> <span class="n">_get_child_verts</span><span class="p">(</span><span class="n">ci_best</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cj_best</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">vertices_j</span> <span class="o">=</span> <span class="p">[</span><span class="n">best_split_ij</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">vertices_j</span> <span class="o">=</span> <span class="n">_get_child_verts</span><span class="p">(</span><span class="n">cj_best</span><span class="p">)</span>
+
+    <span class="n">vertices_i</span><span class="p">,</span> <span class="n">edges_i</span> <span class="o">=</span> <span class="n">do_split</span><span class="p">(</span><span class="n">vertices_i</span><span class="p">,</span> <span class="n">ci_best</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+    <span class="n">vertices_j</span><span class="p">,</span> <span class="n">edges_j</span> <span class="o">=</span> <span class="n">do_split</span><span class="p">(</span><span class="n">vertices_j</span><span class="p">,</span> <span class="n">cj_best</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">vertices_i</span> <span class="o">+</span> <span class="n">vertices_j</span><span class="p">,</span> <span class="n">edges_i</span> <span class="o">+</span> <span class="n">edges_j</span>
 
 
-<span class="k">def</span> <span class="nf">_draw_obstacles_plt</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">SubplotBase</span><span class="p">,</span> <span class="n">tsp</span><span class="p">:</span> <span class="n">TSP_O</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">tsp</span><span class="o">.</span><span class="n">obstacles</span><span class="p">:</span>
-        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="nb">list</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>  <span class="c1"># copy objects</span>
-        <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">tsp</span><span class="o">.</span><span class="n">h</span> <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">tsp</span><span class="o">.</span><span class="n">h</span> <span class="o">-</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">),</span> <span class="s1">&#39;k-&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># define a test case</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">124</span><span class="p">)</span>
+    <span class="n">xy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
 
+    <span class="c1"># pretend 8,0,17,4,16,12,18 is a cluster</span>
+    <span class="n">cluster</span> <span class="o">=</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">18</span><span class="p">]</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">18</span><span class="p">,</span><span class="mi">16</span><span class="p">),</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">16</span><span class="p">),</span> <span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">17</span><span class="p">),</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">8</span><span class="p">),</span> <span class="p">(</span><span class="mi">18</span><span class="p">,</span><span class="mi">11</span><span class="p">),</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span><span class="mi">10</span><span class="p">)]</span>
+    <span class="n">dist</span> <span class="o">=</span> <span class="n">distance_matrix</span><span class="p">(</span><span class="n">xy</span><span class="p">,</span> <span class="n">xy</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">visualize_obstacles_plt</span><span class="p">(</span><span class="n">tsp</span><span class="p">:</span> <span class="n">TSP_O</span><span class="p">,</span> <span class="n">tour</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]],</span> <span class="n">ax</span><span class="p">:</span> <span class="n">SubplotBase</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generate visualization of a TSP_O using MatPlotLib backend.</span>
+    <span class="n">clusterV</span><span class="p">,</span> <span class="n">clusterE</span> <span class="o">=</span> <span class="n">do_split</span><span class="p">(</span><span class="n">_get_child_verts</span><span class="p">(</span><span class="n">edges</span><span class="p">),</span> <span class="n">edges</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;clusterV = </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">clusterV</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;clusterE = </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">clusterE</span><span class="p">)</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        tsp (TSP_O): the problem</span>
-<span class="sd">        tour (Iterable[Union[int, NDArray]]): tour either as indices of vertices or as segments</span>
-<span class="sd">        ax (SubplotBase): Matplotlib axes to plot on. Defaults to None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+    <span class="c1">########################################################################</span>
+    <span class="c1">####### Make a plot ####################################################</span>
+    <span class="c1">########################################################################</span>
 
-    <span class="n">visualize_tsp_plt</span><span class="p">(</span><span class="n">tsp</span><span class="p">,</span> <span class="n">tour</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
-    <span class="n">_draw_obstacles_plt</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">tsp</span><span class="p">)</span>
+    <span class="c1"># Hypothetical MST &amp; make a plot</span>
+    <span class="n">hypothetical_mst</span> <span class="o">=</span> <span class="n">edges</span> <span class="o">+</span> <span class="p">[(</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">13</span><span class="p">),</span> <span class="p">(</span><span class="mi">13</span><span class="p">,</span><span class="mi">9</span><span class="p">),</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span><span class="mi">19</span><span class="p">),</span> <span class="p">(</span><span class="mi">19</span><span class="p">,</span><span class="mi">14</span><span class="p">),(</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">15</span><span class="p">)]</span>
 
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;cyan&quot;</span><span class="p">,</span> <span class="s2">&quot;magenta&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;yellow&quot;</span><span class="p">,</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="s2">&quot;pink&quot;</span><span class="p">,</span> <span class="s2">&quot;olive&quot;</span><span class="p">,</span> <span class="s2">&quot;lemonchiffon&quot;</span><span class="p">,</span> <span class="s2">&quot;darkslategray&quot;</span><span class="p">]</span>
 
-<span class="k">def</span> <span class="nf">_draw_cities_color_pil</span><span class="p">(</span><span class="n">im</span><span class="p">:</span> <span class="n">Image</span><span class="p">,</span> <span class="n">tsp</span><span class="p">:</span> <span class="n">TSP_Color</span><span class="p">):</span>
-    <span class="n">draw</span> <span class="o">=</span> <span class="n">ImageDraw</span><span class="o">.</span><span class="n">Draw</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tsp</span><span class="o">.</span><span class="n">cities</span><span class="p">):</span>
-        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">p</span>
-        <span class="n">c</span> <span class="o">=</span> <span class="s1">&#39;red&#39;</span> <span class="k">if</span> <span class="n">tsp</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="s1">&#39;blue&#39;</span>
-        <span class="n">draw</span><span class="o">.</span><span class="n">ellipse</span><span class="p">([(</span><span class="n">x</span><span class="o">*</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">8</span><span class="p">,</span> <span class="n">y</span><span class="o">*</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">8</span><span class="p">),</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">8</span><span class="p">,</span> <span class="n">y</span><span class="o">*</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">8</span><span class="p">)],</span> <span class="n">c</span><span class="p">,</span> <span class="n">outline</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
+    <span class="c1"># Full plot</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xy</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xy</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">xy</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xy</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">i</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="n">hypothetical_mst</span><span class="p">:</span>
+        <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">xy</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xy</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">xy</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">xy</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span>
+        <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Potential subtree&quot;</span><span class="p">)</span>
 
+    <span class="c1"># Plot clusterings based on group size</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]):</span>
+        <span class="n">clusterV</span><span class="p">,</span> <span class="n">clusterE</span> <span class="o">=</span> <span class="n">do_split</span><span class="p">(</span><span class="n">_get_child_verts</span><span class="p">(</span><span class="n">hypothetical_mst</span><span class="p">),</span>
+            <span class="n">hypothetical_mst</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">_draw_tour_color_pil</span><span class="p">(</span><span class="n">im</span><span class="p">:</span> <span class="n">Image</span><span class="p">,</span> <span class="n">tsp</span><span class="p">:</span> <span class="n">TSP_Color</span><span class="p">,</span> <span class="n">tour</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
-    <span class="n">draw</span> <span class="o">=</span> <span class="n">ImageDraw</span><span class="o">.</span><span class="n">Draw</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-    <span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">([(</span><span class="n">x</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">y</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">tsp</span><span class="o">.</span><span class="n">tour_segments</span><span class="p">(</span><span class="n">tour</span><span class="p">)],</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">xy</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xy</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">k</span><span class="p">)</span>
 
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;r = </span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">visualize_color_pil</span><span class="p">(</span><span class="n">tsp</span><span class="p">:</span> <span class="n">TSP_Color</span><span class="p">,</span> <span class="n">tour</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generate and save visualization of a TSP_Color using PIL backend.</span>
-<span class="sd">    Due to the fact that the TSP_Color code is underdeveloped, this is not as feature rich.</span>
-<span class="sd">    Only supports two colors, and tours as indices of vertices.</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">cluster</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">clusterV</span><span class="p">):</span>
+            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="n">cluster</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xy</span><span class="p">[</span><span class="n">cluster</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">color</span> <span class="o">=</span> <span class="n">colors</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        tsp (TSP_Color): the problem</span>
-<span class="sd">        tour (Iterable[int]): tour either as indices of vertices</span>
-<span class="sd">        path (str): path to save</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;RGB&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tsp</span><span class="o">.</span><span class="n">w</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">tsp</span><span class="o">.</span><span class="n">h</span> <span class="o">*</span> <span class="mi">2</span><span class="p">),</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;white&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tour</span><span class="p">):</span>
-        <span class="n">_draw_tour_color_pil</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">tsp</span><span class="p">,</span> <span class="n">tour</span><span class="p">)</span>
-    <span class="n">_draw_cities_color_pil</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">tsp</span><span class="p">)</span>
-    <span class="n">im</span><span class="o">.</span><span class="n">thumbnail</span><span class="p">((</span><span class="n">tsp</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="n">tsp</span><span class="o">.</span><span class="n">h</span><span class="p">))</span>
-    <span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">edge_lst</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">clusterE</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge_lst</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">vi</span><span class="p">,</span><span class="n">vj</span> <span class="ow">in</span> <span class="n">edge_lst</span><span class="p">:</span>
+                    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">xy</span><span class="p">[</span><span class="n">vi</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xy</span><span class="p">[</span><span class="n">vj</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">xy</span><span class="p">[</span><span class="n">vi</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">xy</span><span class="p">[</span><span class="n">vj</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span>
+                    <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;Citation 55 Splitting Rule&#39;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="c1">#fig.savefig(&quot;citation55_cluster.pdf&quot;)</span>
 </pre></div>
 
         </details>
 
             </section>
-                <section id="visualize_obstacles_pil">
-                            <div class="attr function"><a class="headerlink" href="#visualize_obstacles_pil">#&nbsp;&nbsp</a>
+                <section id="do_split">
+                            <div class="attr function"><a class="headerlink" href="#do_split">#&nbsp;&nbsp</a>
 
         
             <span class="def">def</span>
-            <span class="name">visualize_obstacles_pil</span><span class="signature">(
-    tsp: <a href="obstacles.html#TSP_O">tsp.extra.obstacles.TSP_O</a>,
-    tour: Iterable[Union[int, numpy.ndarray[Any, numpy.dtype[+ScalarType]]]],
-    path: str
-)</span>:
+            <span class="name">do_split</span><span class="signature">(
+    vertices: List,
+    edges: List,
+    D: numpy.ndarray,
+    r: int
+) -&gt; Tuple[List, List]</span>:
     </div>
 
                 <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">visualize_obstacles_pil</span><span class="p">(</span><span class="n">tsp</span><span class="p">:</span> <span class="n">TSP_O</span><span class="p">,</span> <span class="n">tour</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]],</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generate and save visualization of a TSP_O using PIL backend.</span>
+            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">do_split</span><span class="p">(</span><span class="n">vertices</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">edges</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">D</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">List</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;It should be doable to apply concept of algorithm from [1] for splitting subtrees that are</span>
+<span class="sd">    too large. The only difference is that we have edges with distances that aren&#39;t all 1, whereas</span>
+<span class="sd">    in [2], &quot;Edge length l(e) = 1 is used in all examples&quot;. They made a split by removing the</span>
+<span class="sd">    &quot;central edge&quot;, which was the edge such that the two resulting subtrees had maximally similar</span>
+<span class="sd">    d_max, where in their case d_max was distance from root of new subtree to the furthest leaf of</span>
+<span class="sd">    the subtree. For them, because edge length was 1, this just amounted to counting edges. For us,</span>
+<span class="sd">    we have to add up edge lengths. So how would this algorithm actually work?</span>
+
+<span class="sd">    1.   Given a subtree that has size &gt; r,</span>
+<span class="sd">        1. consider all edges and compute d_max for each of the two new root vertexes if split was</span>
+<span class="sd">           to occur by removing this edge.</span>
+<span class="sd">        2. split at the edge where d_max of the two trees is as equal as possible. Doing this</span>
+<span class="sd">           conceptually will give us, at each split, two trees that could fit in circles of</span>
+<span class="sd">           approximately the same radius.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        tsp (TSP_O): the problem</span>
-<span class="sd">        tour (Iterable[Union[int, NDArray]]): tour either as indices of vertices or as segments</span>
-<span class="sd">        path (str): path to save</span>
+<span class="sd">        vertices (List): List of vertices (defining the cluster) `[i, j, k]`</span>
+<span class="sd">        edges (List): List of edges `[(i, j), ...]`</span>
+<span class="sd">        D (NDArray): Distance matrix can be accessed with `D[i,j]`</span>
+<span class="sd">        r (int): Maximum cluster size</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Tuple[List, List]: Lists of vertices defining split clusters, lists of edges</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;RGB&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tsp</span><span class="o">.</span><span class="n">w</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">tsp</span><span class="o">.</span><span class="n">h</span> <span class="o">*</span> <span class="mi">2</span><span class="p">),</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;white&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tour</span><span class="p">):</span>
-        <span class="n">_draw_tour_pil</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">tsp</span><span class="p">,</span> <span class="n">tour</span><span class="p">)</span>
-    <span class="n">_draw_cities_pil</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">tsp</span><span class="p">)</span>
-    <span class="n">_draw_obstacles_pil</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">tsp</span><span class="p">)</span>
-    <span class="n">im</span><span class="o">.</span><span class="n">thumbnail</span><span class="p">((</span><span class="n">tsp</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="n">tsp</span><span class="o">.</span><span class="n">h</span><span class="p">))</span>
-    <span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vertices</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">r</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">vertices</span><span class="p">],</span> <span class="p">[</span><span class="n">edges</span><span class="p">]</span>
+
+    <span class="n">best_split_ij</span><span class="p">,</span> <span class="n">smallest_delta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">ci_best</span><span class="p">,</span> <span class="n">cj_best</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+        <span class="c1"># split edge ij</span>
+        <span class="n">ci</span> <span class="o">=</span> <span class="n">_get_child_edges</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">))</span>
+        <span class="n">dmax_i</span> <span class="o">=</span> <span class="n">_get_dmax</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
+        <span class="n">cj</span> <span class="o">=</span> <span class="n">_get_child_edges</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">))</span>
+        <span class="n">dmax_j</span> <span class="o">=</span> <span class="n">_get_dmax</span><span class="p">(</span><span class="n">cj</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dmax_j</span> <span class="o">-</span> <span class="n">dmax_i</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">delta</span> <span class="o">&lt;</span> <span class="n">smallest_delta</span><span class="p">:</span>
+            <span class="n">best_split_ij</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+            <span class="n">smallest_delta</span> <span class="o">=</span> <span class="n">delta</span>
+            <span class="n">ci_best</span> <span class="o">=</span> <span class="n">ci</span>
+            <span class="n">cj_best</span> <span class="o">=</span> <span class="n">cj</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ci_best</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">vertices_i</span> <span class="o">=</span> <span class="p">[</span><span class="n">best_split_ij</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">vertices_i</span> <span class="o">=</span> <span class="n">_get_child_verts</span><span class="p">(</span><span class="n">ci_best</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cj_best</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">vertices_j</span> <span class="o">=</span> <span class="p">[</span><span class="n">best_split_ij</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">vertices_j</span> <span class="o">=</span> <span class="n">_get_child_verts</span><span class="p">(</span><span class="n">cj_best</span><span class="p">)</span>
+
+    <span class="n">vertices_i</span><span class="p">,</span> <span class="n">edges_i</span> <span class="o">=</span> <span class="n">do_split</span><span class="p">(</span><span class="n">vertices_i</span><span class="p">,</span> <span class="n">ci_best</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+    <span class="n">vertices_j</span><span class="p">,</span> <span class="n">edges_j</span> <span class="o">=</span> <span class="n">do_split</span><span class="p">(</span><span class="n">vertices_j</span><span class="p">,</span> <span class="n">cj_best</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">vertices_i</span> <span class="o">+</span> <span class="n">vertices_j</span><span class="p">,</span> <span class="n">edges_i</span> <span class="o">+</span> <span class="n">edges_j</span>
 </pre></div>
 
         </details>
 
-            <div class="docstring"><p>Generate and save visualization of a TSP_O using PIL backend.</p>
+            <div class="docstring"><p>It should be doable to apply concept of algorithm from [1] for splitting subtrees that are
+too large. The only difference is that we have edges with distances that aren't all 1, whereas
+in [2], "Edge length l(e) = 1 is used in all examples". They made a split by removing the
+"central edge", which was the edge such that the two resulting subtrees had maximally similar
+d_max, where in their case d_max was distance from root of new subtree to the furthest leaf of
+the subtree. For them, because edge length was 1, this just amounted to counting edges. For us,
+we have to add up edge lengths. So how would this algorithm actually work?</p>
+
+<ol>
+<li>Given a subtree that has size &gt; r,
+<ol>
+<li>consider all edges and compute d_max for each of the two new root vertexes if split was
+to occur by removing this edge.</li>
+<li>split at the edge where d_max of the two trees is as equal as possible. Doing this
+conceptually will give us, at each split, two trees that could fit in circles of
+approximately the same radius.</li>
+</ol></li>
+</ol>
 
 <h6 id="args">Args</h6>
 
 <ul>
-<li><strong>tsp (TSP_O):</strong>  the problem</li>
-<li><strong>tour (Iterable[Union[int, NDArray]]):</strong>  tour either as indices of vertices or as segments</li>
-<li><strong>path (str):</strong>  path to save</li>
+<li><strong>vertices (List):</strong>  List of vertices (defining the cluster) <code>[i, j, k]</code></li>
+<li><strong>edges (List):</strong>  List of edges <code>[(i, j), ...]</code></li>
+<li><strong>D (NDArray):</strong>  Distance matrix can be accessed with <code>D[i,j]</code></li>
+<li><strong>r (int):</strong>  Maximum cluster size</li>
 </ul>
-</div>
 
+<h6 id="returns">Returns</h6>
 
-                </section>
-                <section id="visualize_obstacles_plt">
-                            <div class="attr function"><a class="headerlink" href="#visualize_obstacles_plt">#&nbsp;&nbsp</a>
-
-        
-            <span class="def">def</span>
-            <span class="name">visualize_obstacles_plt</span><span class="signature">(
-    tsp: <a href="obstacles.html#TSP_O">tsp.extra.obstacles.TSP_O</a>,
-    tour: Iterable[Union[int, numpy.ndarray[Any, numpy.dtype[+ScalarType]]]],
-    ax: matplotlib.axes._subplots.SubplotBase = None
-)</span>:
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">visualize_obstacles_plt</span><span class="p">(</span><span class="n">tsp</span><span class="p">:</span> <span class="n">TSP_O</span><span class="p">,</span> <span class="n">tour</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]],</span> <span class="n">ax</span><span class="p">:</span> <span class="n">SubplotBase</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generate visualization of a TSP_O using MatPlotLib backend.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        tsp (TSP_O): the problem</span>
-<span class="sd">        tour (Iterable[Union[int, NDArray]]): tour either as indices of vertices or as segments</span>
-<span class="sd">        ax (SubplotBase): Matplotlib axes to plot on. Defaults to None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
-
-    <span class="n">visualize_tsp_plt</span><span class="p">(</span><span class="n">tsp</span><span class="p">,</span> <span class="n">tour</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
-    <span class="n">_draw_obstacles_plt</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">tsp</span><span class="p">)</span>
-</pre></div>
-
-        </details>
-
-            <div class="docstring"><p>Generate visualization of a TSP_O using MatPlotLib backend.</p>
-
-<h6 id="args">Args</h6>
-
-<ul>
-<li><strong>tsp (TSP_O):</strong>  the problem</li>
-<li><strong>tour (Iterable[Union[int, NDArray]]):</strong>  tour either as indices of vertices or as segments</li>
-<li><strong>ax (SubplotBase):</strong>  Matplotlib axes to plot on. Defaults to None.</li>
-</ul>
-</div>
-
-
-                </section>
-                <section id="visualize_color_pil">
-                            <div class="attr function"><a class="headerlink" href="#visualize_color_pil">#&nbsp;&nbsp</a>
-
-        
-            <span class="def">def</span>
-            <span class="name">visualize_color_pil</span><span class="signature">(tsp: <a href="color.html#TSP_Color">tsp.extra.color.TSP_Color</a>, tour: Iterable[int], path: str)</span>:
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">visualize_color_pil</span><span class="p">(</span><span class="n">tsp</span><span class="p">:</span> <span class="n">TSP_Color</span><span class="p">,</span> <span class="n">tour</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generate and save visualization of a TSP_Color using PIL backend.</span>
-<span class="sd">    Due to the fact that the TSP_Color code is underdeveloped, this is not as feature rich.</span>
-<span class="sd">    Only supports two colors, and tours as indices of vertices.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        tsp (TSP_Color): the problem</span>
-<span class="sd">        tour (Iterable[int]): tour either as indices of vertices</span>
-<span class="sd">        path (str): path to save</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;RGB&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tsp</span><span class="o">.</span><span class="n">w</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">tsp</span><span class="o">.</span><span class="n">h</span> <span class="o">*</span> <span class="mi">2</span><span class="p">),</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;white&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tour</span><span class="p">):</span>
-        <span class="n">_draw_tour_color_pil</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">tsp</span><span class="p">,</span> <span class="n">tour</span><span class="p">)</span>
-    <span class="n">_draw_cities_color_pil</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">tsp</span><span class="p">)</span>
-    <span class="n">im</span><span class="o">.</span><span class="n">thumbnail</span><span class="p">((</span><span class="n">tsp</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="n">tsp</span><span class="o">.</span><span class="n">h</span><span class="p">))</span>
-    <span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-</pre></div>
-
-        </details>
-
-            <div class="docstring"><p>Generate and save visualization of a TSP_Color using PIL backend.
-Due to the fact that the TSP_Color code is underdeveloped, this is not as feature rich.
-Only supports two colors, and tours as indices of vertices.</p>
-
-<h6 id="args">Args</h6>
-
-<ul>
-<li><strong>tsp (TSP_Color):</strong>  the problem</li>
-<li><strong>tour (Iterable[int]):</strong>  tour either as indices of vertices</li>
-<li><strong>path (str):</strong>  path to save</li>
-</ul>
+<blockquote>
+  <p>Tuple[List, List]: Lists of vertices defining split clusters, lists of edges</p>
+</blockquote>
 </div>
 
 
