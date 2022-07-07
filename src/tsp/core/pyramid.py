@@ -5,8 +5,8 @@ This code is a replication and improvement of the "graph pyramid" described in [
 algorithm is described in detail in a paper by J. VanDrunen, K. Nam, M. A. Beers, and Z. Pizlo,
 currently in preparation.
 
-[1] Y. Haxhimusa, W. G. Kropatsch, Z. Pizlo, and A. Ion. Approximate graph pyramid solution of the
-E-TSP. Elsevier, 2009.
+[1] Haxhimusa, Y., Kropatsch, W. G., Pizlo, Z., & Ion, A. (2009). Approximate graph pyramid
+solution of the E-TSP.
 """
 
 
@@ -18,7 +18,7 @@ from numpy.typing import NDArray
 import numpy as np
 
 from tsp.core.tsp import N_TSP
-from tsp.core.tree_split import citation55
+from tsp.core.tree_split import do_split
 
 
 def _cheapest_insertion(centroids, nodes, prev_centroid, next_centroid):
@@ -37,10 +37,6 @@ def _cheapest_insertion(centroids, nodes, prev_centroid, next_centroid):
             min_distance = distance
             result = partial_tour
     return result
-
-
-def _do_split(v, e, edges, k):
-    return citation55(v, e, edges, k)
 
 
 def _find_parent(i, parents):
@@ -98,7 +94,7 @@ def _cluster_boruvka(nodes: List, k: int):
         e.append([])
         for p in set(parents):
             if len(vertex_tracker[p]) > k:
-                split_v, split_e = _do_split(
+                split_v, split_e = do_split(
                     vertex_tracker[p],
                     list(edge_tracker[p]),
                     edges,

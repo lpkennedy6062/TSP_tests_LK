@@ -8,7 +8,7 @@ from matplotlib.axes import SubplotBase
 
 from tsp.core.pyramid_old import DSNode
 from tsp.core.tsp import TSP
-from tsp.core.viz import _draw_cities_plt, _draw_edges_plt
+from tsp.core.viz import _draw_cities_plt, _draw_edges_plt, _init_plot
 
 
 def _isolate_edges(mst: Iterable[Tuple[int, int]], clusters: Iterable[DSNode]):
@@ -30,14 +30,7 @@ def visualize_clusters_plt(tsp: TSP, mst: Iterable[Tuple[float, Tuple[int, int]]
         clusters (Iterable[DSNode]): forest of clusters
         ax (SubplotBase): Matplotlib axes to plot on. Defaults to None.
     """
-    if ax is None:
-        ax = plt.subplot(111)
-
-    ax.set_xlim((0, tsp.w))
-    ax.set_ylim((0, tsp.h))
-    ax.set_xticks([])
-    ax.set_yticks([])
-    ax.set_aspect('equal', 'box')
+    _init_plot(ax, tsp)
 
     for edges in _isolate_edges(list(zip(*mst))[1], clusters):
         _draw_edges_plt(ax, tsp, edges)

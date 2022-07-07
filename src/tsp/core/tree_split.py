@@ -1,49 +1,40 @@
-"""This code implements the algorithm for splitting trees found in [1]. Code-named "Citation 55"
-because it is citation 55 in [2].
+"""This code implements algorithms for splitting trees to optimal height found in [1,2].
 
-This code is copyright Mark Beers and released under the terms found in the LICENSE file of this
-repository (ISC or COIL-1.0 license).
+This code is copyright Mark Beers and released under the terms found in the LICENSE file at the
+root of this repository (ISC or COIL license).
 
-[1] W. G. Kropatsch, Y. Haxhimusa, and Z. Pizlo. Integral Trees: Subtree Depth and Diameter.
-Springer, 2004.
+[1] Kropatsch, W. G., Saib, M., & Schreyer, M. (2002). The Optimal Height of a Graph Pyramid.
 
-[2] Y. Haxhimusa, W. G. Kropatsch, Z. Pizlo, and A. Ion. Approximate graph pyramid solution of the
-E-TSP. Elsevier, 2009.
+[2] Kropatsch, W. G., Haxhimusa, Y., & Pizlo, Z. (2004). Integral Trees: Subtree Depth and Diameter.
 """
 
+
 import itertools
+from typing import List, Tuple
 
 import numpy as np
+from numpy.typing import NDArray
 import matplotlib.pyplot as plt
 from scipy.spatial import distance_matrix
 
 
-# define a test case
-np.random.seed(124)
-xy = np.random.uniform(0,10, (20,2))
-
-# pretend 8,0,17,4,16,12,18 is a cluster
-cluster = [8,0,17,4,16,12,18]
-edges = [(18,16), (12,16), (16,4), (4,17), (12, 0), (0,8), (18,11), (11,1), (11,3), (11,10)]
-dist = distance_matrix(xy, xy)
-
-
-# define a function to get children of a particular vertex
-def get_child_edges(v, edges, reject):
+def _get_child_edges(v, edges, reject):
+    """Get children of a particular vertex.
+    """
     children = []
     for i,j in edges:
-        if i == v or j == v:
-            if (i, j) != reject and (j, i) != reject:
-                #print("accepted i,j = ", (i,j))
-                children += [(i,j)] + get_child_edges(j if i == v else i, edges, (i,j))
+        if v in (i, j):
+            if reject not in ((i, j), (j, i)):
+                children += [(i,j)] + _get_child_edges(j if i == v else i, edges, (i,j))
     return children
 
-def get_child_verts(child_edges):
+
+def _get_child_verts(child_edges):
     return np.unique(np.array(child_edges).ravel()).tolist()
 
-def get_dmax(edges, D):
-    """
-    This hideous creation:
+
+def _get_dmax(edges, D):
+    """This hideous creation:
     1) finds the distances from each node in the MST to all the leaves.
     2) Computes and return the maximum of all of these numbers. This is
         the greatest distance from one leaf to another leaf in the tree.
@@ -55,21 +46,21 @@ def get_dmax(edges, D):
         if len(edges) == 0:
             return dcur
         for i, j in edges:
-            if i == v or j == v:
-                child_edges.append(get_child_edges(j if i == v else i, edges, (i,j)))
+            if v in (i, j):
+                child_edges.append(_get_child_edges(j if i == v else i, edges, (i,j)))
                 next_v.append(j if i == v else i)
                 edge_lengths.append(D[i,j])
 
         return_list = []
         for k in range(len(child_edges)):
             g = inner(next_v[k], dcur + edge_lengths[k], child_edges[k], D)
-            if type(g) is list:
+            if isinstance(g, list):
                 return_list += g
             else:
                 return_list += [g]
         return return_list
 
-    verts = get_child_verts(edges)
+    verts = _get_child_verts(edges)
     dmax_by_v = []
     for v in verts:
         dmax_by_v += [inner(v, 0, edges, D)]
@@ -77,24 +68,34 @@ def get_dmax(edges, D):
     dmax_flat = list(itertools.chain(*dmax_by_v))
     if len(dmax_flat) == 0:
         return 0
-    else:
-        return max(dmax_flat)
+    return max(dmax_flat)
 
 
+def do_split(vertices: List, edges: List, D: NDArray, r: int) -> Tuple[List, List]:
+    """It should be doable to apply concept of algorithm from [1] for splitting subtrees that are
+    too large. The only difference is that we have edges with distances that aren't all 1, whereas
+    in [2], "Edge length l(e) = 1 is used in all examples". They made a split by removing the
+    "central edge", which was the edge such that the two resulting subtrees had maximally similar
+    d_max, where in their case d_max was distance from root of new subtree to the furthest leaf of
+    the subtree. For them, because edge length was 1, this just amounted to counting edges. For us,
+    we have to add up edge lengths. So how would this algorithm actually work?
 
+    a)   Given a subtree that has size > r,
+    a.1) consider all edges and compute d_max for each of the two new root vertexes if split was to
+         occur by removing this edge.
+    a.2) split at the edge where d_max of the two trees is as equal as possible. Doing this
+         conceptually will give us, at each split, two trees that could fit in circles of
+         approximately the same radius.
 
-# dmax_test = get_dmax(edges, dist)
-# print(dmax_test)
-# ce12 = get_child_edges(12, edges, (12,16))
-# print(ce12)
-# print(get_child_verts(ce12))
+    Args:
+        vertices (List): List of vertices (defining the cluster): `[i, j, k]`
+        edges (List): List of edges: `[(i, j), ...]`
+        D (NDArray): Distance matrix: can be accessed with `D[i,j]`
+        r (int): Maximum cluster size
 
-# ce16 = get_child_edges(16, edges, (12,16))
-# print(ce16)
-# print(get_child_verts(ce16))
-
-
-def citation55(vertices, edges, D, r):
+    Returns:
+        Tuple[List, List]: Lists of vertices defining split clusters, lists of edges
+    """
     if len(vertices) <= r:
         return [vertices], [edges]
 
@@ -102,10 +103,10 @@ def citation55(vertices, edges, D, r):
     ci_best, cj_best = np.inf, np.inf
     for i,j in edges:
         # split edge ij
-        ci = get_child_edges(i, edges, (i,j))
-        dmax_i = get_dmax(ci, D)
-        cj = get_child_edges(j, edges, (i,j))
-        dmax_j = get_dmax(cj, D)
+        ci = _get_child_edges(i, edges, (i,j))
+        dmax_i = _get_dmax(ci, D)
+        cj = _get_child_edges(j, edges, (i,j))
+        dmax_j = _get_dmax(cj, D)
         delta = np.abs(dmax_j - dmax_i)
         if delta < smallest_delta:
             best_split_ij = (i,j)
@@ -113,42 +114,38 @@ def citation55(vertices, edges, D, r):
             ci_best = ci
             cj_best = cj
 
-    #print(best_split_ij, smallest_delta, ci_best, cj_best)
     if len(ci_best) == 0:
         vertices_i = [best_split_ij[0]]
     else:
-        vertices_i = get_child_verts(ci_best)
+        vertices_i = _get_child_verts(ci_best)
 
     if len(cj_best) == 0:
         vertices_j = [best_split_ij[1]]
     else:
-        vertices_j = get_child_verts(cj_best)
+        vertices_j = _get_child_verts(cj_best)
 
-    vertices_i, edges_i = citation55(vertices_i, ci_best, D, r)
-    #print("vertices_i = ", list(itertools.chain(*vertices_i)))
-    # if len(list(itertools.chain(*vertices_i))) == 0:
-    #     print("got here! ")
-    #     vertices_i == [[best_split_ij[0]]]
-    vertices_j, edges_j = citation55(vertices_j, cj_best, D, r)
-    # if len(list(itertools.chain(*vertices_j))) == 0:
-    #     vertices_j == [[best_split_ij[1]]]
+    vertices_i, edges_i = do_split(vertices_i, ci_best, D, r)
+    vertices_j, edges_j = do_split(vertices_j, cj_best, D, r)
     return vertices_i + vertices_j, edges_i + edges_j
 
 
-
 if __name__ == '__main__':
-    clusterV, clusterE = citation55(get_child_verts(edges), edges, dist, 3)
+    # define a test case
+    np.random.seed(124)
+    xy = np.random.uniform(0,10, (20,2))
+
+    # pretend 8,0,17,4,16,12,18 is a cluster
+    cluster = [8,0,17,4,16,12,18]
+    edges = [(18,16), (12,16), (16,4), (4,17), (12, 0), (0,8), (18,11), (11,1), (11,3), (11,10)]
+    dist = distance_matrix(xy, xy)
+
+    clusterV, clusterE = do_split(_get_child_verts(edges), edges, dist, 3)
     print("clusterV = \n", clusterV)
     print("clusterE = \n", clusterE)
-
-
-
-
 
     ########################################################################
     ####### Make a plot ####################################################
     ########################################################################
-
 
     # Hypothetical MST & make a plot
     hypothetical_mst = edges + [(4,6), (6,13), (13,9), (9,19), (19,14),(10,5),
@@ -169,7 +166,7 @@ if __name__ == '__main__':
 
     # Plot clusterings based on group size
     for i,j, r in zip([0,1,1], [1,0,1], [3,4,5]):
-        clusterV, clusterE = citation55(get_child_verts(hypothetical_mst),
+        clusterV, clusterE = do_split(_get_child_verts(hypothetical_mst),
             hypothetical_mst, dist, r)
 
         for k in range(xy.shape[0]):
