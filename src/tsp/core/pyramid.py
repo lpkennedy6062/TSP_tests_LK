@@ -11,9 +11,10 @@ E-TSP. Elsevier, 2009.
 
 
 from typing import List
-from numpy.typing import NDArray
 from collections import defaultdict
 import itertools as it
+
+from numpy.typing import NDArray
 import numpy as np
 
 from tsp.core.tsp import N_TSP
@@ -36,25 +37,6 @@ def _cheapest_insertion(centroids, nodes, prev_centroid, next_centroid):
             min_distance = distance
             result = partial_tour
     return result
-
-
-def _solve_level(c, v, level, subcluster, tour, prev_centroid=None, next_centroid=None):
-    centroids = c[level]
-    nodes = v[level][subcluster]
-    # prev_centroid = c[0][tour[-1]] if tour else None
-    partial_tour = _cheapest_insertion(centroids, nodes, prev_centroid, next_centroid)
-    if level == 0:
-        tour.extend(partial_tour)
-    else:
-        for i, node in enumerate(partial_tour):
-            if tour:
-                next_prev_centroid = c[0][tour[-1]]
-            else:
-                next_prev_centroid = c[level][partial_tour[-1]]
-            if i + 1 == len(partial_tour):
-                _solve_level(c, v, level - 1, node, tour, next_prev_centroid, next_centroid if next_centroid is not None else c[0][tour[0]])
-            else:
-                _solve_level(c, v, level - 1, node, tour, next_prev_centroid, c[level][partial_tour[i + 1]])
 
 
 def _do_split(v, e, edges, k):
@@ -136,11 +118,19 @@ def _cluster_boruvka(nodes: List, k: int):
     return c, v, e
 
 
+def _solve_level(c, v, level, subcluster, prev_centroid=None, prev_centroids=None, next_centroid=None):
+    if prev_centroids is None:
+        prev_centroids = []
+    centroids = c[level]
+    nodes = v[level][subcluster] + prev_centroids
+    return _cheapest_insertion(centroids, nodes, prev_centroid, next_centroid)
+
+
 def pyramid_solve(tsp: N_TSP, k: int = 6, s: int = 1) -> NDArray:
     """Find an approximately-optimal tour using hierarchical clustering algorithm.
 
     Args:
-        nodes (N_TSP): TSP to solve 
+        nodes (N_TSP): TSP to solve
         k (int, optional): Cluster size. Defaults to 6.
         s (int, optional): Number of previous cities to account for in partial tour (refines k+s-1 cities, where the extra 1 is the endpoint, for historical reasons). Defaults to 1.
         clustering (str, optional): MST algorithm to use for clustering, either 'boruvka' or 'kruskal'. Defaults to 'boruvka'.
@@ -149,7 +139,7 @@ def pyramid_solve(tsp: N_TSP, k: int = 6, s: int = 1) -> NDArray:
         NDArray: tour
     """
     nodes = list(map(lambda a: np.array(a, dtype=np.float64), tsp.cities))
-    c, v, e = _cluster_boruvka(nodes, k)
+    c, v, _ = _cluster_boruvka(nodes, k)
     level = len(v) - 1
     result = _solve_level(c, v, level, 0)
     while level > 0:

@@ -6,7 +6,7 @@ from typing import Iterable, Tuple
 from matplotlib import pyplot as plt
 from matplotlib.axes import SubplotBase
 
-from tsp.core.pyramid import DSNode
+from tsp.core.pyramid_old import DSNode
 from tsp.core.tsp import TSP
 from tsp.core.viz import _draw_cities_plt, _draw_edges_plt
 
