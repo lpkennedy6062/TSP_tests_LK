@@ -81,7 +81,7 @@ def pyramid_solve(tsp: N_TSP, **kwargs) -> NDArray:
     Returns:
         NDArray: solution as vertex indices
     """
-    return np.array(pyramid_solve_(tsp.cities, **kwargs))
+    return pyramid_solve_(tsp, **kwargs)
 
 
 class Solver:
@@ -147,7 +147,7 @@ class PyramidSolver(Solver):
 
     def __init__(self, tsp: N_TSP):
         Solver.__init__(self, tsp)
-        self.m = tsp.cities
+        self.tsp = tsp
 
     def __call__(self) -> NDArray:
-        return np.array(pyramid_solve_(self.m))
+        return pyramid_solve_(self.tsp)

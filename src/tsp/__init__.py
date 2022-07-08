@@ -15,7 +15,6 @@ different kinds of "not-Euclidean" TSPs, as well as the supporting code for seri
 visualization.
 
 This code has been used to generate results for a couple of abstracts so far, and implements
-some experiments described in others. It serves as a companion to the book *Problem Solving:
-Cognitive Mechanisms and Formal Models* by Zygmunt Pizlo. See the
-[README](https://github.com/jackvandrunen/tsp) for citations.
+some experiments described in others. It serves as a companion to the book [*Problem Solving: Cognitive Mechanisms and Formal Models*](https://www.cambridge.org/core/books/abs/problem-solving/problem-solving/105FC98CEBE3FA277CD43AC34EECBC1B)
+by Zygmunt Pizlo. See the [README](https://github.com/jackvandrunen/tsp) for citations.
 """

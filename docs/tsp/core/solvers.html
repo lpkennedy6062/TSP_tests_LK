@@ -205,7 +205,7 @@ this library to find optimal tours than using Concorde directly.</p>
 <span class="sd">    Returns:</span>
 <span class="sd">        NDArray: solution as vertex indices</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pyramid_solve_</span><span class="p">(</span><span class="n">tsp</span><span class="o">.</span><span class="n">cities</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">pyramid_solve_</span><span class="p">(</span><span class="n">tsp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">Solver</span><span class="p">:</span>
@@ -271,10 +271,10 @@ this library to find optimal tours than using Concorde directly.</p>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tsp</span><span class="p">:</span> <span class="n">N_TSP</span><span class="p">):</span>
         <span class="n">Solver</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tsp</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">m</span> <span class="o">=</span> <span class="n">tsp</span><span class="o">.</span><span class="n">cities</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tsp</span> <span class="o">=</span> <span class="n">tsp</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pyramid_solve_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">pyramid_solve_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tsp</span><span class="p">)</span>
 </pre></div>
 
         </details>
@@ -402,7 +402,7 @@ this library to find optimal tours than using Concorde directly.</p>
 <span class="sd">    Returns:</span>
 <span class="sd">        NDArray: solution as vertex indices</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pyramid_solve_</span><span class="p">(</span><span class="n">tsp</span><span class="o">.</span><span class="n">cities</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">pyramid_solve_</span><span class="p">(</span><span class="n">tsp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 
         </details>
@@ -691,10 +691,10 @@ possible keyword arguments.</p>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tsp</span><span class="p">:</span> <span class="n">N_TSP</span><span class="p">):</span>
         <span class="n">Solver</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tsp</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">m</span> <span class="o">=</span> <span class="n">tsp</span><span class="o">.</span><span class="n">cities</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tsp</span> <span class="o">=</span> <span class="n">tsp</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pyramid_solve_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">pyramid_solve_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tsp</span><span class="p">)</span>
 </pre></div>
 
         </details>
@@ -714,7 +714,7 @@ possible keyword arguments.</p>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tsp</span><span class="p">:</span> <span class="n">N_TSP</span><span class="p">):</span>
         <span class="n">Solver</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tsp</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">m</span> <span class="o">=</span> <span class="n">tsp</span><span class="o">.</span><span class="n">cities</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tsp</span> <span class="o">=</span> <span class="n">tsp</span>
 </pre></div>
 
         </details>
