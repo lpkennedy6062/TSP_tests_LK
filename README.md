@@ -1,8 +1,9 @@
 # tsp
 
 A library for cognitive science research on the traveling salesperson problem (TSP). Documentation
-is hosted [here](https://jackv.co/tsp/tsp.html). Built and maintained by Jack VanDrunen
-([website](https://jackv.co/)), with contributions from Mark Beers
+is hosted [here](https://jackv.co/tsp/tsp.html). Built and maintained by
+[Jack VanDrunen](https://jackv.co/),
+with contributions from Mark Beers
 ([github](https://github.com/mabeers-arco),
 [linkedin](https://www.linkedin.com/in/mark-beers-3a90a614a/)).
 
@@ -39,7 +40,7 @@ that purpose.
 `SPDX-License-Identifier: ISC OR COIL-1.0`
 
 If you use our code for scientific work, we encourage you to cite it, including at least (1) our
-full names (Jacob VanDrunen and Mark A. Beers), (2), the title of the project ("tsp: A library
+full names (Jacob VanDrunen and Mark Beers), (2), the title of the project ("tsp: A library
 for cognitive science research on the traveling salesperson problem"), and (3) the GitHub url
 ([https://github.com/jackvandrunen/tsp](https://github.com/jackvandrunen/tsp)).
 
@@ -50,6 +51,10 @@ This library accompanies the forthcoming book
 by Zygmunt Pizlo (Cambridge UP, 2022). It has been used to generate results for the following
 abstracts:
 
+> VanDrunen, J., Nam, K., Beers, M., and Pizlo, Z. "Traveling salesperson problem with simple
+> obstacles: The role of multidimensional scaling and the role of clustering."
+> *Computational Brain and Behavior*, 2022.
+> 
 > Pizlo, Z. and VanDrunen, J. "The status of mental representations in cognitive functions."
 > *Annual Interdisciplinary Conference*, 2020.
 > 
@@ -83,6 +88,9 @@ caveats: (1) it lacks a systematic suite of integration tests to ensure there ar
 still lurking around, (2) it very frustratingly uses numpy arrays in some areas and lists in others,
 and (3) it is computationally inefficient, despite some algorithms having theoretically-lower
 complexity bounds.
+
+Oh, and (4) it still relies on Concorde, which is a notoriously difficult piece of software to
+install. I am happy to hear about any alternatives you can suggest.
 
 ## Acknowledgements
 
