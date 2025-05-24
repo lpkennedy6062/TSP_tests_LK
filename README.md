@@ -1,5 +1,10 @@
 # tsp
 
+For the tests I have been working on, I added them in the examples folder.
+
+
+
+
 A library for cognitive science research on the traveling salesperson problem (TSP). Documentation
 is hosted [here](https://jackv.co/tsp/tsp.html). Built and maintained by
 [Jack VanDrunen](https://jackv.co/),
